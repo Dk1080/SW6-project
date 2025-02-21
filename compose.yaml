@@ -1,0 +1,56 @@
+services:
+  ollama:
+    image: ollama/ollama:0.5.7
+    container_name: ollama
+    volumes:
+      - ollama:/root/.ollama
+      - ./ollama_entrypoint.sh:/ollama_entrypoint.sh
+    ports:
+      - "11434:11434"
+    environment:
+      - LLM_MODEL_VERSION=${LLM_MODEL_VERSION}
+    entrypoint: ["/bin/bash", "/ollama_entrypoint.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:11434 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  server:
+    build:
+      context: ./Server
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - default
+
+  android-emulator:
+    build:
+      context: .  # Build context is now the SW6 directory
+      dockerfile: ./FitnessApp/Dockerfile  # Path to the Dockerfile
+    ports:
+      - "5900:5900"  # VNC port (optional)
+      - "5555:5555"  # ADB port
+      - "6080:6080"  # VNC web port (optional)
+    devices:
+      - /dev/kvm # Only if you need nested virtualization
+    environment:
+      DEVICE: "Pixel_4_XL"  # Or your preferred device
+      WEB_VNC: "true"        # For VNC access (optional)
+      LOG_WEB_SHARED: "true" # For log sharing (optional)
+
+
+volumes:
+  ollama:
+  
