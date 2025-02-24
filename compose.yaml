@@ -35,20 +35,6 @@ services:
     networks:
       - default
 
-  android-emulator:
-    build:
-      context: .  # Build context is now the SW6 directory
-      dockerfile: ./FitnessApp/Dockerfile  # Path to the Dockerfile
-    ports:
-      - "5900:5900"  # VNC port (optional)
-      - "5555:5555"  # ADB port
-      - "6080:6080"  # VNC web port (optional)
-    devices:
-      - /dev/kvm # Only if you need nested virtualization
-    environment:
-      DEVICE: "Pixel_4_XL"  # Or your preferred device
-      WEB_VNC: "true"        # For VNC access (optional)
-      LOG_WEB_SHARED: "true" # For log sharing (optional)
 
 
 volumes:
