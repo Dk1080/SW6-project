@@ -1,11 +1,30 @@
-import express from 'express';
-import { genkit }  from 'genkit';
-import { ollama } from 'genkitx-ollama';
 import bodyParser from 'body-parser';
+import express from 'express';
+import {genkit} from 'genkit';
+import {ollama} from 'genkitx-ollama';
+import {MongoClient} from 'mongodb';
 
 const app = express();
 const port = 8080;
 
+const client = new MongoClient("mongodb://root:root@mongo:27017")
+await client.connect();
+const database = client.db("test"); 
+//initialize the database.
+try {
+  // Check if the collection already exists
+  const collections = await database.listCollections({name: 'yourCollectionName'}).toArray();
+  if (collections.length > 0) {
+    console.log("Collection already exists.");
+  }else{
+    await database.createCollection("test");
+  }
+
+
+
+} catch(err){
+  console.log(err);
+}
 
 
 app.use(bodyParser.json());
@@ -39,6 +58,16 @@ app.post('/query', async (req, res) => {
 
     console.log(text);
     res.send(text);
+})
+
+
+
+app.post("/InsertData",(req,res)=>{
+
+  const collection = database.collection("users");
+  collection.insertOne(req.body.doc);
+  res.status(404).send("Inserted data"); 
+
 })
 
 
