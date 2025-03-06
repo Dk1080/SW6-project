@@ -3,10 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:FitnessApp.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             
              x:Class="FitnessApp.Views.HomePageView"
              x:DataType="vm:HomePageViewModel">
-    
+    <!--mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" -->
     <StackPanel>
         <TextBlock Text="Please input your query"></TextBlock>
         <TextBox  Watermark="Query" Text="{Binding Query}"/>

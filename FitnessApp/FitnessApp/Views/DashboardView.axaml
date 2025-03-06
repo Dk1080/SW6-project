@@ -1,0 +1,40 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:FitnessApp.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="393" d:DesignHeight="852"
+             x:Class="FitnessApp.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+    
+    <!-- DET HER HAR GIVET MIG SÅ MEGET CANCER :)))) JEG TROR DET HER ER DEN BEDSTE MÅDE AT GØRE DET PÅ HAR PRØVET MANGE ANDRE -->
+    <Grid Background="DarkGray" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- Status Bar -->
+            <RowDefinition Height="*" /> <!-- Graph 1 -->
+            <RowDefinition Height="*" /> <!-- Graph 2 -->
+            <RowDefinition Height="Auto" /> <!-- Chat Icon -->
+        </Grid.RowDefinitions>
+        
+
+        <!-- Status Bar -->
+        <Border Grid.Row="0" Background="#EFF6EE" Padding="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="125">
+            <TextBlock Text="My Status" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+        </Border>
+
+        <!-- Graph 1 -->
+        <Border Grid.Row="1" Background="#0E7C7B" Padding="20" CornerRadius="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,10,10,10">
+            <TextBlock Text="GRAF" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+        </Border>
+
+        <!-- Graph 2 -->
+        <Border Grid.Row="2" Background="#960200" Padding="20" CornerRadius="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0,10,10">
+            <TextBlock Text="GRAF" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+        </Border>
+
+        <!-- Chat Icon -->
+        <Border Grid.Row="3" Background="RoyalBlue" Padding="20" CornerRadius="10" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10,0,10,10">
+            <TextBlock Text="CHAT ICON" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+        </Border>
+    </Grid>
+</UserControl>
