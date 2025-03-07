@@ -31,23 +31,23 @@ Det betyder så også at når man skifter mellem views, at man i Modellen skal b
     STEP 1
 Sæt en public partial class op inde i din ViewModel ligesom det her exempel fra DashboardViewModel:
 
-public partial class DashboardViewModel : ViewModelBase
-{
-    private readonly MainViewModel _mainViewModel;
-
-    public DashboardViewModel(MainViewModel mainViewModel)
+    public partial class DashboardViewModel : ViewModelBase
     {
-        _mainViewModel = mainViewModel;
-    } 
+        private readonly MainViewModel _mainViewModel;
 
-    [RelayCommand]
-    public void GoToChatBot()
-    {
-        _mainViewModel.NavigateTo(new ChatBotViewModel(_mainViewModel));
+        public DashboardViewModel(MainViewModel mainViewModel)
+        {
+            _mainViewModel = mainViewModel;
+        } 
+    
+        [RelayCommand]
+        public void GoToChatBot()
+        {
+            _mainViewModel.NavigateTo(new ChatBotViewModel(_mainViewModel));
+        }
+    
+    
     }
-    
-    
-}
 
 self ændr den nederste relayCommand til at navigate til den viewmodel du nu har lavet
 
@@ -56,7 +56,7 @@ inde i den tilsvarende .axaml fil forbind fx en knap med RelayCommanden ligesom 
 
 Kig kun på Command det den der er vigtig her
 
-<Button Grid.Row="3"
+    <Button Grid.Row="3"
                 Background="RoyalBlue"
                 Padding="10"
                 CornerRadius="10"
