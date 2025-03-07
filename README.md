@@ -5,6 +5,7 @@ Her er en guide til hvordan man laver en ny view + hvordan man integrerer den in
 
 
 LAV NY VIEW GUIDE :)))
+    
     STEP 1
 Højreklik Views mappen og vælg Avalonia user control
 Kald den for etellerandetView
