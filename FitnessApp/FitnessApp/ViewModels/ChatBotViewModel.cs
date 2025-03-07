@@ -9,13 +9,13 @@ using FitnessApp.Views;
 
 namespace FitnessApp.ViewModels;
 
-public partial class HomePageViewModel : ViewModelBase
+public partial class ChatBotViewModel : ViewModelBase
 {
     private readonly MainViewModel _mainViewModel;
     
-    public HomePageViewModel(MainViewModel mainViewModel)
+    public ChatBotViewModel(MainViewModel mainViewModel)
     {
-        _mainViewModel = mainViewModel ?? throw new ArgumentNullException(nameof(mainViewModel));
+        _mainViewModel = mainViewModel;
     }
 
     [ObservableProperty] private string _query = string.Empty;
@@ -54,12 +54,10 @@ public partial class HomePageViewModel : ViewModelBase
         }
     }
     
-    
-    // Command to navigate to DashboardViewModel: CURRENTLY OUTDATED, USED AT BEGINNING
     [RelayCommand]
-    private void GoToBlankPage()
+    public void GoToDashboard()
     {
-            _mainViewModel.NavigateTo(new DashboardViewModel(_mainViewModel));
+        _mainViewModel.NavigateTo(new DashboardViewModel(_mainViewModel));
     }
 }
     

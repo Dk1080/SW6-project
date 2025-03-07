@@ -6,43 +6,25 @@
              
              x:Class="FitnessApp.Views.MainView"
              x:DataType="vm:MainViewModel">
-    <!--mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" -->
     <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
     
-    
-    <Grid Background="DarkGray">
-        <Button Content="Go to Dashboard" 
-                Command="{Binding GoToDashboardCommand}" 
-                HorizontalAlignment="Center" 
-                VerticalAlignment="Center" 
-                Width="200" Height="50"/>
-        <ContentControl Content="{Binding CurrentPage}" />
-    </Grid>
-    
-    <!--<SplitView IsPaneOpen="{Binding IsPaneOpen}"
-             OpenPaneLength="200"
-             CompactPaneLength="100"
-             DisplayMode="CompactInline"
-             Background="#1e1e1e"
-             PaneBackground="#1e1e1e">
-      <SplitView.Pane>
-          <StackPanel Spacing="5"
-                      Margin="5">
-              <Button Foreground="White" Command="{Binding TogglePane}" >
-                  <PathIcon Data="{StaticResource LineHorizontal5Regular}"></PathIcon>
-              </Button>
-              <ListBox>
-                  <ListBoxItem>
-                      Item
-                  </ListBoxItem>
-              </ListBox>
-          </StackPanel>
-      </SplitView.Pane> 
-  </SplitView> -->
+    <!-- Main view model holder styr på navigation i vores app lige nu -->
+    <ContentControl Content="{Binding CurrentPage}">
+        <ContentControl.DataTemplates>
+            <DataTemplate DataType="vm:MainViewModel">
+                <Grid Background="DarkGray">
+                    <Button Content="Go to Dashboard" 
+                            Command="{Binding GoToDashboardCommand}" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Width="200" Height="50" 
+                            ZIndex="1"/>
+                </Grid>
+            </DataTemplate>
+        </ContentControl.DataTemplates>
+    </ContentControl>
   
 </UserControl>
      

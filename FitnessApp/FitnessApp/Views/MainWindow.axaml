@@ -9,7 +9,6 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="FitnessApp">
         
-        <!--mc:Ignorable="d" d:DesignWidth="393" d:DesignHeight="852" -->
         <Window.DataContext>
                 <vm:MainViewModel />
         </Window.DataContext>
