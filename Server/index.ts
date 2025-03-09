@@ -1,10 +1,12 @@
 import bodyParser from 'body-parser';
 import express from 'express';
-import {genkit} from 'genkit';
+import expressWs from 'express-ws';
+import {genkit} from 'genkit/beta';
 import {ollama} from 'genkitx-ollama';
 import {MongoClient} from 'mongodb';
 
 const app = express();
+expressWs(app);
 const port = 8080;
 
 const client = new MongoClient("mongodb://root:root@mongo:27017")
@@ -69,6 +71,36 @@ app.post("/InsertData",(req,res)=>{
   res.status(404).send("Inserted data"); 
 
 })
+
+
+app.ws('/ws', async (ws, req) => {
+  console.log('Client connected');
+  const chat = ai.chat({
+    model: 'ollama/deepseek-r1',
+    system:
+    "You are an AI designed to help people, your name is Deepseek and you will try to be as concise with your answers as possible.",
+    config: {
+      temperature: 1.3,
+    },
+  });
+
+
+  ws.on('message', async (msg) => {
+      console.log(`Received: ${msg}`);
+      const response = await chat.send(msg);
+      //Get the content of the respone from a JSON object
+      const content = response.message.content && response.message.content[0];
+      //Remove reasoning part of return
+      const answer = String(content.text).replace(/<think>.*?<\/think>/gs, '').trim();
+      console.log("This here" + answer)
+      ws.send(`${answer}`);
+  });
+
+  ws.on('close', () => {
+      console.log('Client disconnected');
+  });
+});
+
 
 
 app.listen(port, () => {
