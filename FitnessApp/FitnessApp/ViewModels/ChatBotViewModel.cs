@@ -48,7 +48,11 @@ public partial class ChatBotViewModel : ViewModelBase
     {
         try
         {
-            await _ws.ConnectAsync(new Uri("ws://localhost:8080/ws"), new HttpMessageInvoker(_handler), CancellationToken.None);
+            //Comment or uncomment based OS the app is running.
+            //string wsAddress =  "ws://10.0.2.2:8080/ws";
+            string wsAddress = "ws://localhost:8080/ws";
+            
+            await _ws.ConnectAsync(new Uri(wsAddress), new HttpMessageInvoker(_handler), CancellationToken.None);
             Console.WriteLine("Connected to WebSocket!");
             ReceiveChat().ConfigureAwait(false);
         }
