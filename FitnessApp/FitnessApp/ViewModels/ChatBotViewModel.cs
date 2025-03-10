@@ -5,11 +5,18 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FitnessApp.Views;
 
 namespace FitnessApp.ViewModels;
 
-public partial class HomePageViewModel : ViewModelBase
+public partial class ChatBotViewModel : ViewModelBase
 {
+    private readonly MainViewModel _mainViewModel;
+    
+    public ChatBotViewModel(MainViewModel mainViewModel)
+    {
+        _mainViewModel = mainViewModel;
+    }
 
     [ObservableProperty] private string _query = string.Empty;
     [ObservableProperty] private string _response = string.Empty;
@@ -45,6 +52,12 @@ public partial class HomePageViewModel : ViewModelBase
         {
             Console.WriteLine($"POST request failed with status code {response.StatusCode}.");
         }
+    }
+    
+    [RelayCommand]
+    public void GoToDashboard()
+    {
+        _mainViewModel.NavigateTo(new DashboardViewModel(_mainViewModel));
     }
 }
     

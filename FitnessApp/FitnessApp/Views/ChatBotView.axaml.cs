@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace FitnessApp.Views;
 
-public partial class HomePageView : UserControl
+public partial class ChatBotView : UserControl
 {
-    public HomePageView()
+    public ChatBotView()
     {
         InitializeComponent();
     }

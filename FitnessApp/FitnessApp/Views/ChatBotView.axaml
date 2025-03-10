@@ -1,0 +1,89 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:FitnessApp.ViewModels"
+             x:Class="FitnessApp.Views.ChatBotView"
+             x:DataType="vm:ChatBotViewModel">
+    <Design.DataContext>
+        <vm:ChatBotViewModel />
+    </Design.DataContext>
+    
+    <Grid Background="DarkGray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  
+            <RowDefinition Height="*"/>  
+            <RowDefinition Height="Auto"/>  
+            <RowDefinition Height="Auto"/> 
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#EFF6EE" Padding="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="125">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />    <!-- Left spacer -->
+                    <ColumnDefinition Width="Auto" /> <!-- Text centered -->
+                    <ColumnDefinition Width="*" />    <!-- Right spacer -->
+                </Grid.ColumnDefinitions>
+                
+                <!-- Text dead center -->
+                <TextBlock Grid.Column="1" 
+                           Text="FitnessBot6969" 
+                           Foreground="Black" 
+                           FontSize="24" 
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center"
+                           />
+                
+                <!-- Button overlay on the left -->
+                <Button Grid.Column="0"
+                        Command="{Binding GoToDashboardCommand}"
+                        Padding="10"
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        Background="RoyalBlue"
+                        CornerRadius="25">
+                    <PathIcon Data="{StaticResource ArrowLeftRegular}" Height="30" Width="30"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- TextBlock for displaying the Response -->
+        <TextBlock Grid.Row="1" 
+                   Text="{Binding Response}" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center" 
+                   Margin="10"
+                   />
+
+        <!-- Query TextBox and Submit Button -->
+        <Grid Grid.Row="2" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />    <!-- TextBox takes most space -->
+                <ColumnDefinition Width="Auto" /> <!-- Submit Button on the right -->
+            </Grid.ColumnDefinitions>
+            
+            <!-- TextBox for Query input -->
+            <TextBox Grid.Column="0" 
+                     CornerRadius="25"
+                     Watermark="Query" 
+                     Text="{Binding Query}" 
+                     VerticalAlignment="Center" 
+                     Margin="0,0,10,0"
+                     />
+            
+            <!-- Submit Button with icon -->
+            <Button Grid.Column="1"
+                    Command="{Binding SendQuery}"
+                    Padding="10"
+                    VerticalAlignment="Center"
+                    Background="RoyalBlue"
+                    CornerRadius="25">
+                <PathIcon Data="{StaticResource ArrowUpRegular}" Height="30" Width="30"/>
+            </Button>
+        </Grid>
+    </Grid>
+
+    
+    
+</UserControl>

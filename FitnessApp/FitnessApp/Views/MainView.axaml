@@ -3,44 +3,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:FitnessApp.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             
              x:Class="FitnessApp.Views.MainView"
              x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
-
-  <SplitView IsPaneOpen="{Binding IsPaneOpen}"
-             OpenPaneLength="200"
-             CompactPaneLength="100"
-             DisplayMode="CompactInline"
-             Background="#1e1e1e"
-             PaneBackground="#1e1e1e">
-      <SplitView.Pane>
-          <StackPanel Spacing="5"
-                      Margin="5">
-              <Button Foreground="White" Command="{Binding TogglePane}" >
-                  <PathIcon Data="{StaticResource LineHorizontal5Regular}"></PathIcon>
-              </Button>
-              <ListBox>
-                  <ListBoxItem>
-                      Item
-                  </ListBoxItem>
-              </ListBox>
-          </StackPanel>
-      </SplitView.Pane>
-      
-      <SplitView.Content>
-          <Border CornerRadius="12 0 0 0"
-                  Background="#2d2d2d">
-              <TransitioningContentControl Content="{Binding CurrentPage}"></TransitioningContentControl>
-          </Border>
-      </SplitView.Content>
-      
-      
-  </SplitView>
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+    
+    <!-- Main view model holder styr på navigation i vores app lige nu -->
+    <ContentControl Content="{Binding CurrentPage}">
+        <ContentControl.DataTemplates>
+            <DataTemplate DataType="vm:MainViewModel">
+                <Grid Background="DarkGray">
+                    <Button Content="Go to Dashboard" 
+                            Command="{Binding GoToDashboardCommand}" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Width="200" Height="50" 
+                            ZIndex="1"/>
+                </Grid>
+            </DataTemplate>
+        </ContentControl.DataTemplates>
+    </ContentControl>
   
 </UserControl>
      
