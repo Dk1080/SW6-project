@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:conv="clr-namespace:FitnessApp.Convertor"
              xmlns:vm="clr-namespace:FitnessApp.ViewModels"
              x:Class="FitnessApp.Views.ChatBotView"
              x:DataType="vm:ChatBotViewModel">
@@ -48,13 +49,20 @@
             </Grid>
         </Border>
 
-        <!-- TextBlock for displaying the Response -->
-        <TextBlock Grid.Row="1" 
-                   Text="{Binding Response}" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center" 
-                   Margin="10"
-                   />
+        <!-- ScrollViewer displaying Chat logs -->
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Chat}" Margin="10">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border CornerRadius="10" Padding="10" Margin="10"
+                                Background="{Binding IsUser, Converter={StaticResource BooleanToBrushConvertor}}">
+                            <TextBlock Foreground="Black" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding text}"></TextBlock>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        
 
         <!-- Query TextBox and Submit Button -->
         <Grid Grid.Row="2" Margin="10">
