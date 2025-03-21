@@ -1,22 +1,21 @@
-﻿using Avalonia.Controls;
-namespace FitnessApp.ViewModels;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public partial class DashboardViewModel : ViewModelBase
+namespace FitnesApp.ViewModels
 {
-    private readonly MainViewModel _mainViewModel;
-
-    public DashboardViewModel(MainViewModel mainViewModel)
+    public partial class DashboardViewModel : ObservableObject
     {
-        _mainViewModel = mainViewModel;
-    } 
+        [RelayCommand]
+        async Task GoToChatBot()
+        {
+            await Shell.Current.GoToAsync(nameof(ChatBotPage));
+        }
 
-    [RelayCommand]
-    public void GoToChatBot()
-    {
-        _mainViewModel.NavigateTo(new ChatBotViewModel(_mainViewModel));
+
     }
-    
-    
 }

@@ -1,1 +1,40 @@
-node_modules
+# Ignore Visual Studio files for the FitnessApp project
+/FitnessApp/.vs
+
+# Ignore build output directories
+/FitnessApp/bin/
+/FitnessApp/obj/
+
+# Ignore user-specific files
+/FitnessApp/*.user
+/FitnessApp/*.suo
+
+# Ignore package manager folders
+/FitnessApp/packages/
+/FitnessApp/node_modules/
+
+# Ignore temporary files
+/FitnessApp/*.log
+/FitnessApp/*.tmp
+
+# Ignore publish output
+/FitnessApp/wwwroot/
+
+# Ignore Android build files
+/FitnessApp/android/native/build/
+/FitnessApp/android/native/.idea/
+/FitnessApp/android/native/gradle/
+/FitnessApp/android/native/gradlew
+/FitnessApp/android/native/gradlew.bat
+/FitnessApp/android/native/*.iml
+
+# Ignore intermediate build files
+/FitnessApp/android/NewBinding.Android.Binding/obj/
+/FitnessApp/android/NewBinding.Android.Binding/bin/
+
+# Ignore Gradle wrapper properties
+/FitnessApp/android/native/gradle/wrapper/gradle-wrapper.properties
+
+# Ignore generated files
+/FitnessApp/android/NewBinding.Android.Binding/**/*.xml
+/FitnessApp/android/NewBinding.Android.Binding/**/*.json

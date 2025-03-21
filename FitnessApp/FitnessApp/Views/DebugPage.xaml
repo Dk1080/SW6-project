@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FitnesApp.Views.DebugPage"
+             Title="DebugPage"
+             xmlns:viewmodel="clr-namespace:FitnesApp.ViewModels"
+             x:DataType="viewmodel:MainViewModel">
+    <StackLayout>
+        <Label Text="{Binding LabelText}"></Label>
+        <Label Text="{Binding X}"></Label>
+        <Button Text="Click me!" Command="{Binding IncrementCommand}"></Button>
+        <Button Text="Request Permission!" Command="{Binding RequestPermissionsCommand}"></Button>
+        <Button Text="Insert Steps" Command="{Binding GetStepsCommand}"></Button>
+    </StackLayout>
+</ContentPage>
