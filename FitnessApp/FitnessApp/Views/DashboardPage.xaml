@@ -24,6 +24,10 @@
             />
         </Border>
 
+        <Button Grid.Row="0" Command="{Binding GoToDebugCommand}" Text="Go To debug">
+            
+        </Button>
+
         <Border Grid.Row="1" Background="#0E7C7B" Padding="20" StrokeShape="RoundRectangle 10,10,10,10"  HorizontalOptions="Center" VerticalOptions="Center" Margin="10,10,10,10">
             <Label Text="GRAF" 
                    TextColor="White" 

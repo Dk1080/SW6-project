@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FitnesApp.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,13 @@ namespace FitnesApp.ViewModels
         async Task GoToChatBot()
         {
             await Shell.Current.GoToAsync(nameof(ChatBotPage));
+        }
+
+
+        [RelayCommand]
+        async Task GoToDebug()
+        {
+            await Shell.Current.GoToAsync(nameof(DebugPage));
         }
 
 

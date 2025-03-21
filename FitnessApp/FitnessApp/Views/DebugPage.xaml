@@ -4,7 +4,7 @@
              x:Class="FitnesApp.Views.DebugPage"
              Title="DebugPage"
              xmlns:viewmodel="clr-namespace:FitnesApp.ViewModels"
-             x:DataType="viewmodel:MainViewModel">
+             x:DataType="viewmodel:DebugViewModel">
     <StackLayout>
         <Label Text="{Binding LabelText}"></Label>
         <Label Text="{Binding X}"></Label>

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
 using FitnesApp.ViewModels;
+using FitnesApp.Views;
 using FitnessApp.ViewModels;
 using Microsoft.Extensions.Logging;
 
@@ -29,6 +30,10 @@ public static class MauiProgram
 
 		builder.Services.AddTransient<ChatBotPage>();
 		builder.Services.AddSingleton<ChatBotViewModel>();
+
+        builder.Services.AddTransient<DebugPage>();
+        builder.Services.AddSingleton<DebugViewModel>();
+
 
 
 

@@ -36,6 +36,7 @@
         </member>
         <member name="T:FitnesApp.ViewModels.DashboardViewModel">
             <inheritdoc/>
+            <inheritdoc/>
         </member>
         <member name="F:FitnesApp.ViewModels.DashboardViewModel.goToChatBotCommand">
             <summary>The backing field for <see cref="P:FitnesApp.ViewModels.DashboardViewModel.GoToChatBotCommand"/>.</summary>
@@ -43,35 +44,41 @@
         <member name="P:FitnesApp.ViewModels.DashboardViewModel.GoToChatBotCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:FitnesApp.ViewModels.DashboardViewModel.GoToChatBot"/>.</summary>
         </member>
-        <member name="T:FitnesApp.ViewModels.MainViewModel">
+        <member name="F:FitnesApp.ViewModels.DashboardViewModel.goToDebugCommand">
+            <summary>The backing field for <see cref="P:FitnesApp.ViewModels.DashboardViewModel.GoToDebugCommand"/>.</summary>
+        </member>
+        <member name="P:FitnesApp.ViewModels.DashboardViewModel.GoToDebugCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:FitnesApp.ViewModels.DashboardViewModel.GoToDebug"/>.</summary>
+        </member>
+        <member name="T:FitnesApp.ViewModels.DebugViewModel">
             <inheritdoc/>
             <inheritdoc/>
             <inheritdoc/>
             <inheritdoc/>
         </member>
-        <member name="P:FitnesApp.ViewModels.MainViewModel.LabelText">
-            <inheritdoc cref="F:FitnesApp.ViewModels.MainViewModel.labelText"/>
+        <member name="P:FitnesApp.ViewModels.DebugViewModel.LabelText">
+            <inheritdoc cref="F:FitnesApp.ViewModels.DebugViewModel.labelText"/>
         </member>
-        <member name="P:FitnesApp.ViewModels.MainViewModel.X">
-            <inheritdoc cref="F:FitnesApp.ViewModels.MainViewModel.x"/>
+        <member name="P:FitnesApp.ViewModels.DebugViewModel.X">
+            <inheritdoc cref="F:FitnesApp.ViewModels.DebugViewModel.x"/>
         </member>
-        <member name="F:FitnesApp.ViewModels.MainViewModel.incrementCommand">
-            <summary>The backing field for <see cref="P:FitnesApp.ViewModels.MainViewModel.IncrementCommand"/>.</summary>
+        <member name="F:FitnesApp.ViewModels.DebugViewModel.incrementCommand">
+            <summary>The backing field for <see cref="P:FitnesApp.ViewModels.DebugViewModel.IncrementCommand"/>.</summary>
         </member>
-        <member name="P:FitnesApp.ViewModels.MainViewModel.IncrementCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:FitnesApp.ViewModels.MainViewModel.Increment"/>.</summary>
+        <member name="P:FitnesApp.ViewModels.DebugViewModel.IncrementCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:FitnesApp.ViewModels.DebugViewModel.Increment"/>.</summary>
         </member>
-        <member name="F:FitnesApp.ViewModels.MainViewModel.getStepsCommand">
-            <summary>The backing field for <see cref="P:FitnesApp.ViewModels.MainViewModel.GetStepsCommand"/>.</summary>
+        <member name="F:FitnesApp.ViewModels.DebugViewModel.getStepsCommand">
+            <summary>The backing field for <see cref="P:FitnesApp.ViewModels.DebugViewModel.GetStepsCommand"/>.</summary>
         </member>
-        <member name="P:FitnesApp.ViewModels.MainViewModel.GetStepsCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:FitnesApp.ViewModels.MainViewModel.GetSteps"/>.</summary>
+        <member name="P:FitnesApp.ViewModels.DebugViewModel.GetStepsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:FitnesApp.ViewModels.DebugViewModel.GetSteps"/>.</summary>
         </member>
-        <member name="F:FitnesApp.ViewModels.MainViewModel.requestPermissionsCommand">
-            <summary>The backing field for <see cref="P:FitnesApp.ViewModels.MainViewModel.RequestPermissionsCommand"/>.</summary>
+        <member name="F:FitnesApp.ViewModels.DebugViewModel.requestPermissionsCommand">
+            <summary>The backing field for <see cref="P:FitnesApp.ViewModels.DebugViewModel.RequestPermissionsCommand"/>.</summary>
         </member>
-        <member name="P:FitnesApp.ViewModels.MainViewModel.RequestPermissionsCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:FitnesApp.ViewModels.MainViewModel.RequestPermissions"/>.</summary>
+        <member name="P:FitnesApp.ViewModels.DebugViewModel.RequestPermissionsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:FitnesApp.ViewModels.DebugViewModel.RequestPermissions"/>.</summary>
         </member>
         <member name="T:FitnesApp.Resource">
             <summary>
@@ -824,6 +831,12 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Response">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Response" generated properties.</summary>
         </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.LabelText">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "LabelText" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.X">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "X" generated properties.</summary>
+        </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Username">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Username" generated properties.</summary>
         </member>
@@ -832,12 +845,6 @@
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.InvalidInfo">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "InvalidInfo" generated properties.</summary>
-        </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.LabelText">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "LabelText" generated properties.</summary>
-        </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.X">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "X" generated properties.</summary>
         </member>
         <member name="T:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs">
             <summary>
@@ -851,6 +858,12 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Response">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Response" generated properties.</summary>
         </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.LabelText">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "LabelText" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.X">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "X" generated properties.</summary>
+        </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Username">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Username" generated properties.</summary>
         </member>
@@ -859,12 +872,6 @@
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.InvalidInfo">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "InvalidInfo" generated properties.</summary>
-        </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.LabelText">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "LabelText" generated properties.</summary>
-        </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.X">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "X" generated properties.</summary>
         </member>
     </members>
 </doc>
