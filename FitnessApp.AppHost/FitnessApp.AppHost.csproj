@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.1.0" />
     <PackageReference Include="Aspire.Hosting.MongoDB" Version="9.1.0" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="9.3.1-beta.241" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="9.3.1-beta.244" />
   </ItemGroup>
 
   <ItemGroup>
