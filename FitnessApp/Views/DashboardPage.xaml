@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FitnesApp.DashboardPage"
+             xmlns:viewmodel="clr-namespace:FitnesApp.ViewModels"
+             xmlns:maui="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             Title="DashboardPage"
+             x:DataType="viewmodel:DashboardViewModel"
+             >
+    <Grid Background="DarkGray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="0.4*" />
+        </Grid.RowDefinitions>
+
+
+        <Border Grid.Row="0" Background="#EFF6EE" Padding="20"
+                HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="125">
+            <Label 
+                Text="My Status" 
+                TextColor="Black" 
+                HorizontalOptions="Center" 
+                VerticalOptions="Center" 
+                FontSize="24"/>
+        </Border>
+
+
+        <Border Grid.Row="1" Background="#0E7C7B" Padding="20" StrokeShape="RoundRectangle 10,10,10,10"  
+                HorizontalOptions="Fill" VerticalOptions="Fill" Margin="10">
+            <maui:CartesianChart 
+                Series="{Binding ChartSeries}"
+                BackgroundColor="#0E7C7B" 
+                />
+        </Border>
+
+
+        <Border Grid.Row="2" Background="#960200" Padding="20" StrokeShape="RoundRectangle 10,10,10,10"  
+                HorizontalOptions="Fill" VerticalOptions="Fill" Margin="10">
+            <Label Text="GRAF" 
+                   TextColor="White" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center" 
+                   FontSize="24"/>
+        </Border>
+
+        <ImageButton Grid.Row="3"
+                     Background="RoyalBlue"
+                     Padding="10"
+                     CornerRadius="10"
+                     HorizontalOptions="End"
+                     VerticalOptions="Center"
+                     Margin="10"
+                     Command="{Binding GoToChatBotCommand}"
+                     Source="chat.png"/>
+    </Grid>
+</ContentPage>
