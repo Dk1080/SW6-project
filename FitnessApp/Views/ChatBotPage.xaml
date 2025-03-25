@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FitnesApp.ChatBotPage"
+             xmlns:viewmodel="clr-namespace:FitnesApp.ViewModels"
+             Title="ChatBotPage"
+             x:DataType="viewmodel:ChatBotViewModel">
+
+
+    <Grid Background="DarkGray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#EFF6EE" Padding="20"  VerticalOptions="Center" Height="125">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <!-- Left spacer -->
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Text centered -->
+                    <ColumnDefinition Width="*" />
+                    <!-- Right spacer -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Text dead center -->
+                <Label Grid.Column="1" 
+                       Text="FitnessBot6969" 
+                       TextColor="Black" 
+                       FontSize="24" 
+                       HorizontalOptions="Center" 
+                       VerticalOptions="Center"
+                       />
+
+                <!-- Button overlay on the left -->
+                <ImageButton Grid.Column="0"
+                    Command="{Binding GoToDashboardCommand}"
+                    Padding="10"
+                    Margin="10,0,0,0"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Start"
+                    Background="RoyalBlue"
+                    CornerRadius="25"
+                    Source="arrow_back.png">
+                </ImageButton>
+            </Grid>
+        </Border>
+
+        <!-- ScrollView displaying Chat logs -->
+        <CollectionView ItemsSource="{Binding Chat}" Margin="10" Grid.Row="1">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewmodel:ChatBubble">
+                    <Border StrokeShape="RoundRectangle 10,10,10,10" Padding="10" Margin="10">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsUser}" Value="True">
+                                <Setter Property="Background" Value="LightBlue" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsUser}" Value="False">
+                                <Setter Property="Background" Value="LightGray" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label TextColor="Black" HorizontalOptions="Start" LineBreakMode="WordWrap" Text="{Binding text}" />
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
+
+        <!-- Query TextBox and Submit Button -->
+        <Grid Grid.Row="2" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <!-- TextBox takes most space -->
+                <ColumnDefinition Width="Auto" />
+                <!-- Submit Button on the right -->
+            </Grid.ColumnDefinitions>
+
+            <!-- TextBox for Query input -->
+            <Entry Grid.Column="0" 
+                 Placeholder="Query" 
+                 Text="{Binding Query}" 
+                 VerticalOptions="Center" 
+                 Margin="0,0,10,0"
+                 />
+
+            <!-- Submit Button with icon -->
+            <ImageButton Grid.Column="1"
+                Command="{Binding SendQueryCommand}"
+                Padding="10"
+                VerticalOptions="Center"
+                Background="RoyalBlue"
+                CornerRadius="25"
+                Source="arrow_up.png">
+            </ImageButton>
+        </Grid>
+    </Grid>
+
+
+
+</ContentPage>
