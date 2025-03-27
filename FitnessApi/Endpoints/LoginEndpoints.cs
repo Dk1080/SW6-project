@@ -1,4 +1,5 @@
 ﻿using FitnessApi.Models;
+using FitnessApi.Models.Api_DTOs;
 using FitnessApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,10 +37,10 @@ namespace FitnessApi.Endpoints
             });
 
 
-            app.MapPost("/login", (HttpContext httpContext, User user, IUserService userService) =>
+            app.MapPost("/login", (HttpContext httpContext, UserRequest user, IUserService userService) =>
             {
                 // Get the user based on their name.
-                User gottenUser = userService.GetUserByName(user.Name);
+                User gottenUser = userService.GetUserByName(user.Username);
 
                 if (gottenUser == null)
                 {
@@ -48,7 +49,7 @@ namespace FitnessApi.Endpoints
                 else if (gottenUser.Password == user.Password)
                 {
                     // Set session data
-                    httpContext.Session.SetString("Username", gottenUser.Name);
+                    httpContext.Session.SetString("Username", gottenUser.Username);
                     return Results.Ok();
                 }
                 else

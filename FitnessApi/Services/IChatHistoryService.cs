@@ -11,8 +11,7 @@ namespace FitnessApi.Services
 
         public IEnumerable<ChatHistory> GetAllChatHistoriesForAUser(string UserName);
 
-
-        void AddChatHistory(ChatHistory chatHistory);
+        ObjectId AddChatHistory(ChatHistory chatHistory);
 
         void UpdateChatHistory(ChatHistory chatHistory);
 

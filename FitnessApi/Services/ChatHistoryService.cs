@@ -17,13 +17,13 @@ namespace FitnessApi.Services
         }
 
 
-        public void AddChatHistory(ChatHistory chatHistory)
+        public ObjectId AddChatHistory(ChatHistory chatHistory)
         {
             _databaseContext.ChatHistories.Add(chatHistory);
-            _databaseContext.ChangeTracker.DetectChanges();
-            Console.WriteLine(_databaseContext.ChangeTracker.DebugView.LongView);
             _databaseContext.SaveChanges();
+            return chatHistory.Id; 
         }
+
 
         public void DeleteChatHistory(ChatHistory chatHistory)
         {
@@ -37,8 +37,27 @@ namespace FitnessApi.Services
 
         public void UpdateChatHistory(ChatHistory chatHistory)
         {
-            _databaseContext.ChatHistories.Update(chatHistory);
-            _databaseContext.SaveChanges();
+            var existingChat = _databaseContext.ChatHistories.FirstOrDefault(c => c.Id == chatHistory.Id);
+
+            if (existingChat != null)
+            {
+                // Get only new messages that do not already exist
+                var newMessages = chatHistory.chatHistory
+                    .Where(newMsg => !existingChat.chatHistory.Any(existingMsg =>
+                        existingMsg.Role == newMsg.Role &&
+                        existingMsg.Text == newMsg.Text))
+                    .ToList();
+
+                // Add only the new messages
+                existingChat.chatHistory.AddRange(newMessages);
+
+                _databaseContext.Entry(existingChat).State = EntityState.Modified;
+                _databaseContext.SaveChanges();
+            }
+            else
+            {
+                Console.WriteLine($"ChatHistory with ID {chatHistory.Id} not found.");
+            }
         }
 
         public ChatHistory? GetChatHistoryByID(ObjectId Id)

@@ -25,4 +25,8 @@
     <ProjectReference Include="..\FitnessApp.ServiceDefaults\FitnessApp.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Database DTOs\" />
+  </ItemGroup>
+
 </Project>

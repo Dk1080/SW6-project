@@ -40,9 +40,9 @@ namespace FitnessApi.Services
         }
 
 
-        public User? GetUserByName(String name)
+        public User? GetUserByName(String username)
         {
-            return _databaseContext.Users.FirstOrDefault(x => x.Name == name);
+            return _databaseContext.Users.FirstOrDefault(x => x.Username == username);
         }
 
 

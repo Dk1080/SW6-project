@@ -11,7 +11,7 @@ namespace FitnessApi.Models
 
         [Required(ErrorMessage ="User has to have a name!")]
         [Display(Name = "Username")]
-        public string Name { get; set; }
+        public string Username { get; set; }
         [Required(ErrorMessage = "Must have password")]
         [Display(Name = "Password")]
         public string Password { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.AI;
+using MongoDB.Bson;
 
 namespace FitnessApi.Models
 {

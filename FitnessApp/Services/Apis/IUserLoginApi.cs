@@ -1,0 +1,18 @@
+﻿using FitnessApp.Models.Api_DTOs;
+using Refit;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FitnesApp.Services.APIs
+{
+    public interface IUserLoginApi
+    {
+        [Post("/login")]
+        Task<HttpResponseMessage> Execute(UserRequest userRequest);
+
+
+    }
+}
