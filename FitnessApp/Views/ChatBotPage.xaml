@@ -126,22 +126,27 @@
                 </ImageButton>
             </Grid>
         </Grid>
+        
         <!-- SideMenu-->
         <Grid x:Name="SideMenu"
               BackgroundColor="LightGray"
               WidthRequest="250"
-              HeightRequest="1000"
               TranslationX="{Binding MenuPosition, Mode=TwoWay}"
               VerticalOptions="Fill"
               HorizontalOptions="End">
             <StackLayout Padding="20">
-                <Button Text="Close" Command="{Binding ToggleMenuCommand}" BackgroundColor="Blue" />
-                <Button Text="New Chat" Command="{Binding NewChatCommand}" Background="Aqua"/>
+                <Button Margin="10" Text="Close" Command="{Binding ToggleMenuCommand}" BackgroundColor="Blue" />
+                <Button Margin="10" Text="New Chat" Command="{Binding NewChatCommand}" Background="Aqua"/>
 
                 <CollectionView ItemsSource="{Binding ChatLog.histories}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dto:ChatHistoryDTO">
-                            <Label TextColor="Black" HorizontalOptions="Start" LineBreakMode="WordWrap" Text="{Binding Id}"/>
+                            <Button
+                                    Margin="0,10,0,10"
+                                    Text="{Binding Id}" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SwapChatCommand}" 
+                                    CommandParameter="{Binding Id}"
+                                    HorizontalOptions="Fill"/>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

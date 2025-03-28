@@ -82,50 +82,51 @@ namespace FitnesApp.ViewModels
                 return;
             }
 
+            var query = new ChatDTO(Query, threadId, "user");
 
-            var query = new ChatDTO(Query,threadId,"user");
+            // Gem besked i currentchat så den kan blive displayed hvis man skifter
+            var userMessage = new ChatMessageDTO("user", Query);
+            CurrentChat.Add(userMessage);
 
-            //Add the query to the UI
-            CurrentChat.Add(new ChatMessageDTO("user", Query));
+            // Gem den i den tilsvarende chat :3
+            var currentChatHistory = chatLog.histories.FirstOrDefault(chat => chat.Id == threadId.ToString());
 
-
-
-
+            if (currentChatHistory != null)
+            {
+                currentChatHistory.ChatHistory.Add(userMessage);
+            }
 
             // Sending the query to the server.
             try
             {
+                var response = await _chatApi.SendChat(query);
 
-               var response =  await _chatApi.SendChat(query);
+                // Tilføj chattens besked så den også kan blive displayed
+                var botMessage = new ChatMessageDTO("assistant", response.Query);
+                CurrentChat.Add(botMessage);
 
+                // Gem i den tilsvarende chat ╰(*°▽°*)╯
+                if (currentChatHistory != null)
+                {
+                    currentChatHistory.ChatHistory.Add(botMessage);
+                }
 
                 //If this is a new chat then add it to the chatlog
                 if (threadId == ObjectId.Empty)
                 {
-                    List<ChatMessageDTO> tmpHis = new();
-                    tmpHis.Add(new ChatMessageDTO("user", Query));
-                    chatLog.histories.Add(new ChatHistoryDTO(ObjectId.Parse(response.ThreadId), tmpHis));
-                    OnPropertyChanged(nameof(ChatLog));
-                    OnPropertyChanged(nameof(ChatLog.histories));
+                    threadId = ObjectId.Parse(response.ThreadId);
+                    chatLog.histories.Add(new ChatHistoryDTO(threadId, new List<ChatMessageDTO> { userMessage, botMessage }));
                 }
 
-
-                //Set the new threadID
-                threadId = ObjectId.Parse(response.ThreadId);
-
-                CurrentChat.Add(new ChatMessageDTO("assistant", response.Query));
-
+                OnPropertyChanged(nameof(CurrentChat));
                 OnPropertyChanged(nameof(ChatLog));
-
-
             }
-            catch (Exception e) { 
-
-            Console.WriteLine(e.ToString());  
-                
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
-
         }
+
 
 
         [RelayCommand]
@@ -135,7 +136,34 @@ namespace FitnesApp.ViewModels
             threadId = ObjectId.Empty;
         }
 
+        [RelayCommand]
+        private async Task SwapChat(String chatId)
+        {
+            try
+            {
+                CurrentChat.Clear();
+                
+                var selectedChat = ChatLog.histories.FirstOrDefault(chat => chat.Id == chatId);
 
+                if (selectedChat != null) 
+                { 
+                    threadId = ObjectId.Parse(chatId);
+
+                    foreach (ChatMessageDTO message in selectedChat.ChatHistory)
+                    {
+                        CurrentChat.Add(message);
+                    }
+
+                    OnPropertyChanged(nameof(CurrentChat));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error swapping chat: {ex.Message}");
+            }
+
+        }
 
         [RelayCommand]
         async Task GoToDashboard()
@@ -172,7 +200,7 @@ namespace FitnesApp.ViewModels
             _isMenuOpen = !_isMenuOpen;
         }
 
-
+        
 
 
     }
