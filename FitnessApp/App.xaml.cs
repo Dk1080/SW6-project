@@ -1,4 +1,4 @@
-﻿namespace FitnesApp
+﻿namespace FitnessApp
 {
     public partial class App : Application
     {

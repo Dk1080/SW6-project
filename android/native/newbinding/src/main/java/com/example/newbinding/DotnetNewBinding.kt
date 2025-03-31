@@ -22,14 +22,14 @@ class DotnetNewBinding(private val Context : Context) {
         }
     }
 
-    suspend fun insertSteps() {
+    suspend fun insertSteps(Steps: Int) {
         val endTime = Instant.now()
         val startTime = endTime.minus(Duration.ofMinutes(15))
         try {
             println("dssdfdsfsdf.com")
 
             val stepsRecord = StepsRecord(
-                count = 120,
+                count = Steps.toLong(),
                 startTime = startTime,
                 endTime = endTime,
                 startZoneOffset = ZoneOffset.UTC,
@@ -48,14 +48,15 @@ class DotnetNewBinding(private val Context : Context) {
 
 
     suspend fun aggregateSteps(
-        startTime: Instant,
-        endTime: Instant
+        startTime: Long,
+        endTime: Long
     ): Long? {
         try {
             val response = healthConnectClient.aggregate(
                 AggregateRequest(
                     metrics = setOf(StepsRecord.COUNT_TOTAL),
-                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    //Convert the C# time to java time.
+                    timeRangeFilter = TimeRangeFilter.between(Instant.ofEpochMilli(startTime), Instant.ofEpochMilli(endTime))
                 )
             )
             // The result may be null if no data is available in the time range

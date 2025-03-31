@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FitnesApp.Services.APIs
+namespace FitnessApp.Services.APIs
 {
     public interface IUserLoginApi
     {

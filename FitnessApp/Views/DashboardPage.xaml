@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FitnesApp.DashboardPage"
-             xmlns:viewmodel="clr-namespace:FitnesApp.ViewModels"
+             x:Class="FitnessApp.DashboardPage"
+             xmlns:viewmodel="clr-namespace:FitnessApp.ViewModels"
              xmlns:maui="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              Title="DashboardPage"
              x:DataType="viewmodel:DashboardViewModel"
@@ -15,7 +15,7 @@
             <RowDefinition Height="0.4*" />
         </Grid.RowDefinitions>
 
-
+        
         <Border Grid.Row="0" Background="#EFF6EE" Padding="20"
                 HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="125">
             <Label 
@@ -25,6 +25,12 @@
                 VerticalOptions="Center" 
                 FontSize="24"/>
         </Border>
+
+        <Button 
+    Grid.Row="0"
+    Text="Go to debug"
+    Command="{Binding GoToDebugCommand}">
+        </Button>
 
 
         <Border Grid.Row="1" Background="#0E7C7B" Padding="20" StrokeShape="RoundRectangle 10,10,10,10"  

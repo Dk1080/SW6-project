@@ -1,17 +1,18 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
-using FitnesApp.Services.Apis;
-using FitnesApp.Services.APIs;
-using FitnesApp.ViewModels;
-using FitnesApp.Views;
+using FitnessApp.PlatformsImplementations;
+using FitnessApp.Services;
+using FitnessApp.Services.Apis;
+using FitnessApp.Services.APIs;
 using FitnessApp.ViewModels;
+using FitnessApp.Views;
 using LiveChartsCore.SkiaSharpView.Maui;
 using Microsoft.Extensions.Logging;
 using Refit;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 using System.Net;
 
-namespace FitnesApp;
+namespace FitnessApp;
 
 public static class MauiProgram
 {
@@ -55,6 +56,8 @@ public static class MauiProgram
 
 
 
+
+        builder.Services.AddSingleton<IHealthService>((e)=> new HealthService());
 
 
         builder.Services.AddTransient<LoginViewModel>();

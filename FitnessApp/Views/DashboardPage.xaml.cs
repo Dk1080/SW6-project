@@ -1,6 +1,6 @@
-using FitnesApp.ViewModels;
+using FitnessApp.ViewModels;
 
-namespace FitnesApp;
+namespace FitnessApp;
 
 public partial class DashboardPage : ContentPage
 {
