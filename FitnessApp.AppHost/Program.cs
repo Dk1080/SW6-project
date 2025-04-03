@@ -12,18 +12,18 @@ var mongo = builder
 var mongodb = mongo.AddDatabase("FitnessAppDatabase");
 
 //Setup ollama support
-var ollama = builder.AddOllama("ollama")
+var ollama = builder.AddOllama(name: "ollama")
     .WithGPUSupport(OllamaGpuVendor.Nvidia)
-    .WithOpenWebUI()
-    .WithDataVolume();
-var chat = ollama.AddModel("chat", "gemma3:4b");
+    //.WithOpenWebUI()
+    .WithDataVolume()
+    .AddModel("llama3.2");
 
 
 
 
 builder.AddProject<Projects.FitnessApi>("fitnessapi")
-    .WaitFor(chat)
-    .WithReference(chat)
+    .WaitFor(ollama)
+    .WithReference(ollama)
     .WithReference(mongodb);
 
 builder.Build().Run();

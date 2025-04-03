@@ -1,13 +1,16 @@
 ﻿using FitnessApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.AI;
 using MongoDB.Driver;
 using MongoDB.EntityFrameworkCore.Extensions;
+using System.Text.Json;
 
 namespace FitnessApi.Services
 {
     public class DatabaseContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<ChatHistory> ChatHistories { get; set; } 
 
 
 
@@ -28,6 +31,13 @@ namespace FitnessApi.Services
 
             modelBuilder.Entity<User>()
                 .ToCollection("Users");
+
+            modelBuilder.Entity<ChatHistory>()
+                .ToCollection("ChatHistories");
+
+
+
+
         }
 
     }

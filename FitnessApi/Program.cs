@@ -1,7 +1,7 @@
 using FitnessApi.Endpoints;
 using FitnessApi.Services;
 using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Hosting;
+using OllamaSharp;
 using MongoDB.Driver;
 using Scalar.AspNetCore;
 
@@ -25,26 +25,24 @@ builder.Services.AddScoped<DatabaseContext>(svc =>
 
 //Add DB services via DI
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IChatHistoryService, ChatHistoryService>();
 
 //Configure session management.
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromSeconds(10);
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
 
 
 //Adding ollama
-builder.AddOllamaApiClient("chat").AddChatClient();
-//builder.Services.AddChatClient(new OllamaChatClient(new Uri("http://localhost:59443/"), "gemma3:4b"));
+builder.AddOllamaApiClient("ollama-llama3-2").AddChatClient();
 
 
 var app = builder.Build();
-
-
 
 
 

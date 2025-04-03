@@ -1,11 +1,15 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
+using FitnesApp.Services.Apis;
+using FitnesApp.Services.APIs;
 using FitnesApp.ViewModels;
 using FitnesApp.Views;
 using FitnessApp.ViewModels;
 using LiveChartsCore.SkiaSharpView.Maui;
 using Microsoft.Extensions.Logging;
+using Refit;
 using SkiaSharp.Views.Maui.Controls.Hosting;
+using System.Net;
 
 namespace FitnesApp;
 
@@ -26,10 +30,37 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-        builder.Services.AddTransient<LoginPage>();
-        builder.Services.AddTransient<LoginViewModel>();
+        // Create a shared CookieContainer
+        var cookieContainer = new CookieContainer();
+        builder.Services.AddSingleton(cookieContainer);
 
-		builder.Services.AddSingleton<DashboardPage>();
+        var handler = new HttpClientHandler { CookieContainer = cookieContainer };
+
+        //Add refit services to send Http requests
+        builder.Services.AddRefitClient<IUserLoginApi>()
+#if ANDROID
+			.ConfigureHttpClient(c => c.BaseAddress = new Uri("http://10.0.2.2:5251"))
+#else
+			.ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5251"))
+#endif
+			.ConfigurePrimaryHttpMessageHandler(() => handler);
+
+        builder.Services.AddRefitClient<IChatApi>()
+#if ANDROID
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://10.0.2.2:5251"))
+#else
+			.ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5251"))
+#endif
+    .ConfigurePrimaryHttpMessageHandler(() => handler);
+
+
+
+
+
+        builder.Services.AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<LoginPage>();
+
+        builder.Services.AddSingleton<DashboardPage>();
         builder.Services.AddSingleton<DashboardViewModel>();
 
 		builder.Services.AddTransient<ChatBotPage>();

@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FitnessApi.Models;
+using FitnessApi.Models.Api_DTOs;
+using FitnessApi.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.AI;
-
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System.IO;
 using System.Linq;
 
@@ -11,36 +15,123 @@ namespace FitnessApi.Endpoints
 
         public static WebApplication MapChatEndpoints(this WebApplication app)
         {
+            
 
-            //Create list holding chat history
-            var chatHistory = new List<ChatMessage>();
+            //app.MapGet("/chat", () =>
+            //{
+            //    return chatHistory.ToJson();
+            //});
 
 
-            app.MapPost("/chat", async (IChatClient chatClient, ChatDTO chatDTO) =>
+            app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService) =>
             {
 
-                //////Add the messasge to the chat history.
-                //chatHistory.Add(new ChatMessage(ChatRole.User, chatDTO.Msg));
+                //Get the username of the user.
+                string username = httpContext.Session.GetString("Username");
 
-                //////Give the chat history to the AI and get the respons
 
-                //ChatResponse response = await chatClient.GetResponseAsync(chatHistory);
+                if (string.IsNullOrEmpty(username))
+                {
+                    return Results.Unauthorized();
+                }
 
-                //chatHistory.Add(new ChatMessage(ChatRole.Assistant, response.Text));
+                ChatHistory DatabaseChatHistory = new();
+                DatabaseChatHistory.Username = username;
 
-                //ChatMessage RrtnMsg = chatHistory.Last();
 
-                //return Results.Ok(RrtnMsg.Text);
+
+                ChatHistory DBChatmessasges = new();
+                List<ChatMessage> LocalChatmessasges = new List<ChatMessage>();
+
+
+                //If this is a previous conversation then get it from the database.
+                if (ObjectId.Parse(chatDTO.ThreadId) != ObjectId.Empty)
+                {
+                    LocalChatmessasges = ChatHistory.ConvertDBToLocal(chatHistoryService.GetChatHistoryByID(ObjectId.Parse(chatDTO.ThreadId)));
+                }
+
+
+                ////Add the messasge to the chathistory.
+                LocalChatmessasges.Add(new ChatMessage(ChatRole.User, chatDTO.Query));
+
+
+                ////Give the chat history to the AI and get the response.
+
+                ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges);
+
+                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, response.Message.Text));
+
+                ChatMessage RrtnMsg = LocalChatmessasges.Last();
+                ObjectId threadId = new();
+
+
+                //Save the conversation to the database
+                if(ObjectId.Empty == ObjectId.Parse(chatDTO.ThreadId))
+                {
+                    //Add a new chat and get that threadId
+                    DatabaseChatHistory.chatHistory = ChatHistory.ConvertLocalToDb(LocalChatmessasges);
+                    threadId = chatHistoryService.AddChatHistory(DatabaseChatHistory);
+                }
+                else
+                {
+                    //Convert the local list to a DB list
+                    DatabaseChatHistory.chatHistory = ChatHistory.ConvertLocalToDb(LocalChatmessasges);
+                    DatabaseChatHistory.Id = ObjectId.Parse(chatDTO.ThreadId);
+                    chatHistoryService.UpdateChatHistory(DatabaseChatHistory);
+
+                    threadId = DatabaseChatHistory.Id;
+
+                }
+
+                    return Results.Ok(new ChatDTO(RrtnMsg.Text,threadId,"assistant"));
 
             });
+
+
+            app.MapGet("/getChats", (HttpContext httpContext, IChatHistoryService chatHistoryService) =>
+            {
+
+                string username = httpContext.Session.GetString("Username");
+
+
+                if (string.IsNullOrEmpty(username))
+                {
+                    return Results.Unauthorized();
+                }
+
+
+                Console.WriteLine(username);
+
+                ChatHistoriesResponse chatHistoriesResponse = new();
+
+                //Get from database
+                List<ChatHistory> chatHistories = (List<ChatHistory>)chatHistoryService.GetAllChatHistoriesForAUser(username);
+
+
+                //Convert to ChatHistoryDTO
+                foreach(ChatHistory chatHistoryItem in chatHistories)
+                {
+
+                    var tmpChat = new ChatHistoryDTO(chatHistoryItem.Id, chatHistoryItem.chatHistory);
+                    chatHistoriesResponse.histories.Add(tmpChat);
+                }
+                //System.NullReferenceException: 'Object reference not set to an instance of an object.'
+
+                return Results.Ok(chatHistoriesResponse);
+
+            });
+
+
 
             return app;
         }
 
-        public class ChatDTO(string msg)
-        {
-            public string Msg { get; set; } = msg;
-        }
+
+
+
+
+
+
     }
 }
 

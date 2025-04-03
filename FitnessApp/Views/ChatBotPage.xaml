@@ -3,100 +3,167 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FitnesApp.ChatBotPage"
              xmlns:viewmodel="clr-namespace:FitnesApp.ViewModels"
+             xmlns:dto="clr-namespace:FitnessApp.Models.Api_DTOs"
              Title="ChatBotPage"
              x:DataType="viewmodel:ChatBotViewModel">
 
 
-    <Grid Background="DarkGray">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Background="#EFF6EE" Padding="20"  VerticalOptions="Center" Height="125">
-            <Grid>
+<!-- Grid split into main view and sidebar-->
+    <Grid Background="DarkGray">
+        
+        
+        
+        <!-- MainView -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+
+            <Border Grid.Row="0" Background="#EFF6EE" Padding="20"  VerticalOptions="Center" Height="125">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <!-- Left spacer -->
+                        <ColumnDefinition Width="*" />
+                        <!-- Text centered -->
+                        <ColumnDefinition Width="Auto" />
+                        <!-- Right spacer -->
+                    </Grid.ColumnDefinitions>
+
+
+                    <!-- Button overlay on the left -->
+                    <ImageButton Grid.Column="0"
+                  Command="{Binding GoToDashboardCommand}"
+                  Padding="10"
+                  Margin="10,0,0,0"
+                  VerticalOptions="Center"
+                  HorizontalOptions="Start"
+                  Background="RoyalBlue"
+                  CornerRadius="25"
+                  Source="arrow_back.png">
+                    </ImageButton>
+
+
+                    <!-- Text dead center -->
+                    <Label Grid.Column="1" 
+                    Text="FitnessBot6969" 
+                    TextColor="Black" 
+                    FontSize="24" 
+                    HorizontalOptions="Center" 
+                    VerticalOptions="Center"
+                    />
+
+                    <!--Toogle menu button-->
+                    <ImageButton Grid.Column="2"
+                          Padding="10"
+                          Margin="10,0,0,0"
+                          VerticalOptions="Center"
+                          HorizontalOptions="Start"
+                          Background="RoyalBlue"
+                          CornerRadius="25"
+                          Source="hamburger_menu.png"
+                          Command="{Binding ToggleMenuCommand}"
+                          >
+                    </ImageButton>
+
+
+                </Grid>
+            </Border>
+
+
+
+
+            <!-- ScrollView displaying Chat logs -->
+            <CollectionView ItemsSource="{Binding CurrentChat}" Margin="10" Grid.Row="1">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:ChatMessageDTO">
+                        <Border StrokeShape="RoundRectangle 10,10,10,10" Padding="10" Margin="20">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Role}" Value="user">
+                                    <Setter Property="Background" Value="LightBlue" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding Role}" Value="assistant">
+                                    <Setter Property="Background" Value="LightGray" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label TextColor="Black" HorizontalOptions="Start" LineBreakMode="WordWrap" Text="{Binding Text}" />
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+
+
+            <!-- Query TextBox and Submit Button -->
+            <Grid Grid.Row="2" Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <!-- Left spacer -->
+                    <!-- TextBox takes most space -->
                     <ColumnDefinition Width="Auto" />
-                    <!-- Text centered -->
-                    <ColumnDefinition Width="*" />
-                    <!-- Right spacer -->
+                    <!-- Submit Button on the right -->
                 </Grid.ColumnDefinitions>
 
-                <!-- Text dead center -->
-                <Label Grid.Column="1" 
-                       Text="FitnessBot6969" 
-                       TextColor="Black" 
-                       FontSize="24" 
-                       HorizontalOptions="Center" 
-                       VerticalOptions="Center"
-                       />
+                <!-- TextBox for Query input -->
+                <Entry Grid.Column="0" 
+              Placeholder="Query" 
+              Text="{Binding Query}" 
+              VerticalOptions="Center" 
+              Margin="0,0,10,0"
+              />
 
-                <!-- Button overlay on the left -->
-                <ImageButton Grid.Column="0"
-                    Command="{Binding GoToDashboardCommand}"
-                    Padding="10"
-                    Margin="10,0,0,0"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Start"
-                    Background="RoyalBlue"
-                    CornerRadius="25"
-                    Source="arrow_back.png">
+                <!-- Submit Button with icon -->
+                <ImageButton Grid.Column="1"
+             Command="{Binding SendQueryCommand}"
+             Padding="10"
+             VerticalOptions="Center"
+             Background="RoyalBlue"
+             CornerRadius="25"
+             Source="arrow_up.png">
                 </ImageButton>
             </Grid>
-        </Border>
-
-        <!-- ScrollView displaying Chat logs -->
-        <CollectionView ItemsSource="{Binding Chat}" Margin="10" Grid.Row="1">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="viewmodel:ChatBubble">
-                    <Border StrokeShape="RoundRectangle 10,10,10,10" Padding="10" Margin="10">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding IsUser}" Value="True">
-                                <Setter Property="Background" Value="LightBlue" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Border" Binding="{Binding IsUser}" Value="False">
-                                <Setter Property="Background" Value="LightGray" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label TextColor="Black" HorizontalOptions="Start" LineBreakMode="WordWrap" Text="{Binding text}" />
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-
-
-        <!-- Query TextBox and Submit Button -->
-        <Grid Grid.Row="2" Margin="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <!-- TextBox takes most space -->
-                <ColumnDefinition Width="Auto" />
-                <!-- Submit Button on the right -->
-            </Grid.ColumnDefinitions>
-
-            <!-- TextBox for Query input -->
-            <Entry Grid.Column="0" 
-                 Placeholder="Query" 
-                 Text="{Binding Query}" 
-                 VerticalOptions="Center" 
-                 Margin="0,0,10,0"
-                 />
-
-            <!-- Submit Button with icon -->
-            <ImageButton Grid.Column="1"
-                Command="{Binding SendQueryCommand}"
-                Padding="10"
-                VerticalOptions="Center"
-                Background="RoyalBlue"
-                CornerRadius="25"
-                Source="arrow_up.png">
-            </ImageButton>
         </Grid>
+        
+        <!-- SideMenu-->
+        <Grid x:Name="SideMenu"
+              BackgroundColor="LightGray"
+              WidthRequest="250"
+              TranslationX="{Binding MenuPosition, Mode=TwoWay}"
+              VerticalOptions="Fill"
+              HorizontalOptions="End">
+            <StackLayout Padding="20">
+                <Button Margin="10" Text="Close" Command="{Binding ToggleMenuCommand}" BackgroundColor="Blue" />
+                <Button Margin="10" Text="New Chat" Command="{Binding NewChatCommand}" Background="Aqua"/>
+
+                <CollectionView ItemsSource="{Binding ChatLog.histories}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:ChatHistoryDTO">
+                            <Button
+                                    Margin="0,10,0,10"
+                                    Text="{Binding Id}" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SwapChatCommand}" 
+                                    CommandParameter="{Binding Id}"
+                                    HorizontalOptions="Fill"/>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </Grid>
+
+
+
+
+
     </Grid>
+    
+    
+    
+
+
+   
 
 
 
