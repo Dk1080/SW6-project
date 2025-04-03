@@ -1,7 +1,9 @@
 ﻿using FitnessApi.Models;
 using FitnessApi.Models.Api_DTOs;
 using FitnessApi.Services;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace FitnessApi.Endpoints
 {
@@ -20,8 +22,12 @@ namespace FitnessApi.Endpoints
             });
 
 
-            app.MapPost("/AddUser", (User user , IUserService userService) =>
+            app.MapPost("/AddUser", (User user , IUserService userService, IPasswordHasher passwordHasher) =>
             {
+
+                //Hash the password of the user.
+                user.Password = passwordHasher.hashPassword(user.Password);
+
                 try
                 {
                     userService.AddUser(user);
@@ -37,7 +43,7 @@ namespace FitnessApi.Endpoints
             });
 
 
-            app.MapPost("/login", (HttpContext httpContext, UserRequest user, IUserService userService) =>
+            app.MapPost("/login", (HttpContext httpContext, UserRequest user, IUserService userService, IPasswordHasher passwordHasher) =>
             {
                 // Get the user based on their name.
                 User gottenUser = userService.GetUserByName(user.Username);
@@ -46,7 +52,8 @@ namespace FitnessApi.Endpoints
                 {
                     return Results.BadRequest();
                 }
-                else if (gottenUser.Password == user.Password)
+                //Check the password against the hashed password stored in the database.
+                else if (passwordHasher.verifyPassword(user.Password, gottenUser.Password))
                 {
                     // Set session data
                     httpContext.Session.SetString("Username", gottenUser.Username);
@@ -79,8 +86,11 @@ namespace FitnessApi.Endpoints
             });
 
 
-
             return app;
         }
+
+        
+
+
     }
 }
