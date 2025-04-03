@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FitnesApp.Services.Apis;
+using FitnessApp.Services.Apis;
 using FitnessApp.Models.Api_DTOs;
 using MongoDB.Bson;
 using System;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace FitnesApp.ViewModels
+namespace FitnessApp.ViewModels
 {
     public partial class ChatBotViewModel : ObservableObject
     {

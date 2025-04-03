@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FitnesApp.Views;
+using FitnessApp.Views;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore;
 using System;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FitnesApp.ViewModels
+namespace FitnessApp.ViewModels
 {
     public partial class DashboardViewModel : ObservableObject
     {

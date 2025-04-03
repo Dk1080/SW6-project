@@ -1,7 +1,7 @@
-﻿using FitnesApp.ViewModels;
-using FitnesApp.Views;
+﻿using FitnessApp.ViewModels;
+using FitnessApp.Views;
 
-namespace FitnesApp
+namespace FitnessApp
 {
     public partial class AppShell : Shell
     {

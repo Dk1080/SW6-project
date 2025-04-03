@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FitnesApp.Services.Apis
+namespace FitnessApp.Services.Apis
 {
     public interface IChatApi
     {
