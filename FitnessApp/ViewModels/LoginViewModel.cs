@@ -7,8 +7,8 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FitnesApp;
-using FitnesApp.Services.APIs;
+using FitnessApp;
+using FitnessApp.Services.APIs;
 using FitnessApp.Models.Api_DTOs;
 
 namespace FitnessApp.ViewModels;

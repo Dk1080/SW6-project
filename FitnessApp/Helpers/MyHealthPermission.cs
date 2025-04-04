@@ -5,7 +5,7 @@ using Android.Health.Connect;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using static Microsoft.Maui.ApplicationModel.Permissions;
 
-namespace FitnesApp.Helpers
+namespace FitnessApp.Helpers
 {
     class MyHealthPermission : BasePlatformPermission
     {

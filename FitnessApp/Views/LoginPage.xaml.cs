@@ -1,6 +1,6 @@
 using FitnessApp.ViewModels;
 
-namespace FitnesApp;
+namespace FitnessApp;
 
 public partial class LoginPage : ContentPage
 {
