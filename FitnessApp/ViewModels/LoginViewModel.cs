@@ -40,6 +40,7 @@ public partial class LoginViewModel : ObservableObject
             return;
         }
 
+
         //Send Login details to server.
         try
         {

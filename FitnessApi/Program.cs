@@ -38,6 +38,10 @@ builder.Services.AddSession(options =>
 });
 
 
+//Add Password hashing service
+builder.Services.AddScoped<IPasswordHasher , PasswordHasher>();
+
+
 //Adding ollama
 builder.AddOllamaApiClient("ollama-llama3-2").AddChatClient();
 
