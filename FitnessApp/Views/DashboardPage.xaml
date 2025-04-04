@@ -27,9 +27,9 @@
         </Border>
 
         <Button 
-    Grid.Row="0"
-    Text="Go to debug"
-    Command="{Binding GoToDebugCommand}">
+            Grid.Row="0"
+            Text="Go to debug"
+            Command="{Binding GoToDebugCommand}">   
         </Button>
 
 
@@ -37,6 +37,7 @@
                 HorizontalOptions="Fill" VerticalOptions="Fill" Margin="10">
             <maui:CartesianChart 
                 Series="{Binding ChartSeries}"
+                XAxes="{Binding XAxes}"
                 BackgroundColor="#0E7C7B" 
                 />
         </Border>

@@ -26,6 +26,7 @@ builder.Services.AddScoped<DatabaseContext>(svc =>
 //Add DB services via DI
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChatHistoryService, ChatHistoryService>();
+builder.Services.AddScoped<IChartDataService, ChartDataService>();
 
 //Configure session management.
 builder.Services.AddDistributedMemoryCache();
@@ -66,6 +67,7 @@ app.UseHttpsRedirection();
 //Map endpoints
 app.MapLoginEndpoints();
 app.MapChatEndpoints();
+app.MapDashboardEndpoints();
 
 
 
