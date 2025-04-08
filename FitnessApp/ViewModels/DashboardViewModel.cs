@@ -15,8 +15,7 @@ namespace FitnessApp.ViewModels
     public partial class DashboardViewModel : ObservableObject
     {
         private readonly IDashboardApi _dashboardApi;
-        private readonly string _userId = "abe"; // TESTINGS
-
+        
         public DashboardViewModel(IDashboardApi dashboardApi)
         {
             _dashboardApi = dashboardApi;
@@ -41,7 +40,7 @@ namespace FitnessApp.ViewModels
             try
             {
                 // Fetch dataen til graferne fra APIen
-                var ChartData = await _dashboardApi.GetChartData(_userId);
+                var ChartData = await _dashboardApi.GetChartData();
 
                 if (ChartData == null || !ChartData.Any())
                 {

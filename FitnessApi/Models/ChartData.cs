@@ -16,6 +16,6 @@ namespace FitnessApi.Models
         public int Value { get; set; }
 
         [BsonElement("userId")]
-        public string UserId { get; set; } // To associate data with a user
+        public string UserId { get; set; }
     }
 }

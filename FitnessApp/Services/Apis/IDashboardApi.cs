@@ -13,6 +13,6 @@ namespace FitnessApp.Services.Apis
     public interface IDashboardApi
     {
         [Get("/getChartData")]  
-        Task<List<ChartDataDTO>> GetChartData([Query] string userId);
+        Task<List<ChartDataDTO>> GetChartData();
     }
 }

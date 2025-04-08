@@ -35,7 +35,8 @@ public static class MauiProgram
         var cookieContainer = new CookieContainer();
         builder.Services.AddSingleton(cookieContainer);
 
-        var handler = new HttpClientHandler { CookieContainer = cookieContainer };
+        var handler = new HttpClientHandler { CookieContainer = cookieContainer, UseCookies = true };
+        builder.Services.AddSingleton(handler);
 
         //Add refit services to send Http requests
         builder.Services.AddRefitClient<IUserLoginApi>()
@@ -60,7 +61,7 @@ public static class MauiProgram
 #else
             .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5251"))
 #endif
-            .ConfigurePrimaryHttpMessageHandler(() => handler);
+            .ConfigurePrimaryHttpMessageHandler(sp => sp.GetRequiredService<HttpClientHandler>());
 
 
 
