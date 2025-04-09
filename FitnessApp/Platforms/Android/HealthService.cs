@@ -1,12 +1,21 @@
-﻿using FitnessApp.Helpers;
+﻿using Android.Graphics;
+using Android.Health.Connect.DataTypes;
+using AndroidX.Health.Connect.Client.Aggregate;
+using FitnessApp.Helpers;
+using FitnessApp.Models.System_DTOs;
 using FitnessApp.Services;
 using FitnessApp.ViewModels;
+using GoogleGson;
 using Java.Lang;
+using Java.Time;
 using Kotlin.Coroutines;
+using Microsoft.Maui.Controls.PlatformConfiguration;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 using HealthConnect = NewBindingAndroid.DotnetNewBinding;
@@ -37,7 +46,7 @@ internal class HealthService : IHealthService
         
     }
 
-    public async Task<int> GetSteps()
+    public async Task<List<HealthHourInfo>> GetSteps()
     {
         var taskCompletionSource = new TaskCompletionSource<Java.Lang.Object>();
         CancellationTokenSource cts = new CancellationTokenSource();
@@ -45,27 +54,72 @@ internal class HealthService : IHealthService
 
         IContinuation continuation = new Continuation(taskCompletionSource, default);
 
-        //Start the task to get the step data from the last five days.
-        healthConnect.AggregateSteps(
-            GetDateTimeMilliseconds(DateTime.Now.AddDays(-5)),
-            GetDateTimeMilliseconds(DateTime.Now),
-            continuation);
+
+        //Set the current date to java format
+        DateTime currentDate = DateTime.Now;
+        string currentFormattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss");
+
+
+        //Date to start reading from TODO set custom date based on already avalible data.
+        DateTime startDate = DateTime.Now.AddDays(-30);
+        string startFormattedDate = startDate.ToString("yyyy-MM-dd HH:mm:ss");
+
+        //Format the time
+        var formatter = Java.Time.Format.DateTimeFormatter.OfPattern("yyyy-MM-dd HH:mm:ss");
+        var currentDataJava = LocalDateTime.Parse(currentFormattedDate, formatter);
+        var startDateJava = LocalDateTime.Parse(startFormattedDate, formatter);
+
+
+
+        //Ask for the data from the phone
+        healthConnect.AggregateStepsIntoHours(startDateJava, currentDataJava, continuation);
 
 
         //Wait for the task to complete
         var result = await taskCompletionSource.Task;
 
-        //Convert from java object to long and then int.
+
+        Console.WriteLine(result.GetType().FullName);
+
+        //Variable to hold return values.
+        List<HourStepInfo> hourStepInfos = new();
+
+
+        if (result is Android.Runtime.JavaList javaList) { 
+
         
-        if(result is Java.Lang.Long longResult)
-        {
-            //Return the step data
-            return (int)longResult.LongValue();
+            foreach (HealthConnect.DotnetStepDTO item in javaList)
+            {
+                //Create a new converter object to make java data usable in dotnet.
+                HourStepInfo tmpObj = new(item.StartTime,item.EndTime,item.StepCount);
+                hourStepInfos.Add(tmpObj);
+            }
+
+            //foreach (HourStepInfo item in hourStepInfos)
+            //{
+            //    Console.WriteLine($"StartTime: {item.startTime} Endtime: {item.endTime} Count: {item.stepCount}");
+            //}
+
+
+
+            //Convert to list of HealthHourInfo and return TODO change location of this when there is more data.
+            var returnList = new List<HealthHourInfo>();
+            foreach (var item in hourStepInfos)
+            {
+                returnList.Add(new HealthHourInfo(item.startTime, item.endTime, item.stepCount));
+            }
+
+            return returnList;
         }
+
+
+
         else
         {
             throw new System.Exception("Converion or data retival problem");
         }
+
+
 
 
     }
@@ -77,8 +131,7 @@ internal class HealthService : IHealthService
             return status;
         if (status == PermissionStatus.Denied && DeviceInfo.Platform == DevicePlatform.iOS)
         {
-            // Prompt the user to turn on in settings
-            // On iOS once a permission has been denied it may not be requested again from the application
+           
             return status;
         }
         if (Permissions.ShouldShowRationale<MyHealthPermission>())
@@ -139,4 +192,22 @@ public class Continuation : Java.Lang.Object, IContinuation
             _taskCompletionSource.TrySetResult(result);
         }
     }
+}
+
+class HourStepInfo{
+
+    public DateTime startTime {  get; set; }
+    public DateTime endTime { get; set; }
+    public long stepCount { get; set; }
+    
+
+    public HourStepInfo(Instant startTime, Instant endTime, long stepCount)
+    {
+       
+        //Convert the java time to C# time.
+        this.startTime = DateTimeOffset.FromUnixTimeMilliseconds(startTime.ToEpochMilli()).DateTime;
+        this.endTime = DateTimeOffset.FromUnixTimeMilliseconds(endTime.ToEpochMilli()).DateTime;
+        this.stepCount = stepCount;
+    }
+
 }

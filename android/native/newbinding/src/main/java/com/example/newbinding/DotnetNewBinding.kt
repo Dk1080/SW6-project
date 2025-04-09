@@ -2,13 +2,17 @@ package com.example.newbinding
 
 import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.aggregate.AggregationResultGroupedByDuration
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.records.metadata.Metadata
+import androidx.health.connect.client.request.AggregateGroupByDurationRequest
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 class DotnetNewBinding(private val Context : Context) {
@@ -70,5 +74,52 @@ class DotnetNewBinding(private val Context : Context) {
     }
 
 
+    //Get step data for the last 30 days
+    suspend fun aggregateStepsIntoHours(
+        startTime: LocalDateTime,
+        endTime: LocalDateTime
+    ):  List<DotnetStepDTO>{
+        try {
+            val response =
+                healthConnectClient.aggregateGroupByDuration(
+                    AggregateGroupByDurationRequest(
+                        metrics = setOf(StepsRecord.COUNT_TOTAL),
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
+                        timeRangeSlicer = Duration.ofHours(1)
+                    )
+                )
+
+            val returnList = mutableListOf<DotnetStepDTO>()
+            println("tis")
+            for (item in response ) {
+                val startT = item.startTime
+                val endT = item.endTime
+                val result = item.result[StepsRecord.COUNT_TOTAL]
+                println("StartTime: $startT, Endtime: $endT Result: ${result}")
+                //We dont want pointless entries
+                if (result != null) {
+                    returnList.add(DotnetStepDTO(startT,endT,result));
+                }
+
+                println(item.toString())
+            }
+
+
+
+
+            return returnList;
+        } catch (e: Exception) {
+            // Run error handling here
+            return emptyList<DotnetStepDTO>()
+        }
+
+    }
+
+
+    data class DotnetStepDTO(
+        val startTime: Instant,
+        val endTime: Instant,
+        val stepCount: Long
+    )
 
 }

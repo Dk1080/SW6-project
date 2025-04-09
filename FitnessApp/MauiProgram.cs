@@ -52,7 +52,15 @@ public static class MauiProgram
 #else
 			.ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5251"))
 #endif
-    .ConfigurePrimaryHttpMessageHandler(() => handler);
+            .ConfigurePrimaryHttpMessageHandler(() => handler);
+
+        builder.Services.AddRefitClient<IHealthApi>()
+#if ANDROID
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://10.0.2.2:5251"))
+#else
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5251"))
+#endif
+            .ConfigurePrimaryHttpMessageHandler(() => handler);
 
 
 

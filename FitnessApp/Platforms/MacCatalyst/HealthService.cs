@@ -1,4 +1,5 @@
-﻿using FitnessApp.Services;
+﻿using FitnessApp.Models.System_DTOs;
+using FitnessApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ internal class HealthService : IHealthService
         throw new NotImplementedException();
     }
 
-    public Task<int> GetSteps()
+    public Task<List<HealthHourInfo>> GetSteps()
     {
         throw new NotImplementedException();
     }
@@ -23,5 +24,6 @@ internal class HealthService : IHealthService
     {
         throw new NotImplementedException();
     }
+
 }
 

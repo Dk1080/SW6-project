@@ -8,15 +8,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FitnessApp.PlatformsImplementations;
+using FitnessApp.Services;
+using FitnessApp.Models.System_DTOs;
+using FitnessApp.Services.Apis;
 
 namespace FitnessApp.ViewModels
 {
     public partial class DashboardViewModel : ObservableObject
     {
 
-        public DashboardViewModel()
+        IHealthService healthService;
+        IHealthApi _healthApi;
+
+        public DashboardViewModel(IHealthService healthService, IHealthApi healthApi)
         {
             LoadChartData();
+            this.healthService = healthService;
+            _healthApi = healthApi;
+            SendDataToServer();
         }
 
         [ObservableProperty]
@@ -45,5 +55,43 @@ namespace FitnessApp.ViewModels
         {
             await Shell.Current.GoToAsync(nameof(DebugPage));
         }
+
+
+
+        async Task SendDataToServer()
+        {
+            //Check that we have permission
+            var status = PermissionStatus.Unknown;
+            while (status != PermissionStatus.Granted) {
+                status = await healthService.RequestPermission();
+                if (status == PermissionStatus.Denied)
+                {
+                    await Application.Current.Windows[0].Page.DisplayAlert("Permission not granted", "We need access to health data for the app to work", "OK");
+                }
+            }
+
+
+            //Get step data TODO this should be reworked when we want more data so that we have an agregate method that calls the methods for each of the individual data methods.
+            var healthList = await healthService.GetSteps();
+
+            //Create new healthInfoDTO and send it to the server.
+            var userHealthInfo = new HealthInfoDTO(healthList);
+
+            //Send the data to the server.
+            try
+            {
+                HttpResponseMessage response = await _healthApi.sendHealthData(userHealthInfo);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+
+        }
+
+
+
+
     }
 }
