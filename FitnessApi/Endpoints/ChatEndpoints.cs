@@ -90,6 +90,7 @@ namespace FitnessApi.Endpoints
                 Console.WriteLine($"AI response took {stopwatch.ElapsedMilliseconds} ms");
                 
                 //Step 2: Check if response includes function calls
+
                 foreach (FunctionCallContent content in response.Messages.First().Contents)
                 {
                     Console.WriteLine($"AI contents is: {content}");
@@ -101,18 +102,8 @@ namespace FitnessApi.Endpoints
                     string result = "";
                     if (content.Name != "")
                     {
-                        //Toast and CalculatePrice for debugging purposes, remove later
                         switch (content.Name)
                         {
-                            case "Toast":
-                                testingPriceTools.Toast();
-                                break;
-                            case "CalculatePrice":
-                                string strargument = ((JsonElement)content.Arguments.Values.Last()).GetString();
-                                int argument = int.Parse(strargument);
-                                Console.WriteLine($"PRICE is: {testingPriceTools.CalculatePrice(argument)}");
-                                result = testingPriceTools.CalculatePrice(argument).ToString();
-                                break;
                             case "GetFitnessData":
                                 result = databaseTools.GetFitnessData(healthdata);
                                 Console.WriteLine($"Fitness data is: {result}");
