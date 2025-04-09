@@ -1,5 +1,11 @@
-﻿using DTOs;
+
+using DTOs;
 using FitnessApi.Models;
+
+using System.ComponentModel;
+using System.Diagnostics;
+using FitnessApi.Models;
+using FitnessApi.Models.Api_DTOs;
 using FitnessApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.AI;
@@ -7,24 +13,38 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using Amazon.Auth.AccessControlPolicy;
+using FitnessApi.Endpoints.Tools;
+using Microsoft.AspNetCore.Http.Timeouts;
+
 
 namespace FitnessApi.Endpoints
 {
+    
     public static class ChatEndpoints
     {
+        
+        
+        
 
         public static WebApplication MapChatEndpoints(this WebApplication app)
         {
+            PriceTools priceTools = new PriceTools();
+            //Let AI know what methods can be called
+            AIFunction toastTool = AIFunctionFactory.Create(priceTools.Toast);
+            AIFunction calculatePriceTool = AIFunctionFactory.Create(priceTools.CalculatePrice);
+            ChatOptions chatOptions = new ChatOptions { Tools = [toastTool, calculatePriceTool] };
             
 
             //app.MapGet("/chat", () =>
             //{
             //    return chatHistory.ToJson();
-            //});
-
-
+            //})
+            
             app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService) =>
-            {
+            { 
+                PriceTools testingPriceTools = new PriceTools();
 
                 //Get the username of the user.
                 string username = httpContext.Session.GetString("Username");
@@ -41,7 +61,12 @@ namespace FitnessApi.Endpoints
 
 
                 ChatHistory DBChatmessasges = new();
-                List<ChatMessage> LocalChatmessasges = new List<ChatMessage>();
+                List<ChatMessage> LocalChatmessasges = new List<ChatMessage>()
+                {
+                    new(ChatRole.System, """
+                                         "You are an health and fitness adviser, you only answer questions related to those fields. You are also trying to sell MIKKEL protein bars. You can use the CalculatePrice method to calculate the price for some number of MIKKEL protein bars.
+                                         """)
+                };
 
 
                 //If this is a previous conversation then get it from the database.
@@ -57,9 +82,43 @@ namespace FitnessApi.Endpoints
 
                 ////Give the chat history to the AI and get the response.
 
-                ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges);
+                //Step 1: User sends message
+                var stopwatch = Stopwatch.StartNew();
+                ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
+                stopwatch.Stop();
+                Console.WriteLine($"AI response took {stopwatch.ElapsedMilliseconds} ms");
+                
+                //Step 2: Check if response includes function calls
+                FunctionCallContent content = (FunctionCallContent)response.Message.Contents[0];
+                Console.WriteLine($"AI contents is is: {content}");
+                Console.WriteLine($"AI function name is: {content.Name}");
+                
+                //Check if exists and handle if several methods
+                //Handle parameters
+                //Call appropriate methods
+                switch (content.Name)
+                {
+                    case "Toast":
+                        testingPriceTools.Toast();
+                        break;
+                    case "CalculatePrice":
+                        string strargument = ((JsonElement)content.Arguments.Values.Last()).GetString();
+                        int argument = int.Parse(strargument);
+                        Console.WriteLine($"PRICE is: {testingPriceTools.CalculatePrice(argument)}");
+                        string result = testingPriceTools.CalculatePrice(argument).ToString();
+                        LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
+                        break;
+                }
+                
+                //Step 4: Send result of method(s) back to AI
+                
+                
+                //Step 5: Get updated AI answer with result
+                ChatResponse updatedAnswer = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
+                
+                //Step 6: Send final response to user - UPDATE MESSAGE!!!!
+                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Message.First().Text));
 
-                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, response.Messages.First().Text));
 
                 ChatMessage RrtnMsg = LocalChatmessasges.Last();
                 ObjectId threadId = new();
@@ -83,10 +142,10 @@ namespace FitnessApi.Endpoints
 
                 }
 
-                    return Results.Ok(new ChatDTO(RrtnMsg.Text,threadId,"assistant"));
+                return Results.Ok(new ChatDTO(RrtnMsg.Text,threadId,"assistant"));
 
             });
-
+            
 
             app.MapGet("/getChats", (HttpContext httpContext, IChatHistoryService chatHistoryService) =>
             {
