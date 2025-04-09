@@ -1,4 +1,4 @@
-﻿using FitnessApp.Models.System_DTOs;
+﻿using DTOs;
 using Refit;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace FitnessApp.Services.Apis
 {
     public interface IHealthApi
     {
-        [Post("/chat")]
+        [Post("/userHealthInfo")]
         Task<HttpResponseMessage> sendHealthData(HealthInfoDTO healthInfo);
     }
 }

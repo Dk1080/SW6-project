@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DTOs;
 using FitnessApp.Services.Apis;
-using FitnessApp.Models.Api_DTOs;
+using Microsoft.Extensions.AI;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -85,7 +86,7 @@ namespace FitnessApp.ViewModels
             var query = new ChatDTO(Query, threadId, "user");
 
             // Gem besked i currentchat så den kan blive displayed hvis man skifter
-            var userMessage = new ChatMessageDTO("user", Query);
+            var userMessage = new ChatMessageDTO(ChatRole.User, Query);
             CurrentChat.Add(userMessage);
 
             // Gem den i den tilsvarende chat :3
@@ -102,7 +103,7 @@ namespace FitnessApp.ViewModels
                 var response = await _chatApi.SendChat(query);
 
                 // Tilføj chattens besked så den også kan blive displayed
-                var botMessage = new ChatMessageDTO("assistant", response.Query);
+                var botMessage = new ChatMessageDTO(ChatRole.Assistant, response.Query);
                 CurrentChat.Add(botMessage);
 
                 // Gem i den tilsvarende chat ╰(*°▽°*)╯

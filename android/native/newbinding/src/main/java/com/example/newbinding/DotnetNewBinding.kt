@@ -14,6 +14,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 
 class DotnetNewBinding(private val Context : Context) {
 
@@ -90,19 +91,18 @@ class DotnetNewBinding(private val Context : Context) {
                 )
 
             val returnList = mutableListOf<DotnetStepDTO>()
-            println("tis")
-            for (item in response ) {
-                val startT = item.startTime
-                val endT = item.endTime
-                val result = item.result[StepsRecord.COUNT_TOTAL]
-                println("StartTime: $startT, Endtime: $endT Result: ${result}")
-                //We dont want pointless entries
-                if (result != null) {
-                    returnList.add(DotnetStepDTO(startT,endT,result));
-                }
+            for (item in response) {
+                // Round start and end times to the nearest hour
+                val roundedStartT = item.startTime.truncatedTo(ChronoUnit.HOURS)
+                val roundedEndT = item.endTime.truncatedTo(ChronoUnit.HOURS)
 
-                println(item.toString())
+                val result = item.result[StepsRecord.COUNT_TOTAL]
+                if (result != null) {
+                    returnList.add(DotnetStepDTO(roundedStartT, roundedEndT, result))
+                }
+                println("Rounded StartTime: $roundedStartT, Rounded EndTime: $roundedEndT, Result: $result")
             }
+
 
 
 

@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FitnessApp;
 using FitnessApp.Services.APIs;
-using FitnessApp.Models.Api_DTOs;
+using DTOs;
 
 namespace FitnessApp.ViewModels;
 

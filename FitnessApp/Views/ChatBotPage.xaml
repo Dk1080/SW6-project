@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FitnessApp.ChatBotPage"
              xmlns:viewmodel="clr-namespace:FitnessApp.ViewModels"
-             xmlns:dto="clr-namespace:FitnessApp.Models.Api_DTOs"
+             xmlns:dto="clr-namespace:DTOs;assembly=DTOs"
              Title="ChatBotPage"
              x:DataType="viewmodel:ChatBotViewModel">
 

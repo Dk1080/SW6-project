@@ -112,4 +112,12 @@
 	  </MauiXaml>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Models\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\DTOs\DTOs.csproj" />
+	</ItemGroup>
+
 </Project>

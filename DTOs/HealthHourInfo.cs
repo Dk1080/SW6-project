@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FitnessApp.Models.System_DTOs
+namespace DTOs
 {
     //Class to hold the health data for an hour
     //Can be expanded to hold more types of data currently only has stepdata.

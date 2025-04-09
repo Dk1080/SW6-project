@@ -1,8 +1,8 @@
 ﻿using Android.Graphics;
 using Android.Health.Connect.DataTypes;
 using AndroidX.Health.Connect.Client.Aggregate;
+using DTOs;
 using FitnessApp.Helpers;
-using FitnessApp.Models.System_DTOs;
 using FitnessApp.Services;
 using FitnessApp.ViewModels;
 using GoogleGson;

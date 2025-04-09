@@ -1,4 +1,4 @@
-﻿using FitnessApp.Models.Api_DTOs;
+﻿using DTOs;
 using Refit;
 using System;
 using System.Collections.Generic;

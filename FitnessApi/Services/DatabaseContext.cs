@@ -11,6 +11,7 @@ namespace FitnessApi.Services
     {
         public DbSet<User> Users { get; set; }
         public DbSet<ChatHistory> ChatHistories { get; set; } 
+        public DbSet<HealthInfo> HealthInfo { get; set; }   
 
 
 
@@ -35,7 +36,8 @@ namespace FitnessApi.Services
             modelBuilder.Entity<ChatHistory>()
                 .ToCollection("ChatHistories");
 
-
+            modelBuilder.Entity<HealthInfo>()
+                .ToCollection("HealthInfo");
 
 
         }

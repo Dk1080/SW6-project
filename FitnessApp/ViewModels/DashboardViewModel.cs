@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FitnessApp.PlatformsImplementations;
 using FitnessApp.Services;
-using FitnessApp.Models.System_DTOs;
+using DTOs;
 using FitnessApp.Services.Apis;
 
 namespace FitnessApp.ViewModels

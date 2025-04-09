@@ -1,4 +1,4 @@
-﻿using FitnessApp.Models.System_DTOs;
+﻿using DTOs;
 using FitnessApp.Services;
 using System;
 using System.Collections.Generic;
