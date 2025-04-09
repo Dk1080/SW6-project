@@ -1,6 +1,12 @@
+
 using System.ComponentModel;
 using System.Diagnostics;
 using FitnessApi.Models;
+using System.ComponentModel;
+using System.Diagnostics;
+using FitnessApi.Models;
+using FitnessApi.Models.Api_DTOs;
+
 using FitnessApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.AI;
@@ -38,6 +44,7 @@ namespace FitnessApi.Endpoints
             { 
                 PriceTools testingPriceTools = new PriceTools();
                 DatabaseTools databaseTools = new DatabaseTools();
+
 
                 //Get the username of the user.
                 string username = httpContext.Session.GetString("Username");
@@ -120,6 +127,7 @@ namespace FitnessApi.Endpoints
                 
                 //Step 6: Send final response to user
                 LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Messages.First().Text));
+
 
                 ChatMessage RrtnMsg = LocalChatmessasges.Last();
                 ObjectId threadId = new();
