@@ -84,34 +84,36 @@ namespace FitnessApi.Endpoints
                 Console.WriteLine($"AI response took {stopwatch.ElapsedMilliseconds} ms");
                 
                 //Step 2: Check if response includes function calls
-                FunctionCallContent content = (FunctionCallContent)response.Message.Contents[0];
-                Console.WriteLine($"AI contents is is: {content}");
-                Console.WriteLine($"AI function name is: {content.Name}");
-                
-                //Check if exists and handle if several methods
-                //Handle parameters
-                //Call appropriate methods
-                switch (content.Name)
+                foreach (FunctionCallContent content in response.Message.Contents)
                 {
-                    case "Toast":
-                        testingPriceTools.Toast();
-                        break;
-                    case "CalculatePrice":
-                        string strargument = ((JsonElement)content.Arguments.Values.Last()).GetString();
-                        int argument = int.Parse(strargument);
-                        Console.WriteLine($"PRICE is: {testingPriceTools.CalculatePrice(argument)}");
-                        string result = testingPriceTools.CalculatePrice(argument).ToString();
-                        LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
-                        break;
+                    Console.WriteLine($"AI contents is: {content}");
+                    Console.WriteLine($"AI function name is: {content.Name}");
+                    
+                    //Step 3: Call methods with parameters
+                    //Step 4: Send result of method(s) back to AI
+                    //Call appropriate method - as of yet only one method
+                    if (content.Name != "")
+                    {
+                        switch (content.Name)
+                        {
+                            case "Toast":
+                                testingPriceTools.Toast();
+                                break;
+                            case "CalculatePrice":
+                                string strargument = ((JsonElement)content.Arguments.Values.Last()).GetString();
+                                int argument = int.Parse(strargument);
+                                Console.WriteLine($"PRICE is: {testingPriceTools.CalculatePrice(argument)}");
+                                string result = testingPriceTools.CalculatePrice(argument).ToString();
+                                LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
+                                break;
+                        }
+                    }
                 }
-                
-                //Step 4: Send result of method(s) back to AI
-                
-                
+
                 //Step 5: Get updated AI answer with result
                 ChatResponse updatedAnswer = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
                 
-                //Step 6: Send final response to user - UPDATE MESSAGE!!!!
+                //Step 6: Send final response to user
                 LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Message.Text));
 
                 ChatMessage RrtnMsg = LocalChatmessasges.Last();
