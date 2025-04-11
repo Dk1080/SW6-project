@@ -15,10 +15,10 @@ namespace FitnessApi.Services
             _dbContext = dbContext;
         }
 
-        public async Task<List<ChartData>> GetChartDataAsync(string userId)
+        public async Task<List<ChartData>> GetChartDataAsync(string username)
         {
             return await _dbContext.ChartData
-                .Where(w => w.UserId == userId)
+                .Where(w => w.UserId == username)
                 .OrderBy(w => w.Date)
                 .ToListAsync();
         }

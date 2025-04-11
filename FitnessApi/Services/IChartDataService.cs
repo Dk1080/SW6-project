@@ -6,6 +6,6 @@ namespace FitnessApi.Services
 {
     public interface IChartDataService
     {
-        Task<List<ChartData>> GetChartDataAsync(string userId);
+        Task<List<ChartData>> GetChartDataAsync(string username);
     }
 }

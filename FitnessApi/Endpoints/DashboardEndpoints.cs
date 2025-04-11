@@ -11,25 +11,14 @@ namespace FitnessApi.Endpoints
         {
             endpoints.MapGet("/getChartData", async (
                 [FromServices] IChartDataService ChartDataService,
-                [FromServices] IUserService userService,// så man få den currently logged in user >_<
                 HttpContext context) =>
             {
                 // få brugeren fra current session :3
                 string? username = context.Session.GetString("Username");
 
-
-                // Få user objektet for at få id'et som så så senere searcher databasen efter for at finde graf data UwU
-                var user = userService.GetUserByName(username);
-                if (user == null)
-                {
-                    return Results.Unauthorized(); // hvis user not found OwO
-                }
-
-                string userId = user.Id.ToString();
-
                 try
                 {
-                    var chartData = await ChartDataService.GetChartDataAsync(userId);
+                    var chartData = await ChartDataService.GetChartDataAsync(username);
 
                     if (chartData == null || !chartData.Any())
                     {
