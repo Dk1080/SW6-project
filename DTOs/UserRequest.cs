@@ -1,4 +1,4 @@
-﻿namespace FitnessApp.Models.Api_DTOs
+﻿namespace DTOs
 {
     public class UserRequest(string username, string password)
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,6 @@ namespace FitnessApp.Services
 
         Task DebugInsertSteps(int Steps);
 
-        Task<int> GetSteps();
+        Task<List<HealthHourInfo>> GetSteps();
     }
 }

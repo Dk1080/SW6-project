@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.AI;
+﻿using DTOs;
+using Microsoft.Extensions.AI;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.EntityFrameworkCore;
@@ -17,7 +18,6 @@ namespace FitnessApi.Models
         [Display(Name = "Username")]
         public string Username { get; set; }
 
-        //public int ThreadID { get; set; }
 
         [Required(ErrorMessage = "Has to have a ChatHistory!")]
         [Display(Name = "ChatHistory")]

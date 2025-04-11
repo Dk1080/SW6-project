@@ -48,7 +48,7 @@ namespace FitnessApp.ViewModels
         [RelayCommand]
         public async Task GetSteps()
         {
-            X = await healthService.GetSteps();
+            var y = await healthService.GetSteps();
         }
 
         [RelayCommand]

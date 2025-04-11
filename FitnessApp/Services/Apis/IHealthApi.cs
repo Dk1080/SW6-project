@@ -8,18 +8,9 @@ using System.Threading.Tasks;
 
 namespace FitnessApp.Services.Apis
 {
-    public interface IChatApi
+    public interface IHealthApi
     {
-
-
-        [Get("/getChats")]
-        Task<ChatHistoriesResponse> GetuserChats();
-
-
-        [Post("/chat")]
-        Task<ChatDTO> SendChat(ChatDTO chatMessage);
-
-
-
+        [Post("/userHealthInfo")]
+        Task<HttpResponseMessage> sendHealthData(HealthInfoDTO healthInfo);
     }
 }

@@ -1,5 +1,5 @@
-﻿using FitnessApi.Models;
-using FitnessApi.Models.Api_DTOs;
+﻿using DTOs;
+using FitnessApi.Models;
 using FitnessApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.AI;
@@ -59,7 +59,7 @@ namespace FitnessApi.Endpoints
 
                 ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges);
 
-                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, response.Message.Text));
+                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, response.Messages.First().Text));
 
                 ChatMessage RrtnMsg = LocalChatmessasges.Last();
                 ObjectId threadId = new();

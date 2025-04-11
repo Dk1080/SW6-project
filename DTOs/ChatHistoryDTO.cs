@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace FitnessApi.Models.Api_DTOs
+namespace DTOs
 {
     public class ChatHistoryDTO
     {
