@@ -10,9 +10,10 @@ namespace FitnessApi.Services
     public class DatabaseContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<ChatHistory> ChatHistories { get; set; }
+        public DbSet<ChartData> ChartData { get; set; }
         public DbSet<ChatHistory> ChatHistories { get; set; } 
         public DbSet<HealthInfo> HealthInfo { get; set; }   
-
 
 
         public DatabaseContext(DbContextOptions options)
@@ -35,6 +36,10 @@ namespace FitnessApi.Services
 
             modelBuilder.Entity<ChatHistory>()
                 .ToCollection("ChatHistories");
+
+            modelBuilder.Entity<ChartData>()
+                .ToCollection("ChartData"); 
+
 
             modelBuilder.Entity<HealthInfo>()
                 .ToCollection("HealthInfo");

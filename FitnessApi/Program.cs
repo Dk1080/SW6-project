@@ -26,6 +26,7 @@ builder.Services.AddScoped<DatabaseContext>(svc =>
 //Add DB services via DI
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChatHistoryService, ChatHistoryService>();
+builder.Services.AddScoped<IChartDataService, ChartDataService>();
 builder.Services.AddScoped<IHealthDataService, HealthDataService>();
 
 
@@ -69,6 +70,8 @@ app.UseHttpsRedirection();
 app.MapLoginEndpoints();
 app.MapChatEndpoints();
 app.MapHealthDataEndpoints();
+app.MapDashboardEndpoints();
+
 
 
 app.Run();
