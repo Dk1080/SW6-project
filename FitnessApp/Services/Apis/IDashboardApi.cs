@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FitnessApp.Models.Api_DTOs;
+using DTOs;
 using Refit;
 using System.Collections.Generic;
 using System.Threading.Tasks;

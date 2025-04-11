@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
-namespace FitnessApi.Models.Api_DTOs
+namespace DTOs
 {
     public class ChartDataDTO
     {

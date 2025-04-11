@@ -12,7 +12,6 @@ namespace FitnessApi.Services
         public DbSet<User> Users { get; set; }
         public DbSet<ChatHistory> ChatHistories { get; set; }
         public DbSet<ChartData> ChartData { get; set; }
-        public DbSet<ChatHistory> ChatHistories { get; set; } 
         public DbSet<HealthInfo> HealthInfo { get; set; }   
 
 

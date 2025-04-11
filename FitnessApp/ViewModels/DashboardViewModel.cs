@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FitnessApp.Models.Api_DTOs;
 using FitnessApp.Services.Apis;
 using FitnessApp.Views;
 using LiveChartsCore;
@@ -22,11 +21,10 @@ namespace FitnessApp.ViewModels
         IHealthService healthService;
         IHealthApi _healthApi;
 
-        public DashboardViewModel(IHealthService healthService, IHealthApi healthApi.IDashboardApi dashboardApi)
+        public DashboardViewModel(IHealthService healthService, IHealthApi healthApi ,IDashboardApi dashboardApi)
         {
             _dashboardApi = dashboardApi;
             LoadChartDataAsync(); // få data når man kommer ind på dashboard
-            LoadChartData();
             this.healthService = healthService;
             _healthApi = healthApi;
             SendDataToServer();
