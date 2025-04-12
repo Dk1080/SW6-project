@@ -5,10 +5,10 @@ namespace FitnessApi.Endpoints.Tools;
 
 public class DatabaseTools
 {
-    public string GetFitnessData(User user)
+    public string GetFitnessData(HealthInfo healthInfo)
     {
         //user.FitnessData assumed to be List<Dictionary<string,string>>
-        string output = JsonSerializer.Serialize(user.FitnessData);
+        string output = string.Join(", ", healthInfo.HourInfos);
         return output;
         //return "User has ran 10 kilometers every single day for the last week!";
     }
