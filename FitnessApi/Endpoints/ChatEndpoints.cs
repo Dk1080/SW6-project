@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using FitnessApi.Models;
-using FitnessApi.Models.Api_DTOs;
 using FitnessApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.AI;
@@ -11,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Amazon.Auth.AccessControlPolicy;
+using DTOs;
 using FitnessApi.Endpoints.Tools;
 using Microsoft.AspNetCore.Http.Timeouts;
 
@@ -34,7 +34,7 @@ namespace FitnessApi.Endpoints
             AIFunction GetFitnessDataTool = AIFunctionFactory.Create(databaseTools.GetFitnessData);
             ChatOptions chatOptions = new ChatOptions { Tools = [toastTool, calculatePriceTool, GetFitnessDataTool] };
             
-            app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService, IUserService userService) =>
+            app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService, IHealthDataService healthDataService) =>
             { 
                 PriceTools testingPriceTools = new PriceTools();
                 DatabaseTools databaseTools = new DatabaseTools();
@@ -48,15 +48,7 @@ namespace FitnessApi.Endpoints
                     return Results.Unauthorized();
                 }
 
-                User user = new User();
-                try
-                {
-                    userService.GetUserByName(username);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"User not fouund! {e}");
-                }
+                HealthInfo healthdata = healthDataService.GetHealthInfoForUser(username);
                 
                 ChatHistory DatabaseChatHistory = new();
                 DatabaseChatHistory.Username = username;
@@ -91,7 +83,7 @@ namespace FitnessApi.Endpoints
                 Console.WriteLine($"AI response took {stopwatch.ElapsedMilliseconds} ms");
                 
                 //Step 2: Check if response includes function calls
-                foreach (FunctionCallContent content in response.Message.Contents)
+                foreach (FunctionCallContent content in response.Messages.First().Contents)
                 {
                     Console.WriteLine($"AI contents is: {content}");
                     Console.WriteLine($"AI function name is: {content.Name}");
@@ -115,7 +107,8 @@ namespace FitnessApi.Endpoints
                                 result = testingPriceTools.CalculatePrice(argument).ToString();
                                 break;
                             case "GetFitnessData":
-                                result = databaseTools.GetFitnessData(user);
+                                result = databaseTools.GetFitnessData(healthdata);
+                                Console.WriteLine($"Fitness data is: {result}");
                                 break;
                         }
                     }
@@ -126,7 +119,7 @@ namespace FitnessApi.Endpoints
                 ChatResponse updatedAnswer = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
                 
                 //Step 6: Send final response to user
-                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Message.Text));
+                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Messages.First().Text));
 
                 ChatMessage RrtnMsg = LocalChatmessasges.Last();
                 ObjectId threadId = new();
