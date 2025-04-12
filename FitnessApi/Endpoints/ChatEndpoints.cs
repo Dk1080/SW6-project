@@ -27,20 +27,17 @@ namespace FitnessApi.Endpoints
         public static WebApplication MapChatEndpoints(this WebApplication app)
         {
             PriceTools priceTools = new PriceTools();
+            DatabaseTools databaseTools = new DatabaseTools();
             //Let AI know what methods can be called
             AIFunction toastTool = AIFunctionFactory.Create(priceTools.Toast);
             AIFunction calculatePriceTool = AIFunctionFactory.Create(priceTools.CalculatePrice);
-            ChatOptions chatOptions = new ChatOptions { Tools = [toastTool, calculatePriceTool] };
+            AIFunction GetFitnessDataTool = AIFunctionFactory.Create(databaseTools.GetFitnessData);
+            ChatOptions chatOptions = new ChatOptions { Tools = [toastTool, calculatePriceTool, GetFitnessDataTool] };
             
-
-            //app.MapGet("/chat", () =>
-            //{
-            //    return chatHistory.ToJson();
-            //})
-            
-            app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService) =>
+            app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService, IUserService userService) =>
             { 
                 PriceTools testingPriceTools = new PriceTools();
+                DatabaseTools databaseTools = new DatabaseTools();
 
                 //Get the username of the user.
                 string username = httpContext.Session.GetString("Username");
@@ -51,6 +48,16 @@ namespace FitnessApi.Endpoints
                     return Results.Unauthorized();
                 }
 
+                User user = new User();
+                try
+                {
+                    userService.GetUserByName(username);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"User not fouund! {e}");
+                }
+                
                 ChatHistory DatabaseChatHistory = new();
                 DatabaseChatHistory.Username = username;
 
@@ -92,8 +99,10 @@ namespace FitnessApi.Endpoints
                     //Step 3: Call methods with parameters
                     //Step 4: Send result of method(s) back to AI
                     //Call appropriate method - as of yet only one method
+                    string result = "";
                     if (content.Name != "")
                     {
+                        //Toast and CalculatePrice for debugging purposes, remove later
                         switch (content.Name)
                         {
                             case "Toast":
@@ -103,11 +112,14 @@ namespace FitnessApi.Endpoints
                                 string strargument = ((JsonElement)content.Arguments.Values.Last()).GetString();
                                 int argument = int.Parse(strargument);
                                 Console.WriteLine($"PRICE is: {testingPriceTools.CalculatePrice(argument)}");
-                                string result = testingPriceTools.CalculatePrice(argument).ToString();
-                                LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
+                                result = testingPriceTools.CalculatePrice(argument).ToString();
+                                break;
+                            case "GetFitnessData":
+                                result = databaseTools.GetFitnessData(user);
                                 break;
                         }
                     }
+                    LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
                 }
 
                 //Step 5: Get updated AI answer with result
