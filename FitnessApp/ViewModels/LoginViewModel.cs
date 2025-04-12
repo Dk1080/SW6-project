@@ -46,8 +46,6 @@ public partial class LoginViewModel : ObservableObject
         {
             HttpResponseMessage response = await _userLoginApi.Execute(new UserRequest(username, password));
 
-            //    // Console.WriteLine(_mainViewModel.Handler.CookieContainer.SetCookies("http:localhost:8080/test"),);
-
             //TODO Add condition if server is unresponsive / not avalible
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -64,7 +62,7 @@ public partial class LoginViewModel : ObservableObject
 
                 await Shell.Current.GoToAsync(nameof(DashboardPage));
             }
-            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            else if (response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 await Application.Current.Windows[0].Page.DisplayAlert("Unauthorized", "Invalid login details", "OK");
             }

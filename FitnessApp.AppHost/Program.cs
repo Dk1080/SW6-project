@@ -21,9 +21,13 @@ var ollama = builder.AddOllama(name: "ollama")
 
 
 
-builder.AddProject<Projects.FitnessApi>("fitnessapi")
+var api = builder.AddProject<Projects.FitnessApi>("fitnessapi")
     .WaitFor(ollama)
     .WithReference(ollama)
     .WithReference(mongodb);
+
+api.WithUrl($"{api.GetEndpoint("http")}/scalar/v1", "OpenApi");
+
+
 
 builder.Build().Run();

@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
+#if ANDROID || WINDOWS|| IOS || MACCATALYST
 using FitnessApp.PlatformsImplementations;
+#endif
 using FitnessApp.Services;
 using FitnessApp.Services.Apis;
 using FitnessApp.Services.APIs;
@@ -73,7 +75,10 @@ public static class MauiProgram
 
 
 
-        builder.Services.AddSingleton<IHealthService>((e)=> new HealthService());
+        //Needs this conditial for unit testing.
+#if ANDROID || WINDOWS|| IOS || MACCATALYST
+    builder.Services.AddSingleton<IHealthService>((e)=> new HealthService());
+#endif
 
 
         builder.Services.AddTransient<LoginViewModel>();
