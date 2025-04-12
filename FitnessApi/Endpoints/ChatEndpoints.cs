@@ -1,7 +1,3 @@
-
-using DTOs;
-using FitnessApi.Models;
-
 using System.ComponentModel;
 using System.Diagnostics;
 using FitnessApi.Models;
@@ -31,20 +27,17 @@ namespace FitnessApi.Endpoints
         public static WebApplication MapChatEndpoints(this WebApplication app)
         {
             PriceTools priceTools = new PriceTools();
+            DatabaseTools databaseTools = new DatabaseTools();
             //Let AI know what methods can be called
             AIFunction toastTool = AIFunctionFactory.Create(priceTools.Toast);
             AIFunction calculatePriceTool = AIFunctionFactory.Create(priceTools.CalculatePrice);
-            ChatOptions chatOptions = new ChatOptions { Tools = [toastTool, calculatePriceTool] };
+            AIFunction GetFitnessDataTool = AIFunctionFactory.Create(databaseTools.GetFitnessData);
+            ChatOptions chatOptions = new ChatOptions { Tools = [toastTool, calculatePriceTool, GetFitnessDataTool] };
             
-
-            //app.MapGet("/chat", () =>
-            //{
-            //    return chatHistory.ToJson();
-            //})
-            
-            app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService) =>
+            app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService, IUserService userService) =>
             { 
                 PriceTools testingPriceTools = new PriceTools();
+                DatabaseTools databaseTools = new DatabaseTools();
 
                 //Get the username of the user.
                 string username = httpContext.Session.GetString("Username");
@@ -55,6 +48,16 @@ namespace FitnessApi.Endpoints
                     return Results.Unauthorized();
                 }
 
+                User user = new User();
+                try
+                {
+                    userService.GetUserByName(username);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"User not fouund! {e}");
+                }
+                
                 ChatHistory DatabaseChatHistory = new();
                 DatabaseChatHistory.Username = username;
 
@@ -81,7 +84,6 @@ namespace FitnessApi.Endpoints
 
 
                 ////Give the chat history to the AI and get the response.
-
                 //Step 1: User sends message
                 var stopwatch = Stopwatch.StartNew();
                 ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
@@ -89,36 +91,42 @@ namespace FitnessApi.Endpoints
                 Console.WriteLine($"AI response took {stopwatch.ElapsedMilliseconds} ms");
                 
                 //Step 2: Check if response includes function calls
-                FunctionCallContent content = (FunctionCallContent)response.Message.Contents[0];
-                Console.WriteLine($"AI contents is is: {content}");
-                Console.WriteLine($"AI function name is: {content.Name}");
-                
-                //Check if exists and handle if several methods
-                //Handle parameters
-                //Call appropriate methods
-                switch (content.Name)
+                foreach (FunctionCallContent content in response.Message.Contents)
                 {
-                    case "Toast":
-                        testingPriceTools.Toast();
-                        break;
-                    case "CalculatePrice":
-                        string strargument = ((JsonElement)content.Arguments.Values.Last()).GetString();
-                        int argument = int.Parse(strargument);
-                        Console.WriteLine($"PRICE is: {testingPriceTools.CalculatePrice(argument)}");
-                        string result = testingPriceTools.CalculatePrice(argument).ToString();
-                        LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
-                        break;
+                    Console.WriteLine($"AI contents is: {content}");
+                    Console.WriteLine($"AI function name is: {content.Name}");
+                    
+                    //Step 3: Call methods with parameters
+                    //Step 4: Send result of method(s) back to AI
+                    //Call appropriate method - as of yet only one method
+                    string result = "";
+                    if (content.Name != "")
+                    {
+                        //Toast and CalculatePrice for debugging purposes, remove later
+                        switch (content.Name)
+                        {
+                            case "Toast":
+                                testingPriceTools.Toast();
+                                break;
+                            case "CalculatePrice":
+                                string strargument = ((JsonElement)content.Arguments.Values.Last()).GetString();
+                                int argument = int.Parse(strargument);
+                                Console.WriteLine($"PRICE is: {testingPriceTools.CalculatePrice(argument)}");
+                                result = testingPriceTools.CalculatePrice(argument).ToString();
+                                break;
+                            case "GetFitnessData":
+                                result = databaseTools.GetFitnessData(user);
+                                break;
+                        }
+                    }
+                    LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
                 }
-                
-                //Step 4: Send result of method(s) back to AI
-                
-                
+
                 //Step 5: Get updated AI answer with result
                 ChatResponse updatedAnswer = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
                 
-                //Step 6: Send final response to user - UPDATE MESSAGE!!!!
-                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Message.First().Text));
-
+                //Step 6: Send final response to user
+                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Message.Text));
 
                 ChatMessage RrtnMsg = LocalChatmessasges.Last();
                 ObjectId threadId = new();
