@@ -45,7 +45,6 @@ namespace FitnessApi.Endpoints
                 PriceTools testingPriceTools = new PriceTools();
                 DatabaseTools databaseTools = new DatabaseTools();
 
-
                 //Get the username of the user.
                 string username = httpContext.Session.GetString("Username");
 
@@ -56,6 +55,7 @@ namespace FitnessApi.Endpoints
                 }
 
                 HealthInfo healthdata = healthDataService.GetHealthInfoForUser(username);
+
                 
                 ChatHistory DatabaseChatHistory = new();
                 DatabaseChatHistory.Username = username;
@@ -102,11 +102,13 @@ namespace FitnessApi.Endpoints
                     string result = "";
                     if (content.Name != "")
                     {
+                        //Toast and CalculatePrice for debugging purposes, remove later
                         switch (content.Name)
                         {
                             case "GetFitnessData":
                                 result = databaseTools.GetFitnessData(healthdata);
                                 Console.WriteLine($"Fitness data is: {result}");
+
                                 break;
                         }
                     }
