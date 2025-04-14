@@ -32,17 +32,13 @@ namespace FitnessApi.Endpoints
 
         public static WebApplication MapChatEndpoints(this WebApplication app)
         {
-            PriceTools priceTools = new PriceTools();
             DatabaseTools databaseTools = new DatabaseTools();
             //Let AI know what methods can be called
-            AIFunction toastTool = AIFunctionFactory.Create(priceTools.Toast);
-            AIFunction calculatePriceTool = AIFunctionFactory.Create(priceTools.CalculatePrice);
             AIFunction GetFitnessDataTool = AIFunctionFactory.Create(databaseTools.GetFitnessData);
-            ChatOptions chatOptions = new ChatOptions { Tools = [toastTool, calculatePriceTool, GetFitnessDataTool] };
+            ChatOptions chatOptions = new ChatOptions { Tools = [GetFitnessDataTool] };
             
             app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService, IHealthDataService healthDataService) =>
             { 
-                PriceTools testingPriceTools = new PriceTools();
                 DatabaseTools databaseTools = new DatabaseTools();
 
                 //Get the username of the user.
@@ -66,7 +62,7 @@ namespace FitnessApi.Endpoints
                 List<ChatMessage> LocalChatmessasges = new List<ChatMessage>()
                 {
                     new(ChatRole.System, """
-                                         "You are an health and fitness adviser, you only answer questions related to those fields. You are also trying to sell MIKKEL protein bars. You can use the CalculatePrice method to calculate the price for some number of MIKKEL protein bars.
+                                         "You are an health and fitness adviser, you only answer questions related to those fields.
                                          """)
                 };
 
