@@ -23,7 +23,10 @@ namespace FitnessApi.Models
 
     public class Goal
     {
-        [BsonElement("goal")]
-        public string GoalText { get; set; }
+        [BsonElement("goalType")]
+        public string GoalType { get; set; }
+
+        [BsonElement("value")]
+        public int Value { get; set; }
     }
 }
