@@ -35,9 +35,10 @@ namespace FitnessApi.Endpoints
             DatabaseTools databaseTools = new DatabaseTools();
             //Let AI know what methods can be called
             AIFunction GetFitnessDataTool = AIFunctionFactory.Create(databaseTools.GetFitnessData);
-            ChatOptions chatOptions = new ChatOptions { Tools = [GetFitnessDataTool] };
+            AIFunction SetPreferencesAndGoalsTool = AIFunctionFactory.Create(databaseTools.SetPreferencesAndGoals);
+            ChatOptions chatOptions = new ChatOptions { Tools = [GetFitnessDataTool, SetPreferencesAndGoalsTool] };
             
-            app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService, IHealthDataService healthDataService) =>
+            app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService, IHealthDataService healthDataService, IUserPreferencesService userPreferencesService) =>
             { 
                 DatabaseTools databaseTools = new DatabaseTools();
 
@@ -60,7 +61,7 @@ namespace FitnessApi.Endpoints
                 List<ChatMessage> LocalChatmessasges = new List<ChatMessage>()
                 {
                     new(ChatRole.System, """
-                                         "You are an health and fitness adviser, you only answer questions related to those fields. Say hello to the user before they say anything.
+                                         "You are an health and fitness adviser, you only answer questions related to those fields.
                                          """)
                 };
  
@@ -99,7 +100,14 @@ namespace FitnessApi.Endpoints
                             case "GetFitnessData":
                                 result = databaseTools.GetFitnessData(healthdata);
                                 Console.WriteLine($"Fitness data is: {result}");
-
+                                break;
+                            
+                            case "SetPreferencesAndGoals":
+                                foreach (var VARIABLE in content.Arguments)
+                                {
+                                    Console.WriteLine($"Key: {VARIABLE.Key}, Value: {VARIABLE.Value}");
+                                }
+                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, content.Arguments["chartPreference"].ToString(), content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString() );
                                 break;
                         }
                     }
