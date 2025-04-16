@@ -140,7 +140,7 @@ namespace FitnessApi.Endpoints
             });
             
 
-            app.MapGet("/getChats", async (HttpContext httpContext, IChatHistoryService chatHistoryService, IChatClient chatClient) =>
+            app.MapGet("/getChats", async (HttpContext httpContext, IChatHistoryService chatHistoryService, IChatClient chatClient, IUserPreferenceService userPreferencesService) =>
             {
 
                 string username = httpContext.Session.GetString("Username");
