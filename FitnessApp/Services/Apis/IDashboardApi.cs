@@ -19,8 +19,6 @@ namespace FitnessApp.Services.Apis
         [Get("/getUserPreferences")]
         Task<UserPreferencesDTO> GetUserPreferences();
 
-        [Post("/updateUserPreferences")]
-        Task<UserPreferencesDTO> UpdateUserPreferences();
     }
 }
     
