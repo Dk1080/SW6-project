@@ -222,7 +222,6 @@ namespace FitnessApp.ViewModels
                 OnPropertyChanged(nameof(ChartSeries));
                 OnPropertyChanged(nameof(XAxesChartSeries));
                 OnPropertyChanged(nameof(YAxesChartSeries));
-                
 
             }
             catch (Exception ex)
