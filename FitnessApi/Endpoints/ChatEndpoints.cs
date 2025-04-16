@@ -55,16 +55,15 @@ namespace FitnessApi.Endpoints
                 
                 ChatHistory DatabaseChatHistory = new();
                 DatabaseChatHistory.Username = username;
-
-
-
+                
                 ChatHistory DBChatmessasges = new();
                 List<ChatMessage> LocalChatmessasges = new List<ChatMessage>()
                 {
                     new(ChatRole.System, """
-                                         "You are an health and fitness adviser, you only answer questions related to those fields.
+                                         "You are an health and fitness adviser, you only answer questions related to those fields. Say hello to the user before they say anything.
                                          """)
                 };
+ 
 
 
                 //If this is a previous conversation then get it from the database.
@@ -80,10 +79,7 @@ namespace FitnessApi.Endpoints
 
                 ////Give the chat history to the AI and get the response.
                 //Step 1: User sends message
-                var stopwatch = Stopwatch.StartNew();
                 ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
-                stopwatch.Stop();
-                Console.WriteLine($"AI response took {stopwatch.ElapsedMilliseconds} ms");
                 
                 //Step 2: Check if response includes function calls
 
@@ -98,7 +94,6 @@ namespace FitnessApi.Endpoints
                     string result = "";
                     if (content.Name != "")
                     {
-                        //Toast and CalculatePrice for debugging purposes, remove later
                         switch (content.Name)
                         {
                             case "GetFitnessData":
@@ -145,7 +140,7 @@ namespace FitnessApi.Endpoints
             });
             
 
-            app.MapGet("/getChats", (HttpContext httpContext, IChatHistoryService chatHistoryService) =>
+            app.MapGet("/getChats", async (HttpContext httpContext, IChatHistoryService chatHistoryService, IChatClient chatClient) =>
             {
 
                 string username = httpContext.Session.GetString("Username");
@@ -173,22 +168,27 @@ namespace FitnessApi.Endpoints
                     chatHistoriesResponse.histories.Add(tmpChat);
                 }
                 //System.NullReferenceException: 'Object reference not set to an instance of an object.'
+                
+                //Check if preferences and goals are set
+                var preferencesAndGoals = await userPreferencesService.GetUserPreferencesAsync(username);
+                //Start chat 
+                if (preferencesAndGoals is null)
+                {
+                    //Create new chathistory to insert into database to get threadId.
+                    ChatHistory chatHistoryGoal = new();
+                    chatHistoryGoal.chatHistory = new List<ChatMessageDTO>();
+                    chatHistoryGoal.chatHistory.Add(new ChatMessageDTO(ChatRole.Assistant, "Hello, I am your health and fitness AI advisor!\nLet's start by setting up some goals and preferences for you.\nPlease tell me what your health and/or fitness goals are!\nAnd by the way, how do you prefer your graphs?"));
 
+                    //Get threadID
+                    chatHistoryGoal.Id = chatHistoryService.AddChatHistory(chatHistoryGoal);
+
+                    //Add to top of return messages.
+                    chatHistoriesResponse.histories.Add(new ChatHistoryDTO(chatHistoryGoal.Id, chatHistoryGoal.chatHistory));
+                }
                 return Results.Ok(chatHistoriesResponse);
-
             });
-
-
-
             return app;
         }
-
-
-
-
-
-
-
     }
 }
 
