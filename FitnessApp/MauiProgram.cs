@@ -2,6 +2,7 @@
 using CommunityToolkit.Maui.Markup;
 using FitnessApp.PlatformsImplementations;
 using FitnessApp.Services;
+using FitnessApp.Converters;
 using FitnessApp.Services.Apis;
 using FitnessApp.Services.APIs;
 using FitnessApp.ViewModels;
@@ -88,6 +89,8 @@ public static class MauiProgram
         builder.Services.AddTransient<DebugPage>();
         builder.Services.AddSingleton<DebugViewModel>();
 
+        builder.Services.AddSingleton<IsPieSeriesConverter>();
+        builder.Services.AddSingleton<IsNotPieSeriesConverter>();
 
 
 
