@@ -33,7 +33,6 @@ namespace FitnessApp.ViewModels
         public DashboardViewModel(IHealthService healthService, IHealthApi healthApi ,IDashboardApi dashboardApi)
         {
             _dashboardApi = dashboardApi;
-            testUpdate();
             LoadChartDataAsync(); // få data når man kommer ind på dashboard
             LoadOverviewDataAsync();
             this.healthService = healthService;
@@ -78,10 +77,6 @@ namespace FitnessApp.ViewModels
             }
         };
 
-        private async void testUpdate()
-        {
-            await _dashboardApi.UpdateUserPreferences();
-        }
 
         private async void LoadOverviewDataAsync()
         {
