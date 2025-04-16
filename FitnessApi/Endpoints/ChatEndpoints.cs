@@ -187,7 +187,7 @@ namespace FitnessApi.Endpoints
                     ChatHistory chatHistoryGoal = new();
                     chatHistoryGoal.chatHistory = new List<ChatMessageDTO>();
                     chatHistoryGoal.chatHistory.Add(new ChatMessageDTO(ChatRole.Assistant, "Hello, I am your health and fitness AI advisor!\nLet's start by setting up some goals and preferences for you.\nPlease tell me what your health and/or fitness goals are!\nAnd by the way, how do you prefer your graphs?"));
-
+                    chatHistoryGoal.Username = username;
                     //Get threadID
                     chatHistoryGoal.Id = chatHistoryService.AddChatHistory(chatHistoryGoal);
 
