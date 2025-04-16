@@ -33,6 +33,7 @@ namespace FitnessApp.ViewModels
         public DashboardViewModel(IHealthService healthService, IHealthApi healthApi ,IDashboardApi dashboardApi)
         {
             _dashboardApi = dashboardApi;
+            testUpdate();
             LoadChartDataAsync(); // få data når man kommer ind på dashboard
             LoadOverviewDataAsync();
             this.healthService = healthService;
@@ -76,6 +77,11 @@ namespace FitnessApp.ViewModels
                 LabelsRotation = 15
             }
         };
+
+        private async void testUpdate()
+        {
+            await _dashboardApi.UpdateUserPreferences();
+        }
 
         private async void LoadOverviewDataAsync()
         {
@@ -125,19 +131,19 @@ namespace FitnessApp.ViewModels
                 var chartData = chartTask.Result;
                 var preferenceData = preferenceTask.Result ?? new UserPreferencesDTO();
 
-                double goalValue = 6969; //random default
+                double goalValue = 0; // default hvis der ikke kommer en
                 if (preferenceData.Goals.Any())
                 {
-                    string newestGoal = preferenceData.Goals.Last();
-                    if (int.TryParse(newestGoal.Replace(" steps", "").Trim(), out int parsedGoal))
+                    var stepsGoal = preferenceData.Goals.FirstOrDefault(g => g.GoalType == "steps");
+                    if (stepsGoal != null && stepsGoal.Value > 0)
                     {
-                        goalValue = parsedGoal;
+                        goalValue = stepsGoal.Value;
                     }
-                    Debug.WriteLine($"Using newest goal: {goalValue} steps");
+                    Debug.WriteLine($"Using steps goal: {goalValue} steps");
                 }
 
                 // Filter så man får dataen for i dag
-                var today = DateTime.Today; // Use midnight of today
+                var today = DateTime.Today;
                 var todayData = chartData.FirstOrDefault(w => DateTime.Parse(w.Date).Date == today);
 
                 // Udregn % for i dag

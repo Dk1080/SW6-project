@@ -48,6 +48,55 @@ namespace FitnessApi.Endpoints
             .Produces(StatusCodes.Status500InternalServerError);
 
 
+            // TEST TEST TEST TEST
+            endpoints.MapPost("/updateUserPreferences", async (
+                [FromServices] IUserPreferencesService userPreferencesService,
+                HttpContext context) =>
+                    {
+                        string? username = context.Session.GetString("Username");
+                        Console.WriteLine($"[Dashboard] in /dashboard/testPreferences Session Username: {username}");
+
+                        try
+                        {
+                            // Mock data
+                            var mockPreferences = new UserPreferences
+                            {
+                                User = username, // Use session username
+                                ChartPreference = "Halfcircle",
+                                Goals = new List<Goal>
+                        {
+                            new Goal { GoalType = "steps", Value = 1500 }
+                        }
+                            };
+
+                            // Call UpdateUserPreferencesAsync med username og preferences WOWO
+                            var updatedPreferences = await userPreferencesService.UpdateUserPreferencesAsync(username, mockPreferences);
+
+                            // Map til DTO for response
+                            var preferencesDto = new UserPreferencesDTO
+                            {
+                                ChartPreference = updatedPreferences.ChartPreference,
+                                Goals = updatedPreferences.Goals.Select(g => new GoalDTO
+                                {
+                                    GoalType = g.GoalType,
+                                    Value = g.Value
+                                }).ToList()
+                            };
+
+                            return Results.Ok(preferencesDto);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"[Dashboard] Error testing preferences for {username}: {ex.Message}");
+                            return Results.Problem($"Error testing user preferences: {ex.Message}");
+                        }
+                    })
+            .WithName("UpdateUserPreferences")
+            .Produces<UserPreferencesDTO>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status500InternalServerError);
+
+
 
             endpoints.MapGet("/getUserPreferences", async (
                 [FromServices] IUserPreferencesService userPreferencesService,
@@ -68,7 +117,11 @@ namespace FitnessApi.Endpoints
                     var preferencesDto = new UserPreferencesDTO
                     {
                         ChartPreference = preferences?.ChartPreference ?? "Column",
-                        Goals = preferences?.Goals.Select(g => g.GoalText).ToList() ?? new List<string>()
+                        Goals = preferences?.Goals.Select(g => new GoalDTO
+                        {
+                            GoalType = g.GoalType,
+                            Value = g.Value
+                        }).ToList() ?? new List<GoalDTO>()
                     };
 
                     return Results.Ok(preferencesDto);
@@ -83,5 +136,8 @@ namespace FitnessApi.Endpoints
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status500InternalServerError);
         }
+
+
+
     }
 }
