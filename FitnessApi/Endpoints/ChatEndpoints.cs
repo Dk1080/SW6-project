@@ -140,7 +140,7 @@ namespace FitnessApi.Endpoints
             });
             
 
-            app.MapGet("/getChats", async (HttpContext httpContext, IChatHistoryService chatHistoryService, IChatClient chatClient, IUserPreferenceService userPreferencesService) =>
+            app.MapGet("/getChats", async (HttpContext httpContext, IChatHistoryService chatHistoryService, IChatClient chatClient, IUserPreferencesService userPreferencesService) =>
             {
 
                 string username = httpContext.Session.GetString("Username");
@@ -172,7 +172,8 @@ namespace FitnessApi.Endpoints
                 //Check if preferences and goals are set
                 var preferencesAndGoals = await userPreferencesService.GetUserPreferencesAsync(username);
                 //Start chat 
-                if (preferencesAndGoals is null)
+                
+                if (preferencesAndGoals == null)
                 {
                     //Create new chathistory to insert into database to get threadId.
                     ChatHistory chatHistoryGoal = new();
