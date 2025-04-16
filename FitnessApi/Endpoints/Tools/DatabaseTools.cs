@@ -13,16 +13,22 @@ public class DatabaseTools
         return output;
     }
 
-    public async Task<string> SetPreferencesAndGoals(string username, string chartPreference, string goalType, string value, IUserPreferencesService userPreferencesService)
+    public async Task<string> SetPreferencesAndGoals(IUserPreferencesService userPreferencesService, string username, string chartPreference="none", string goalType="none", string value="none")
     {
         Console.WriteLine($"Preference and goals inputs: {username}, {chartPreference}, {goalType}, {value}");
-        UserPreferences preferences = new UserPreferences();
-        preferences.User = username;
-        preferences.ChartPreference = chartPreference;
+        UserPreferences preferences = await userPreferencesService.GetUserPreferencesAsync(username);
 
-        List<Goal> goals = new List<Goal>();
-        goals.Add(new Goal() { GoalType = goalType, Value = int.Parse(value) });
-        preferences.Goals = goals;
+        if (chartPreference != "none" && chartPreference != goalType)
+        {
+            preferences.ChartPreference = chartPreference;   
+        }
+
+        if (goalType != "none" && value != "none")
+        {
+            List<Goal> goals = new List<Goal>();
+            goals.Add(new Goal() { GoalType = goalType, Value = int.Parse(value) });
+            preferences.Goals = goals;   
+        }
 
         try
         {
