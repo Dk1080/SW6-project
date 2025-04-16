@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.ComponentModel;
+using System.Text.Json;
 using FitnessApi.Models;
 using FitnessApi.Services;
 
@@ -13,14 +14,26 @@ public class DatabaseTools
         return output;
     }
 
+    [Description("chartPreference may only have either the value Halfcircle or the value Column")]
     public async Task<string> SetPreferencesAndGoals(IUserPreferencesService userPreferencesService, string username, string chartPreference="none", string goalType="none", string value="none")
     {
         Console.WriteLine($"Preference and goals inputs: {username}, {chartPreference}, {goalType}, {value}");
         UserPreferences preferences = await userPreferencesService.GetUserPreferencesAsync(username);
+        if (preferences == null)
+        {
+            preferences = new UserPreferences();
+        }
 
         if (chartPreference != "none" && chartPreference != goalType)
         {
-            preferences.ChartPreference = chartPreference;   
+            if (chartPreference == "Halfcircle" || chartPreference == "Column")
+            {
+                preferences.ChartPreference = chartPreference;    
+            }
+            else
+            {
+                return "Chart preference was not one of the following allowed values: Halfcircle, Column";
+            }
         }
 
         if (goalType != "none" && value != "none")
