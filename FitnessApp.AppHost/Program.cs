@@ -18,12 +18,19 @@ var ollama = builder.AddOllama(name: "ollama")
     .WithDataVolume()
     .AddModel("llama3.2");
 
-
-
-
-builder.AddProject<Projects.FitnessApi>("fitnessapi")
+//Add Api
+var api = builder.AddProject<Projects.FitnessApi>("fitnessapi")
     .WaitFor(ollama)
     .WithReference(ollama)
     .WithReference(mongodb);
+
+//Add smart display app.
+builder.AddNpmApp("FitnessWebApp", "../FitnessWebApp")
+   .WithReference(api)
+    .WithEnvironment("BROWSER", "none")
+    .WithHttpEndpoint(env: "VITE_PORT")
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile();
+
 
 builder.Build().Run();
