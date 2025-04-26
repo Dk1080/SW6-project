@@ -18,7 +18,9 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
+using Double = System.Double;
 using HealthConnect = NewBindingAndroid.DotnetNewBinding;
+using Object = Java.Lang.Object;
 
 
 namespace FitnessApp.PlatformsImplementations;
@@ -72,7 +74,7 @@ internal class HealthService : IHealthService
 
 
         //Ask for the data from the phone
-        healthConnect.AggregateStepsIntoHours(startDateJava, currentDataJava, continuation);
+        healthConnect.GetData(startDateJava, currentDataJava, "StepRecord", continuation);
 
 
         //Wait for the task to complete
@@ -91,22 +93,15 @@ internal class HealthService : IHealthService
             foreach (HealthConnect.DotnetStepDTO item in javaList)
             {
                 //Create a new converter object to make java data usable in dotnet.
-                HourStepInfo tmpObj = new(item.StartTime,item.EndTime,item.StepCount);
+                HourStepInfo tmpObj = new(item.StartTime,item.EndTime,item.DataCount);
                 hourStepInfos.Add(tmpObj);
             }
-
-            //foreach (HourStepInfo item in hourStepInfos)
-            //{
-            //    Console.WriteLine($"StartTime: {item.startTime} Endtime: {item.endTime} Count: {item.stepCount}");
-            //}
-
-
 
             //Convert to list of HealthHourInfo and return TODO change location of this when there is more data.
             var returnList = new List<HealthHourInfo>();
             foreach (var item in hourStepInfos)
             {
-                returnList.Add(new HealthHourInfo(item.startTime, item.endTime, item.stepCount));
+                returnList.Add(new HealthHourInfo(item.startTime, item.endTime, item.dataCount));
             }
 
             return returnList;
@@ -198,16 +193,16 @@ class HourStepInfo{
 
     public DateTime startTime {  get; set; }
     public DateTime endTime { get; set; }
-    public long stepCount { get; set; }
+    public Double dataCount { get; set; }
     
 
-    public HourStepInfo(Instant startTime, Instant endTime, long stepCount)
+    public HourStepInfo(Instant startTime, Instant endTime, Double dataCount)
     {
        
         //Convert the java time to C# time.
         this.startTime = DateTimeOffset.FromUnixTimeMilliseconds(startTime.ToEpochMilli()).DateTime;
         this.endTime = DateTimeOffset.FromUnixTimeMilliseconds(endTime.ToEpochMilli()).DateTime;
-        this.stepCount = stepCount;
+        this.dataCount = dataCount;
     }
 
 }

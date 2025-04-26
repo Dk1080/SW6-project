@@ -12,18 +12,18 @@ namespace DTOs
     {
         public DateTime startTime {  get; set; }
         public DateTime endTime { get; set; }
-        public long stepCount { get; set; }
+        public Double dataCount { get; set; }
 
 
-        public HealthHourInfo(DateTime startTime, DateTime endTime, long stepCount) { 
+        public HealthHourInfo(DateTime startTime, DateTime endTime, Double dataCount) { 
             this.startTime = startTime;
             this.endTime = endTime;
-            this.stepCount = stepCount;
+            this.dataCount = dataCount;
         }
 
         public override string ToString()
         {
-            return $"Start time: {startTime}, End time: {endTime}, Steps taken: {stepCount}";
+            return $"Start time: {startTime}, End time: {endTime}, Steps taken: {dataCount}";
         }
     }
 }

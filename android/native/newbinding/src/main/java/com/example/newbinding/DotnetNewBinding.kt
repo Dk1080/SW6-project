@@ -119,7 +119,7 @@ class DotnetNewBinding(private val Context : Context) {
                 val result = item.result[metric]
                 if (result != null) {
                     val dataCount = when (result){
-                        is Number -> result
+                        is Number -> result.toDouble()
                         is Energy -> result.inKilocalories
                         is Length -> result.inMeters
                         is Mass -> result.inKilograms
@@ -127,9 +127,9 @@ class DotnetNewBinding(private val Context : Context) {
                     }
                     if(dataCount != null){
                         returnList.add(DotnetStepDTO(roundedStartT, roundedEndT, dataCount))
+                        println("Rounded StartTime: $roundedStartT, Rounded EndTime: $roundedEndT, Result: $dataCount")
                     }
                 }
-                println("Rounded StartTime: $roundedStartT, Rounded EndTime: $roundedEndT, Result: $result")
             }
             return returnList;
         } catch (e: Exception) {
@@ -171,7 +171,7 @@ class DotnetNewBinding(private val Context : Context) {
     data class DotnetStepDTO(
         val startTime: Instant,
         val endTime: Instant,
-        val dataCount: Number
+        val dataCount: Double
     )
 
 }
