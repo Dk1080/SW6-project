@@ -2,19 +2,38 @@ package com.example.newbinding
 
 import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.aggregate.AggregationResultGroupedByDuration
+import androidx.health.connect.client.impl.platform.records.toAggregationType
+import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ElevationGainedRecord
+import androidx.health.connect.client.records.FloorsClimbedRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
+import androidx.health.connect.client.records.HeightRecord
+import androidx.health.connect.client.records.RespiratoryRateRecord
+import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import androidx.health.connect.client.records.Vo2MaxRecord
+import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.records.WheelchairPushesRecord
 import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.request.AggregateGroupByDurationRequest
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.health.connect.client.units.Energy
+import androidx.health.connect.client.units.Length
+import androidx.health.connect.client.units.Mass
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
+import kotlin.reflect.KClass
 
 class DotnetNewBinding(private val Context : Context) {
 
@@ -78,13 +97,14 @@ class DotnetNewBinding(private val Context : Context) {
     //Get step data for the last 30 days
     suspend fun aggregateStepsIntoHours(
         startTime: LocalDateTime,
-        endTime: LocalDateTime
+        endTime: LocalDateTime,
+        metric: AggregateMetric<*>
     ):  List<DotnetStepDTO>{
         try {
             val response =
                 healthConnectClient.aggregateGroupByDuration(
                     AggregateGroupByDurationRequest(
-                        metrics = setOf(StepsRecord.COUNT_TOTAL),
+                        metrics = setOf(metric),
                         timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
                         timeRangeSlicer = Duration.ofHours(1)
                     )
@@ -96,17 +116,21 @@ class DotnetNewBinding(private val Context : Context) {
                 val roundedStartT = item.startTime.truncatedTo(ChronoUnit.HOURS)
                 val roundedEndT = item.endTime.truncatedTo(ChronoUnit.HOURS)
 
-                val result = item.result[StepsRecord.COUNT_TOTAL]
+                val result = item.result[metric]
                 if (result != null) {
-                    returnList.add(DotnetStepDTO(roundedStartT, roundedEndT, result))
+                    val dataCount = when (result){
+                        is Number -> result
+                        is Energy -> result.inKilocalories
+                        is Length -> result.inMeters
+                        is Mass -> result.inKilograms
+                        else -> null
+                    }
+                    if(dataCount != null){
+                        returnList.add(DotnetStepDTO(roundedStartT, roundedEndT, dataCount))
+                    }
                 }
                 println("Rounded StartTime: $roundedStartT, Rounded EndTime: $roundedEndT, Result: $result")
             }
-
-
-
-
-
             return returnList;
         } catch (e: Exception) {
             // Run error handling here
@@ -115,11 +139,39 @@ class DotnetNewBinding(private val Context : Context) {
 
     }
 
+    suspend fun getData(
+        startTime: LocalDateTime,
+        endTime: LocalDateTime,
+        datatype: String
+    ): List<DotnetStepDTO> {
+        println("Datatype: $datatype")
+        val metric = metricMapping[datatype]
+        return if (metric != null) {
+            aggregateStepsIntoHours(startTime, endTime, metric)
+        } else {
+            emptyList()
+        }
+    }
+
+    private val metricMapping = mapOf(
+        "ActiveCaloriesBurnedRecord" to ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL,
+        "TotalCaloriesBurnedRecord" to TotalCaloriesBurnedRecord.ENERGY_TOTAL,
+        "DistanceRecord" to DistanceRecord.DISTANCE_TOTAL,
+        "ElevationGainedRecord" to ElevationGainedRecord.ELEVATION_GAINED_TOTAL,
+        "FloorsClimbedRecord" to FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL,
+        "HeartRateRecord" to HeartRateRecord.BPM_AVG,
+        "HeightRecord" to HeightRecord.HEIGHT_MAX,
+        "RestingHeartRateRecord" to RestingHeartRateRecord.BPM_AVG,
+        "StepsRecord" to StepsRecord.COUNT_TOTAL,
+        "WeightRecord" to WeightRecord.WEIGHT_AVG,
+        "WheelchairPushesRecord" to WheelchairPushesRecord.COUNT_TOTAL
+    )
+
 
     data class DotnetStepDTO(
         val startTime: Instant,
         val endTime: Instant,
-        val stepCount: Long
+        val dataCount: Number
     )
 
 }
