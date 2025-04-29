@@ -73,18 +73,15 @@ internal class HealthService : IHealthService
         
         //Ask for the data from the phone
         healthConnect.GetAllData(startDateJava, currentDataJava, continuation);
-
-
+        
         //Wait for the task to complete
         var result = await taskCompletionSource.Task;
-
-
+        
         Console.WriteLine(result.GetType().FullName);
 
         //Variable to hold return values.
         List<HourStepInfo> hourStepInfos = new();
-
-
+        
         if (result is Android.Runtime.JavaList javaList) { 
 
         
@@ -93,6 +90,7 @@ internal class HealthService : IHealthService
                 //Create a new converter object to make java data usable in dotnet.
                 HourStepInfo tmpObj = new(item.StartTime,item.EndTime,item.DataCount, item.MetricName);
                 hourStepInfos.Add(tmpObj);
+                Console.WriteLine(tmpObj.ToString());
             }
 
             //Convert to list of HealthHourInfo and return TODO change location of this when there is more data.
@@ -204,6 +202,11 @@ class HourStepInfo{
         this.endTime = DateTimeOffset.FromUnixTimeMilliseconds(endTime.ToEpochMilli()).DateTime;
         this.dataCount = dataCount;
         this.metricName = metricName;
+    }
+    
+    public override string ToString()
+    {
+        return $"Start time: {startTime}, End time: {endTime}, Data taken: {dataCount}, Metric: {metricName}";
     }
 
 }

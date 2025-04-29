@@ -60,9 +60,18 @@ class DotnetNewBinding(private val Context : Context) {
                 endZoneOffset = ZoneOffset.UTC,
             )
 
+            val wheelchairPushesRecord = WheelchairPushesRecord(
+                count = Steps.toLong(),
+                startTime = startTime,
+                endTime = endTime,
+                startZoneOffset = ZoneOffset.UTC,
+                endZoneOffset = ZoneOffset.UTC
+            )
+
             println(StepsRecord.toString())
 
             healthConnectClient.insertRecords(listOf(stepsRecord))
+            healthConnectClient.insertRecords(listOf(wheelchairPushesRecord))
         } catch (e: Exception) {
             // Run error handling here
             e.printStackTrace() // Log the exception
@@ -97,50 +106,47 @@ class DotnetNewBinding(private val Context : Context) {
     //Get step data for the last 30 days
     suspend fun getAllData(
         startTime: LocalDateTime,
-        endTime: LocalDateTime,
-    ):  List<DotnetStepDTO>{
-        val allMetrics = metricMapping.values.toSet()
-        try {
-            val response =
-                healthConnectClient.aggregateGroupByDuration(
+        endTime: LocalDateTime
+    ): List<DotnetStepDTO> {
+        val returnList = mutableListOf<DotnetStepDTO>()
+
+        for ((metricString, metric) in metricMapping) {
+            try {
+                val response = healthConnectClient.aggregateGroupByDuration(
                     AggregateGroupByDurationRequest(
-                        metrics = allMetrics,
+                        metrics = setOf(metric),
                         timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
                         timeRangeSlicer = Duration.ofHours(1)
                     )
                 )
 
-            val returnList = mutableListOf<DotnetStepDTO>()
-            for (item in response) {
-                // Round start and end times to the nearest hour
-                val roundedStartT = item.startTime.truncatedTo(ChronoUnit.HOURS)
-                val roundedEndT = item.endTime.truncatedTo(ChronoUnit.HOURS)
+                for (item in response) {
+                    val roundedStartT = item.startTime.truncatedTo(ChronoUnit.HOURS)
+                    val roundedEndT = item.endTime.truncatedTo(ChronoUnit.HOURS)
+                    val result = item.result.get(metric)
 
-                for(metric in allMetrics)
-                {
-                    val result = item.result[metric]
-                    if (result != null) {
-                        val dataCount = when (result){
-                            is Number -> result.toDouble()
-                            is Energy -> result.inKilocalories
-                            is Length -> result.inMeters
-                            is Mass -> result.inKilograms
-                            else -> null
-                        }
-                        if(dataCount != null){
-                            returnList.add(DotnetStepDTO(roundedStartT, roundedEndT, dataCount, metric.toString()))
-                            println("Rounded StartTime: $roundedStartT, Rounded EndTime: $roundedEndT, Result: $dataCount")
-                        }
+                    val dataCount = when (result) {
+                        is Number -> result.toDouble()
+                        is Energy -> result.inKilocalories
+                        is Length -> result.inMeters
+                        is Mass -> result.inKilograms
+                        else -> null
+                    }
+
+                    if (dataCount != null) {
+                        returnList.add(
+                            DotnetStepDTO(roundedStartT, roundedEndT, dataCount, metricString)
+                        )
+                        println("Metric: $metric | Start: $roundedStartT | End: $roundedEndT | Data: $dataCount")
                     }
                 }
 
+            } catch (e: Exception) {
+                println("Error fetching metric $metric: ${e.message}")
             }
-            return returnList;
-        } catch (e: Exception) {
-            // Run error handling here
-            return emptyList<DotnetStepDTO>()
         }
 
+        return returnList
     }
 
     private val metricMapping = mapOf(
