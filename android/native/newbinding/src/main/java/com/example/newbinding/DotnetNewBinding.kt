@@ -95,16 +95,16 @@ class DotnetNewBinding(private val Context : Context) {
 
 
     //Get step data for the last 30 days
-    suspend fun aggregateStepsIntoHours(
+    suspend fun getAllData(
         startTime: LocalDateTime,
         endTime: LocalDateTime,
-        metric: AggregateMetric<*>
     ):  List<DotnetStepDTO>{
+        val allMetrics = metricMapping.values.toSet()
         try {
             val response =
                 healthConnectClient.aggregateGroupByDuration(
                     AggregateGroupByDurationRequest(
-                        metrics = setOf(metric),
+                        metrics = allMetrics,
                         timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
                         timeRangeSlicer = Duration.ofHours(1)
                     )
@@ -116,20 +116,24 @@ class DotnetNewBinding(private val Context : Context) {
                 val roundedStartT = item.startTime.truncatedTo(ChronoUnit.HOURS)
                 val roundedEndT = item.endTime.truncatedTo(ChronoUnit.HOURS)
 
-                val result = item.result[metric]
-                if (result != null) {
-                    val dataCount = when (result){
-                        is Number -> result.toDouble()
-                        is Energy -> result.inKilocalories
-                        is Length -> result.inMeters
-                        is Mass -> result.inKilograms
-                        else -> null
-                    }
-                    if(dataCount != null){
-                        returnList.add(DotnetStepDTO(roundedStartT, roundedEndT, dataCount))
-                        println("Rounded StartTime: $roundedStartT, Rounded EndTime: $roundedEndT, Result: $dataCount")
+                for(metric in allMetrics)
+                {
+                    val result = item.result[metric]
+                    if (result != null) {
+                        val dataCount = when (result){
+                            is Number -> result.toDouble()
+                            is Energy -> result.inKilocalories
+                            is Length -> result.inMeters
+                            is Mass -> result.inKilograms
+                            else -> null
+                        }
+                        if(dataCount != null){
+                            returnList.add(DotnetStepDTO(roundedStartT, roundedEndT, dataCount, metric.toString()))
+                            println("Rounded StartTime: $roundedStartT, Rounded EndTime: $roundedEndT, Result: $dataCount")
+                        }
                     }
                 }
+
             }
             return returnList;
         } catch (e: Exception) {
@@ -137,20 +141,6 @@ class DotnetNewBinding(private val Context : Context) {
             return emptyList<DotnetStepDTO>()
         }
 
-    }
-
-    suspend fun getData(
-        startTime: LocalDateTime,
-        endTime: LocalDateTime,
-        datatype: String
-    ): List<DotnetStepDTO> {
-        println("Datatype: $datatype")
-        val metric = metricMapping[datatype]
-        return if (metric != null) {
-            aggregateStepsIntoHours(startTime, endTime, metric)
-        } else {
-            emptyList()
-        }
     }
 
     private val metricMapping = mapOf(
@@ -171,7 +161,8 @@ class DotnetNewBinding(private val Context : Context) {
     data class DotnetStepDTO(
         val startTime: Instant,
         val endTime: Instant,
-        val dataCount: Double
+        val dataCount: Double,
+        val metricName: String
     )
 
 }

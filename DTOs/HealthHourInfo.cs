@@ -13,12 +13,15 @@ namespace DTOs
         public DateTime startTime {  get; set; }
         public DateTime endTime { get; set; }
         public Double dataCount { get; set; }
+        
+        public String metricName { get; set; }
 
 
-        public HealthHourInfo(DateTime startTime, DateTime endTime, Double dataCount) { 
+        public HealthHourInfo(DateTime startTime, DateTime endTime, Double dataCount, String metricName) { 
             this.startTime = startTime;
             this.endTime = endTime;
             this.dataCount = dataCount;
+            this.metricName = metricName;
         }
 
         public override string ToString()

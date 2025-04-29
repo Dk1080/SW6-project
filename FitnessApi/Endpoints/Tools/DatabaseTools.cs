@@ -14,9 +14,9 @@ public class DatabaseTools
         return output;
     }
 
-    [Description("chartPreference may only have either the value Halfcircle or the value Column")]
+    [Description("chartPreference may only have either the value Halfcircle or the value Column. goalType may only have one of the following values: ActiveCaloriesBurnedRecord, TotalCaloriesBurnedRecord, DistanceRecord, ElevationGainedRecord, FloorsClimbedRecord, HeartRateRecord, HeightRecord, RestingHeartRateRecord, StepsRecord, WeightRecord or WheelchairPushesRecord")]
     public async Task<string> SetPreferencesAndGoals(IUserPreferencesService userPreferencesService, string username, string chartPreference="none", string goalType="none", string value="none")
-    {
+    { 
         Console.WriteLine($"Preference and goals inputs: {username}, {chartPreference}, {goalType}, {value}");
         UserPreferences preferences = await userPreferencesService.GetUserPreferencesAsync(username);
         if (preferences == null)
