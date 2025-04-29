@@ -107,7 +107,7 @@ namespace FitnessApi.Endpoints
                                 {
                                     Console.WriteLine($"Key: {VARIABLE.Key}, Value: {VARIABLE.Value}");
                                 }
-                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, content.Arguments["chartPreference"].ToString(), content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString(), content.Arguments["interval"].ToString(), content.Arguments["startDate"].ToString(), content.Arguments["endDate"].ToString());
+                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, content.Arguments["chartPreference"].ToString(), content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString(), content.Arguments["interval"].ToString(), content.Arguments["endDate"].ToString());
                                 break;
                         }
                     }
