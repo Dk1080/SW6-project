@@ -107,7 +107,7 @@ namespace FitnessApi.Endpoints
                                 {
                                     Console.WriteLine($"Key: {VARIABLE.Key}, Value: {VARIABLE.Value}");
                                 }
-                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, content.Arguments["chartPreference"].ToString(), content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString() );
+                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, content.Arguments["chartPreference"].ToString(), content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString(), content.Arguments["interval"].ToString(), content.Arguments["startDate"].ToString(), content.Arguments["endDate"].ToString());
                                 break;
                         }
                     }
@@ -186,7 +186,7 @@ namespace FitnessApi.Endpoints
                     //Create new chathistory to insert into database to get threadId.
                     ChatHistory chatHistoryGoal = new();
                     chatHistoryGoal.chatHistory = new List<ChatMessageDTO>();
-                    chatHistoryGoal.chatHistory.Add(new ChatMessageDTO(ChatRole.Assistant, "Hello, I am your health and fitness AI advisor!\nLet's start by setting up some goals and preferences for you.\nPlease tell me what your health and/or fitness goals are!\nAnd by the way, how do you prefer your graphs?"));
+                    chatHistoryGoal.chatHistory.Add(new ChatMessageDTO(ChatRole.Assistant, "Hello, I am your health and fitness AI advisor!\nLet's start by setting up some goals and preferences for you.\nPlease tell me what your health and/or fitness goals are!\nWhich interval would you like in your overview?(weekly or monthly)\nWhat date would you like the goal to end?(yyyy-mm-dd format) \nHow would you like your graphs displayed?(Halfcircle or Column)"));
                     chatHistoryGoal.Username = username;
                     //Get threadID
                     chatHistoryGoal.Id = chatHistoryService.AddChatHistory(chatHistoryGoal);
