@@ -4,6 +4,9 @@ import ChatMessenge from "../components/ChatMessenge";
 function ChatView() {
 
     const [chatlog, setChatlog] = useState();
+    const [currentChat, setCurrentChat] = useState();
+    const [query, setQuery] = useState("");
+    const [threadId, setThreadId] = useState();
 
     //Flag for not sending the same request twice
     let requestFlag = false;
@@ -17,22 +20,106 @@ function ChatView() {
                 await fetch("/api/getChats")
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data);
                         setChatlog(data);
-                        
-                    }) }
+
+                    })
+            }
         };
 
         getChartData();
     }, []);
 
+    //Rerender the page to show the first chat.
+    useEffect(() => {
+        if (chatlog?.histories?.[0]?.chatHistory && !threadId) {
+            // Set the starting chat to be the first one in the array.
+            setThreadId(chatlog.histories[0].id);
+            setCurrentChat(chatlog.histories[0].chatHistory);
+        }
+    }, [chatlog, threadId]);
+
+  
+
+    const changeChat = (dessiredChat: object) => {
+
+        setThreadId(dessiredChat.id);
+
+        setCurrentChat(dessiredChat.chatHistory);
+    }
+
+    const sendQuery = async (query) => {
+
+        //Create temperary chat.
+        const updatedChatlog = { ...chatlog };
 
 
-    //populate the current box with top chat.
+       // console.log(chatlog)
+        console.log(query)
+        //loop through each chat until we find the current chat
+        for (const chat of updatedChatlog.histories) {
+            if (chat.id === threadId) {
+                console.log("here " + threadId)
+                //Add the query to the current chat
+                chat.chatHistory.push({
+                    "authorName": null,
+                    "role": "user",
+                    "text": query
+                });
+                console.log(chat);
 
 
+                setChatlog(updatedChatlog);
 
-    //When user sends a query send it to server append that and the response.
+                //Send the query
+                const body = {
+                    "query": query,
+                    "threadId": threadId,
+                    "role": "user"
+                }
+                console.log(body)
+
+                await fetch("/api/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        //Turn the promise into a usable string.
+                        response.text().then((resolvedString: string) => {
+                            const regularString: string = resolvedString;
+
+                            console.log(JSON.parse(regularString));
+                            const AIresponse = JSON.parse(regularString);
+                            //Add the response to the current chat.
+                            chat.chatHistory.push({
+                                "authorName": null,
+                                "role": "assistant",
+                                "text": AIresponse.query
+                            });
+
+                            //Update and force a rerender.
+                            setChatlog({ ...updatedChatlog });});
+
+                    }
+                });
+            }
+        }
+
+    }
+
+
+    //function to open the side menu.
+    const openMenu = () => {
+        document.getElementById("sideMenu").classList.add("open");
+
+    }
+
+    const closeMenu = () => {
+        document.getElementById("sideMenu").classList.remove("open");
+    }
 
 
 
@@ -45,12 +132,34 @@ function ChatView() {
             </div>
         );
     } else {
-        
         return (
             <div>
-                {chatlog?.histories?.[0]?.chatHistory?.map((item) => (
-                    <ChatMessenge item={item} />
-                ))}
+
+
+                <div className="sideMenu" id="sideMenu">
+                    <button onClick={closeMenu}>close</button>
+
+                    {chatlog?.histories?.map((item) => {
+                        return <button onClick={() => changeChat(item)}>{item.id}</button>;
+                    })}
+                </div>
+
+                <button onClick={openMenu}>Select chat logs</button>
+
+                <div>
+                    {currentChat?.map((item: any) => {
+                        return <ChatMessenge item={item} />;
+                    })}
+                    <input type="text" onChange={e => setQuery(e.target.value)}></input>
+                    <button onClick={() => sendQuery(query)}>Send query!</button>
+                </div>
+
+
+
+                
+                
+
+
             </div>
         )
     }

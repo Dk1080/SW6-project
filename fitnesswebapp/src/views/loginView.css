@@ -1,0 +1,32 @@
+.sideMenu {
+   height: 100%;
+   width: 0;
+   position: fixed;
+   z-index: 1;
+   top: 0;
+   right: 0;
+   background-color: #111;
+   overflow-x: hidden;
+   padding-top: 60px;
+   transition: width 0.3s ease, transform 0.3s ease;
+   max-width: 500px;
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start;
+   gap: 10px;
+   transform: translateX(100%);
+}
+
+.sideMenu.open {
+   width: fit-content;
+   transform: translateX(0);
+}
+
+.sideMenu button {
+   width: fit-content;
+}
+
+.messasge {
+   border-radius: 25px;
+   padding: 10px;
+}
