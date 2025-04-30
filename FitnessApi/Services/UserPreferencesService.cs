@@ -56,7 +56,7 @@ namespace FitnessApi.Services
                 // steps her
                 var updatedStepsGoal = preferences.Goals.FirstOrDefault(g => g.GoalType == "steps");
                 if (updatedStepsGoal != null)
-                {
+                {   
                     var existingStepsGoal = existingPreferences.Goals.FirstOrDefault(g => g.GoalType == "steps");
                     if (existingStepsGoal != null)
                     {
