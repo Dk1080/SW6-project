@@ -250,8 +250,7 @@ namespace FitnessApp.ViewModels
                     await Application.Current.Windows[0].Page.DisplayAlert("Permission not granted", "We need access to health data for the app to work", "OK");
                 }
             }
-
-
+            
             //Get step data TODO this should be reworked when we want more data so that we have an agregate method that calls the methods for each of the individual data methods.
             var healthList = await healthService.GetSteps();
 

@@ -111,12 +111,19 @@ class DotnetNewBinding(private val Context : Context) {
         val returnList = mutableListOf<DotnetStepDTO>()
 
         for ((metricString, metric) in metricMapping) {
+            var timeRange = Duration.ZERO
+            if(metricString in hourlyDataTypes){
+                timeRange = Duration.ofHours(1)
+            }else if (metricString in dailyDataTypes){
+                timeRange = Duration.ofDays(1)
+            }
+
             try {
                 val response = healthConnectClient.aggregateGroupByDuration(
                     AggregateGroupByDurationRequest(
                         metrics = setOf(metric),
                         timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
-                        timeRangeSlicer = Duration.ofHours(1)
+                        timeRangeSlicer = timeRange  
                     )
                 )
 
@@ -161,6 +168,23 @@ class DotnetNewBinding(private val Context : Context) {
         "StepsRecord" to StepsRecord.COUNT_TOTAL,
         "WeightRecord" to WeightRecord.WEIGHT_AVG,
         "WheelchairPushesRecord" to WheelchairPushesRecord.COUNT_TOTAL
+    )
+
+    val hourlyDataTypes = setOf(
+        "StepsRecord",
+        "HeartRateRecord",
+        "RestingHeartRateRecord",
+        "ActiveCaloriesBurnedRecord",
+        "WheelchairPushesRecord"
+    )
+
+    val dailyDataTypes = setOf(
+        "TotalCaloriesBurnedRecord",
+        "DistanceRecord",
+        "ElevationGainedRecord",
+        "FloorsClimbedRecord",
+        "HeightRecord",
+        "WeightRecord",
     )
 
 

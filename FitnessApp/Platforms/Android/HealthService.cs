@@ -90,10 +90,9 @@ internal class HealthService : IHealthService
                 //Create a new converter object to make java data usable in dotnet.
                 HourStepInfo tmpObj = new(item.StartTime,item.EndTime,item.DataCount, item.MetricName);
                 hourStepInfos.Add(tmpObj);
-                Console.WriteLine(tmpObj.ToString());
             }
 
-            //Convert to list of HealthHourInfo and return TODO change location of this when there is more data.
+            //Convert to list of HealthHourInfo and return
             var returnList = new List<HealthHourInfo>();
             foreach (var item in hourStepInfos)
             {

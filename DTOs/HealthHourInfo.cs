@@ -26,7 +26,7 @@ namespace DTOs
 
         public override string ToString()
         {
-            return $"Start time: {startTime}, End time: {endTime}, Steps taken: {dataCount}";
+            return $"Start time: {startTime}, End time: {endTime}, Value of {metricName}: {dataCount}";
         }
     }
 }
