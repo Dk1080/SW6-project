@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ChatMessenge from "../components/ChatMessenge";
-
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 function ChatView() {
 
     const [chatlog, setChatlog] = useState();
@@ -38,7 +38,17 @@ function ChatView() {
         }
     }, [chatlog, threadId]);
 
-  
+
+
+
+    //Configure voice to text service.
+    const {
+        transcript,
+        listening,
+        resetTranscript,
+    } = useSpeechRecognition();
+
+
 
     const changeChat = (dessiredChat: object) => {
 
@@ -135,7 +145,6 @@ function ChatView() {
         return (
             <div>
 
-
                 <div className="sideMenu" id="sideMenu">
                     <button onClick={closeMenu}>close</button>
 
@@ -150,13 +159,22 @@ function ChatView() {
                     {currentChat?.map((item: any) => {
                         return <ChatMessenge item={item} />;
                     })}
-                    <input type="text" onChange={e => setQuery(e.target.value)}></input>
-                    <button onClick={() => sendQuery(query)}>Send query!</button>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                        {listening ? (
+                            <button onClick={SpeechRecognition.stopListening}>Stop</button>
+                        ) : (
+                            <div>
+                                <button onClick={() => SpeechRecognition.startListening({ language: 'en-US' })}>Start</button>
+                                <button onClick={resetTranscript}>Reset</button>
+                            </div>
+                        )}
+                        <input type="text" value={transcript || query} onChange={e => setQuery(e.target.value)}></input>
+                        <button onClick={() => sendQuery(transcript || query)}>Send query!</button>
+                    </div>
+                    <p>{listening ? 'Microphone is on' : ''}</p>
+
                 </div>
 
-
-
-                
                 
 
 
