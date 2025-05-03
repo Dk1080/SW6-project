@@ -94,7 +94,7 @@ namespace FitnessApp.ViewModels
                 // Lav graf med data 
                 OverviewDataGraph = new ISeries[]
                 {
-                    new ColumnSeries<int>
+                    new ColumnSeries<Double>
                     {
                         Values = overviewData.Select(w => w.Value).ToList()
                     }
@@ -134,7 +134,7 @@ namespace FitnessApp.ViewModels
                     {
                         goalValue = stepsGoal.Value;
                     }
-                    Debug.WriteLine($"Using steps goal: {goalValue} steps");
+                    Debug.WriteLine($"Using data goal: {goalValue} value");
                 }
 
                 // Filter så man får dataen for i dag

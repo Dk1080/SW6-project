@@ -13,9 +13,10 @@ namespace FitnessApi.Models
         public DateTime Date { get; set; }
 
         [BsonElement("value")]
-        public int Value { get; set; }
+        public Double Value { get; set; }
 
         [BsonElement("userId")]
         public string UserId { get; set; }
+        
     }
 }

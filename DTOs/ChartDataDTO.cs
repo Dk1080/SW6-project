@@ -12,6 +12,6 @@ namespace DTOs
     {
         public String Date {  get; set; }
 
-        public int Value { get; set; }
+        public Double Value { get; set; }
     }
 }

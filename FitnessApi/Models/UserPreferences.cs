@@ -28,5 +28,8 @@ namespace FitnessApi.Models
 
         [BsonElement("value")]
         public int Value { get; set; }
+        
+        [BsonElement("chartInterval")]
+        public string ChartInterval { get; set; }
     }
 }
