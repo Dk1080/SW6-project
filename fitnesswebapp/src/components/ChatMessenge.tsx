@@ -1,6 +1,5 @@
 
 function ChatMessenge(props) {
-    console.log(props.item);
     //Set the color and posistion of the messasge based on the role.
     let color:string,pos:string;
     if (props.item.role == "assistant") {
