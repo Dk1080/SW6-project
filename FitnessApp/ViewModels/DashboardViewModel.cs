@@ -129,10 +129,10 @@ namespace FitnessApp.ViewModels
                 double goalValue = 0; // default hvis der ikke kommer en
                 if (preferenceData.Goals.Any())
                 {
-                    var stepsGoal = preferenceData.Goals.FirstOrDefault(g => g.GoalType == "steps");
-                    if (stepsGoal != null && stepsGoal.Value > 0)
+                    var goal = preferenceData.Goals.FirstOrDefault();
+                    if (goal != null && goal.Value > 0)
                     {
-                        goalValue = stepsGoal.Value;
+                        goalValue = goal.Value;
                     }
                     Debug.WriteLine($"Using data goal: {goalValue} value");
                 }

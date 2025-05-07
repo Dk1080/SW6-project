@@ -41,6 +41,7 @@ namespace FitnessApi.Services
                     .Where(info => info.metricName == goalInfo.GoalType)
                     .GroupBy(h=>h.endTime.Date)
                     .Select(g=>g.ToList())
+                    .OrderBy(list => list.First().endTime.Date)
                     .ToList();
                 
                 Console.WriteLine($"Total matching HealthHourInfo records: {matchingHourInfos.Count}");
