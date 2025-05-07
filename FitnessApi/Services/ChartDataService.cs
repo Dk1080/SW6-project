@@ -36,6 +36,7 @@ namespace FitnessApi.Services
                 var matchingHourInfos = _dbContext.HealthInfo
                     .AsQueryable()
                     .Where(h => h.Username == username)
+                    .ToList()
                     .SelectMany(h => h.HourInfos)
                     .Where(info => info.metricName == goalInfo.GoalType)
                     .GroupBy(h=>h.endTime.Date)
