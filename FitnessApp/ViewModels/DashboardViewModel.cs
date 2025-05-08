@@ -200,14 +200,25 @@ namespace FitnessApp.ViewModels
 
                 // X-akse value
                 XAxesChartSeries[0].Labels = new List<string> { today.ToString("MM-dd") };
+                
+                // Determine dynamic max limit
+                int dynamicMax =Math.Max(100, percentage + 10); // Add a buffer if needed
+                Console.WriteLine($"dynamicMax: {dynamicMax}");
+
+                var labels = new List<string>();
+                for (int i = 0; i <= dynamicMax+25; i += 25)
+                {
+                    labels.Add($"{i}%");
+                }
+                Console.WriteLine($"Labels: {string.Join(", ", labels)}");
 
                 YAxesChartSeries = new[]
                 {
                     new Axis
                     {
                         MinLimit = 0,
-                        MaxLimit = 100,
-                        Labels = new[] { "0%", "25%", "50%", "75%", "100%" }.ToList(),
+                        MaxLimit = dynamicMax,
+                        Labels = labels,
                         LabelsPaint = new SolidColorPaint(SKColor.Parse("#000000")),
                         SeparatorsPaint = new SolidColorPaint(new SKColor(200, 200, 200)) { StrokeThickness = 1 }
                     }
