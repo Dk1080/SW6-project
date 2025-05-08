@@ -12,7 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+#if ANDROID || WINDOWS|| IOS || MACCATALYST
 using FitnessApp.PlatformsImplementations;
+#endif
 using FitnessApp.Services;
 using DTOs;
 using FitnessApp.Services.Apis;

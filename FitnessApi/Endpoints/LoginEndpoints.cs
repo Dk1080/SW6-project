@@ -61,7 +61,7 @@ namespace FitnessApi.Endpoints
                 }
                 else
                 {
-                    return Results.BadRequest();
+                    return Results.Unauthorized();
                 }
             });
 
