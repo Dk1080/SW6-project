@@ -169,7 +169,7 @@ namespace FitnessApp.ViewModels
                 // Lav graf med data 
                 OverviewDataGraph = new ISeries[]
                 {
-                    new ColumnSeries<int>
+                    new ColumnSeries<Double>
                     {
                         Values = values
                     }
@@ -204,12 +204,12 @@ namespace FitnessApp.ViewModels
                 double goalValue = 0; // default hvis der ikke kommer en
                 if (preferenceData.Goals.Any())
                 {
-                    var stepsGoal = preferenceData.Goals.FirstOrDefault(g => g.GoalType == "steps");
-                    if (stepsGoal != null && stepsGoal.Value > 0)
+                    var goal = preferenceData.Goals.FirstOrDefault();
+                    if (goal != null && goal.Value > 0)
                     {
-                        goalValue = stepsGoal.Value;
+                        goalValue = goal.Value;
                     }
-                    Debug.WriteLine($"Using steps goal: {goalValue} steps");
+                    Debug.WriteLine($"Using data goal: {goalValue} value");
                 }
 
                 // Filter så man får dataen for i dag
@@ -275,14 +275,25 @@ namespace FitnessApp.ViewModels
 
                 // X-akse value
                 XAxesChartSeries[0].Labels = new List<string> { today.ToString("MM-dd") };
+                
+                // Determine dynamic max limit
+                int dynamicMax =Math.Max(100, percentage + 10); // Add a buffer if needed
+                Console.WriteLine($"dynamicMax: {dynamicMax}");
+
+                var labels = new List<string>();
+                for (int i = 0; i <= dynamicMax+25; i += 25)
+                {
+                    labels.Add($"{i}%");
+                }
+                Console.WriteLine($"Labels: {string.Join(", ", labels)}");
 
                 YAxesChartSeries = new[]
                 {
                     new Axis
                     {
                         MinLimit = 0,
-                        MaxLimit = 100,
-                        Labels = new[] { "0%", "25%", "50%", "75%", "100%" }.ToList(),
+                        MaxLimit = dynamicMax,
+                        Labels = labels,
                         LabelsPaint = new SolidColorPaint(SKColor.Parse("#000000")),
                         SeparatorsPaint = new SolidColorPaint(new SKColor(200, 200, 200)) { StrokeThickness = 1 }
                     }
@@ -325,8 +336,7 @@ namespace FitnessApp.ViewModels
                     await Application.Current.Windows[0].Page.DisplayAlert("Permission not granted", "We need access to health data for the app to work", "OK");
                 }
             }
-
-
+            
             //Get step data TODO this should be reworked when we want more data so that we have an agregate method that calls the methods for each of the individual data methods.
             var healthList = await healthService.GetSteps();
 

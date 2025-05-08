@@ -14,10 +14,12 @@ public class DatabaseTools
         return output;
     }
 
-    [Description("chartPreference may only have either the value Halfcircle or the value Column, interval must be weekly, biweekly or monthly, endDate must be in yyyy-MM-dd format (e.g., 2025-04-24).")]
+
+    [Description("chartPreference may only have either the value Halfcircle or the value Column. goalType may only have one of the following values: ActiveCaloriesBurnedRecord, TotalCaloriesBurnedRecord, DistanceRecord, ElevationGainedRecord, FloorsClimbedRecord, HeartRateRecord, HeightRecord, RestingHeartRateRecord, StepsRecord, WeightRecord or WheelchairPushesRecord. interval must be weekly, biweekly or monthly. endDate must be in yyyy-MM-dd format (e.g., 2025-04-24).")]
     public async Task<string> SetPreferencesAndGoals(IUserPreferencesService userPreferencesService, string username, string chartPreference="none", string goalType="none", string value="none", string interval="none", string endDate="none")
-    {
+    { 
         Console.WriteLine($"Preference and goals inputs: {username}, {chartPreference}, {goalType}, {value}, {interval}, {endDate}");
+
         UserPreferences preferences = await userPreferencesService.GetUserPreferencesAsync(username);
         if (preferences == null)
         {

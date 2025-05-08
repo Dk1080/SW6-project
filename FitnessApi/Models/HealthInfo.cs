@@ -19,9 +19,5 @@ namespace FitnessApi.Models
         [Required(ErrorMessage = "Has to have a HealthHistory!")]
         [Display(Name = "HealthHistory")]
         public List<HealthHourInfo> HourInfos { get; set; }
-
-
-
-
     }
 }

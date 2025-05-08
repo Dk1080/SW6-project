@@ -33,5 +33,49 @@
 	<uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY" />
 	<uses-permission android:name="android.permission.health.WRITE_STEPS" />
 	<uses-permission android:name="android.permission.health.READ_STEPS" />
+	<!-- Steps -->
+	<uses-permission android:name="android.permission.health.READ_STEPS" />
+	<uses-permission android:name="android.permission.health.WRITE_STEPS" />
+
+	<!-- Active Calories Burned -->
+	<uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
+	<uses-permission android:name="android.permission.health.WRITE_ACTIVE_CALORIES_BURNED" />
+
+	<!-- Total Calories Burned -->
+	<uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
+	<uses-permission android:name="android.permission.health.WRITE_TOTAL_CALORIES_BURNED" />
+
+	<!-- Distance -->
+	<uses-permission android:name="android.permission.health.READ_DISTANCE" />
+	<uses-permission android:name="android.permission.health.WRITE_DISTANCE" />
+
+	<!-- Elevation Gained -->
+	<uses-permission android:name="android.permission.health.READ_ELEVATION_GAINED" />
+	<uses-permission android:name="android.permission.health.WRITE_ELEVATION_GAINED" />
+
+	<!-- Floors Climbed -->
+	<uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED" />
+	<uses-permission android:name="android.permission.health.WRITE_FLOORS_CLIMBED" />
+
+	<!-- Heart Rate -->
+	<uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+	<uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
+
+	<!-- Height -->
+	<uses-permission android:name="android.permission.health.READ_HEIGHT" />
+	<uses-permission android:name="android.permission.health.WRITE_HEIGHT" />
+
+	<!-- Resting Heart Rate -->
+	<uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
+	<uses-permission android:name="android.permission.health.WRITE_RESTING_HEART_RATE" />
+
+	<!-- Weight -->
+	<uses-permission android:name="android.permission.health.READ_WEIGHT" />
+	<uses-permission android:name="android.permission.health.WRITE_WEIGHT" />
+
+	<!-- Wheelchair Pushes -->
+	<uses-permission android:name="android.permission.health.READ_WHEELCHAIR_PUSHES" />
+	<uses-permission android:name="android.permission.health.WRITE_WHEELCHAIR_PUSHES" />
+	
 	<uses-permission android:name="android.permission.INTERNET" />
 </manifest>

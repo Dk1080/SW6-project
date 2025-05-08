@@ -18,7 +18,10 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
+using Double = System.Double;
 using HealthConnect = NewBindingAndroid.DotnetNewBinding;
+using Object = Java.Lang.Object;
+using String = System.String;
 
 
 namespace FitnessApp.PlatformsImplementations;
@@ -50,11 +53,9 @@ internal class HealthService : IHealthService
     {
         var taskCompletionSource = new TaskCompletionSource<Java.Lang.Object>();
         CancellationTokenSource cts = new CancellationTokenSource();
-
-
+        
         IContinuation continuation = new Continuation(taskCompletionSource, default);
-
-
+        
         //Set the current date to java format
         DateTime currentDate = DateTime.Now;
         string currentFormattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss");
@@ -69,44 +70,33 @@ internal class HealthService : IHealthService
         var currentDataJava = LocalDateTime.Parse(currentFormattedDate, formatter);
         var startDateJava = LocalDateTime.Parse(startFormattedDate, formatter);
 
-
-
+        
         //Ask for the data from the phone
-        healthConnect.AggregateStepsIntoHours(startDateJava, currentDataJava, continuation);
-
-
+        healthConnect.GetAllData(startDateJava, currentDataJava, continuation);
+        
         //Wait for the task to complete
         var result = await taskCompletionSource.Task;
-
-
+        
         Console.WriteLine(result.GetType().FullName);
 
         //Variable to hold return values.
         List<HourStepInfo> hourStepInfos = new();
-
-
+        
         if (result is Android.Runtime.JavaList javaList) { 
 
         
             foreach (HealthConnect.DotnetStepDTO item in javaList)
             {
                 //Create a new converter object to make java data usable in dotnet.
-                HourStepInfo tmpObj = new(item.StartTime,item.EndTime,item.StepCount);
+                HourStepInfo tmpObj = new(item.StartTime,item.EndTime,item.DataCount, item.MetricName);
                 hourStepInfos.Add(tmpObj);
             }
 
-            //foreach (HourStepInfo item in hourStepInfos)
-            //{
-            //    Console.WriteLine($"StartTime: {item.startTime} Endtime: {item.endTime} Count: {item.stepCount}");
-            //}
-
-
-
-            //Convert to list of HealthHourInfo and return TODO change location of this when there is more data.
+            //Convert to list of HealthHourInfo and return
             var returnList = new List<HealthHourInfo>();
             foreach (var item in hourStepInfos)
             {
-                returnList.Add(new HealthHourInfo(item.startTime, item.endTime, item.stepCount));
+                returnList.Add(new HealthHourInfo(item.startTime, item.endTime, item.dataCount, item.metricName));
             }
 
             return returnList;
@@ -198,16 +188,24 @@ class HourStepInfo{
 
     public DateTime startTime {  get; set; }
     public DateTime endTime { get; set; }
-    public long stepCount { get; set; }
+    public Double dataCount { get; set; }
+    
+    public String metricName { get; set; }
     
 
-    public HourStepInfo(Instant startTime, Instant endTime, long stepCount)
+    public HourStepInfo(Instant startTime, Instant endTime, Double dataCount, String metricName)
     {
        
         //Convert the java time to C# time.
         this.startTime = DateTimeOffset.FromUnixTimeMilliseconds(startTime.ToEpochMilli()).DateTime;
         this.endTime = DateTimeOffset.FromUnixTimeMilliseconds(endTime.ToEpochMilli()).DateTime;
-        this.stepCount = stepCount;
+        this.dataCount = dataCount;
+        this.metricName = metricName;
+    }
+    
+    public override string ToString()
+    {
+        return $"Start time: {startTime}, End time: {endTime}, Data taken: {dataCount}, Metric: {metricName}";
     }
 
 }
