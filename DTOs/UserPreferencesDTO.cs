@@ -12,5 +12,8 @@ namespace FitnessApi.Models.Api_DTOs
     {
         public string GoalType { get; set; }
         public int Value { get; set; }
+        public string Interval { get; set; }
+        public DateTime StartDate { get; set; } 
+        public DateTime EndDate { get; set; }
     }
 }

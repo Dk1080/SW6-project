@@ -21,6 +21,7 @@ using Microsoft.Maui.Storage;
 using System.Diagnostics;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
+using System.Globalization;
 
 namespace FitnessApp.ViewModels
 {
@@ -83,25 +84,97 @@ namespace FitnessApp.ViewModels
             try
             {
                 // Fetch dataen til graferne fra APIen
-                var overviewData = await _dashboardApi.GetChartData(); 
+                var chartTask = _dashboardApi.GetChartData();
+                var preferenceTask = _dashboardApi.GetUserPreferences();
+
+                await Task.WhenAll(chartTask, preferenceTask);
+
+                var overviewData = chartTask.Result;
+                var preferenceData = preferenceTask.Result;
 
                 if (overviewData == null || !overviewData.Any())
                 {
                     Console.WriteLine("No workout data received.");
                     return;
                 }
+                Debug.WriteLine($"[DashboardViewModel] Raw data ({overviewData.Count} items): [{string.Join(", ", overviewData.Select(w => $"Date={w.Date},Value={w.Value}"))}]");
+
+
+                string interval = "weekly";
+                DateTime todayDate = DateTime.UtcNow.Date;
+                if (preferenceData.Goals.Any()) 
+                {
+                    var stepsGoal = preferenceData.Goals.FirstOrDefault(g => g.GoalType == "steps");
+                    if (stepsGoal != null)
+                    {
+                        interval = stepsGoal.Interval ?? "weekly";
+                    }
+                    Debug.WriteLine($"Interval is : {interval}");
+                }
+
+
+                DateTime cutoffDate;
+                switch (interval.ToLower())
+                {
+                    case "weekly":
+                        cutoffDate = DateTime.UtcNow.Date.AddDays(-7);
+                        break;
+                    case "biweekly":
+                        cutoffDate = DateTime.UtcNow.Date.AddDays(-14);
+                        break;
+                    case "monthly":
+                        cutoffDate = DateTime.UtcNow.Date.AddDays(-30);
+                        break;
+                    default:
+                        cutoffDate = DateTime.UtcNow.Date.AddDays(-7); 
+                        break;
+                }
+
+                Debug.WriteLine($"[DashboardViewModel] Filter parameters: cutoffDate={cutoffDate:yyyy-MM-dd}, startDate={todayDate:yyyy-MM-dd}, today={DateTime.UtcNow.Date:yyyy-MM-dd}");
+
+                var filteredData = new List<ChartDataDTO>();
+                foreach (var w in overviewData)
+                {
+                    try
+                    {
+                        var dataDate = DateTime.Parse(w.Date).Date;
+                        bool inRange = dataDate <= todayDate && dataDate >= cutoffDate;
+                        Debug.WriteLine($"[DashboardViewModel] Evaluating: Date={w.Date}, Value={w.Value}, Parsed={dataDate:yyyy-MM-dd}, InRange={inRange} " +
+                                        $"(todayDate={dataDate <= todayDate}, cutoffDate={dataDate >= cutoffDate})");
+                        if (inRange)
+                        {
+                            filteredData.Add(w);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"[DashboardViewModel] Invalid date format: Date={w.Date}, Error={ex.Message}");
+                    }
+                }
+                filteredData = filteredData.OrderBy(w => DateTime.Parse(w.Date)).ToList();
+
+                Debug.WriteLine($"[DashboardViewModel] Filtered data ({filteredData.Count} items): [{string.Join(", ", filteredData.Select(w => $"Date={w.Date},Value={w.Value}"))}]");
+
+
+
+                List<int> values;
+                List<string> labels;
+                
+                values = filteredData.Select(w => w.Value).ToList();
+                labels = filteredData.Select(w => DateTime.Parse(w.Date).ToString("MM-dd")).ToList();
+                
 
                 // Lav graf med data 
                 OverviewDataGraph = new ISeries[]
                 {
                     new ColumnSeries<int>
                     {
-                        Values = overviewData.Select(w => w.Value).ToList()
+                        Values = values
                     }
                 };
 
                 // X-akse values 
-                XAxesOverviewGraph[0].Labels = overviewData.Select(w => DateTime.Parse(w.Date).ToString("MM-dd")).ToList();
+                XAxesOverviewGraph[0].Labels = labels;
 
                 // Opdater UI
                 OnPropertyChanged(nameof(OverviewDataGraph));
