@@ -28,11 +28,14 @@ public class Program
             return DatabaseContext.Create(scope.ServiceProvider.GetRequiredService<IMongoDatabase>());
         });
 
-        //Add DB services via DI
-        builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<IChatHistoryService, ChatHistoryService>();
-        builder.Services.AddScoped<IChartDataService, ChartDataService>();
-        builder.Services.AddScoped<IHealthDataService, HealthDataService>();
+
+//Add DB services via DI
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IChatHistoryService, ChatHistoryService>();
+builder.Services.AddScoped<IChartDataService, ChartDataService>();
+builder.Services.AddScoped<IHealthDataService, HealthDataService>();
+builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
+
 
 
         //Configure session management.

@@ -13,6 +13,7 @@ namespace FitnessApi.Services
         public DbSet<ChatHistory> ChatHistories { get; set; }
         public DbSet<ChartData> ChartData { get; set; }
         public DbSet<HealthInfo> HealthInfo { get; set; }   
+        public DbSet<UserPreferences> UserPreferences { get; set; }
 
 
         public DatabaseContext(DbContextOptions options)
@@ -43,6 +44,8 @@ namespace FitnessApi.Services
             modelBuilder.Entity<HealthInfo>()
                 .ToCollection("HealthInfo");
 
+            modelBuilder.Entity<UserPreferences>()
+                .ToCollection("UserPreferences");
 
         }
 

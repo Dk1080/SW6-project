@@ -20,6 +20,5 @@ namespace FitnessApp.Services.Apis
         Task<ChatDTO> SendChat(ChatDTO chatMessage);
 
 
-
     }
 }

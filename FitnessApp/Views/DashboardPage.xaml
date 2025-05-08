@@ -4,9 +4,17 @@
              x:Class="FitnessApp.DashboardPage"
              xmlns:viewmodel="clr-namespace:FitnessApp.ViewModels"
              xmlns:maui="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             xmlns:converters="clr-namespace:FitnessApp.Converters"
              Title="DashboardPage"
              x:DataType="viewmodel:DashboardViewModel"
              >
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:IsPieSeriesConverter x:Key="IsPieSeriesConverter" />
+            <converters:IsNotPieSeriesConverter x:Key="IsNotPieSeriesConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <Grid Background="DarkGray">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -35,21 +43,27 @@
 
         <Border Grid.Row="1" Background="#0E7C7B" Padding="20" StrokeShape="RoundRectangle 10,10,10,10"  
                 HorizontalOptions="Fill" VerticalOptions="Fill" Margin="10">
-            <maui:CartesianChart 
-                Series="{Binding ChartSeries}"
-                XAxes="{Binding XAxes}"
-                BackgroundColor="#0E7C7B" 
-                />
+            <Grid>
+                <maui:PieChart Series="{Binding ChartSeries}"
+                               Background="#0E7C7B"
+                               IsVisible="{Binding ChartSeries, Converter={StaticResource IsPieSeriesConverter}}"/>
+                <maui:CartesianChart Series="{Binding ChartSeries}"
+                                     XAxes="{Binding XAxesChartSeries}"
+                                     YAxes="{Binding YAxesChartSeries}"
+                                     Background="#0E7C7B"
+                                     IsVisible="{Binding ChartSeries, Converter={StaticResource IsNotPieSeriesConverter}}"/>
+            </Grid>
         </Border>
 
 
         <Border Grid.Row="2" Background="#960200" Padding="20" StrokeShape="RoundRectangle 10,10,10,10"  
                 HorizontalOptions="Fill" VerticalOptions="Fill" Margin="10">
-            <Label Text="GRAF" 
-                   TextColor="White" 
-                   HorizontalOptions="Center" 
-                   VerticalOptions="Center" 
-                   FontSize="24"/>
+            <Grid>
+                <maui:CartesianChart Series="{Binding OverviewDataGraph}"
+                         XAxes="{Binding XAxesOverviewGraph}"
+                         Background="#960200"
+                         IsVisible="{Binding OverviewDataGraph, Converter={StaticResource IsNotPieSeriesConverter}}"/>
+            </Grid>
         </Border>
 
         <ImageButton Grid.Row="3"

@@ -21,5 +21,9 @@ namespace DTOs
             this.stepCount = stepCount;
         }
 
+        public override string ToString()
+        {
+            return $"Start time: {startTime}, End time: {endTime}, Steps taken: {stepCount}";
+        }
     }
 }
