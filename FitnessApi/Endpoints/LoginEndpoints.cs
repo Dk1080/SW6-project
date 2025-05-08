@@ -14,7 +14,8 @@ namespace FitnessApi.Endpoints
         public static WebApplication MapLoginEndpoints(this WebApplication app)
         {
 
-            
+            //Check if the person is logged in and if so then send them to the dashboard.
+
 
             app.MapGet("/Test", () =>
             {
