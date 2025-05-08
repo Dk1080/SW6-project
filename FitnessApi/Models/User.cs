@@ -7,6 +7,13 @@ namespace FitnessApi.Models
     [Collection("Users")]
     public class User
     {
+        public User(ObjectId id, string username, string password)
+        {
+            Id = id;
+            Username = username;
+            Password = password;
+        }
+
         public ObjectId Id { get; set; }
 
         [Required(ErrorMessage ="User has to have a name!")]

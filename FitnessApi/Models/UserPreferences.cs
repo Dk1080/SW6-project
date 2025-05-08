@@ -28,8 +28,16 @@ namespace FitnessApi.Models
 
         [BsonElement("value")]
         public int Value { get; set; }
-        
-        [BsonElement("chartInterval")]
-        public string ChartInterval { get; set; }
+
+        [BsonElement("interval")]
+        public string Interval { get; set; }
+
+        [BsonElement("startDate")]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
+        public DateTime StartDate { get; set; } 
+
+        [BsonElement("endDate")]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
+        public DateTime EndDate { get; set; } 
     }
 }

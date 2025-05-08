@@ -31,17 +31,20 @@ namespace FitnessApi.Services
 
             // Find om der allerede er preferences for useren
             var existingPreferences = await _dbContext.UserPreferences.FirstOrDefaultAsync(up => up.User == username);
+
             // hvis nej lav en ny preference    
             if (existingPreferences == null)
             {
                 Console.WriteLine($"[Service] No preferences found for {username}, creating new record.");
                 preferences.User = username;
+
                 // Lav id, vil ikke indsætte ind i database uden et id
                 if (string.IsNullOrEmpty(preferences.Id))
                 {
                     preferences.Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                 }
                 
+
                 _dbContext.UserPreferences.Add(preferences);
             }
             // hvis ja opdater preferences
@@ -53,11 +56,15 @@ namespace FitnessApi.Services
                 // steps her
                 var updatedStepsGoal = preferences.Goals.FirstOrDefault(g => g.GoalType == "steps");
                 if (updatedStepsGoal != null)
-                {
+                {   
                     var existingStepsGoal = existingPreferences.Goals.FirstOrDefault(g => g.GoalType == "steps");
                     if (existingStepsGoal != null)
                     {
                         existingStepsGoal.Value = updatedStepsGoal.Value;
+                        existingStepsGoal.Interval = updatedStepsGoal.Interval;
+                        var startdate = DateTime.UtcNow.Date;
+                        existingStepsGoal.StartDate = startdate;   
+                        existingStepsGoal.EndDate = updatedStepsGoal.EndDate;
                     }
                 }
                     _dbContext.UserPreferences.Update(existingPreferences);

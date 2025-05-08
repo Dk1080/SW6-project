@@ -107,8 +107,14 @@ namespace FitnessApi.Endpoints
                                 {
                                     Console.WriteLine($"Key: {VARIABLE.Key}, Value: {VARIABLE.Value}");
                                 }
-                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, content.Arguments["chartPreference"].ToString(), content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString() );
+                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, content.Arguments["chartPreference"].ToString(), content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString(), content.Arguments["interval"].ToString(), content.Arguments["endDate"].ToString());
                                 break;
+
+                            case "UpdateGoal":
+                                result = await databaseTools.UpdateGoal(userPreferencesService, username, content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString(), content.Arguments["interval"].ToString(), content.Arguments["endDate"].ToString());
+                                break;
+
+
                         }
                     }
                     LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
@@ -169,24 +175,68 @@ namespace FitnessApi.Endpoints
 
 
                 //Convert to ChatHistoryDTO
-                foreach(ChatHistory chatHistoryItem in chatHistories)
+                foreach (ChatHistory chatHistoryItem in chatHistories)
                 {
 
                     var tmpChat = new ChatHistoryDTO(chatHistoryItem.Id, chatHistoryItem.chatHistory);
                     chatHistoriesResponse.histories.Add(tmpChat);
                 }
                 //System.NullReferenceException: 'Object reference not set to an instance of an object.'
-                
+
                 //Check if preferences and goals are set
                 var preferencesAndGoals = await userPreferencesService.GetUserPreferencesAsync(username);
+                bool promptNewGoal = false;
+                Goal goal = null;
+
+                if (preferencesAndGoals?.Goals?.Any() == true)
+                {
+                    goal = preferencesAndGoals.Goals.FirstOrDefault(g => g.GoalType == "steps");
+                    if (goal != null)
+                    {
+                        var endDate = goal.EndDate.Date;
+                        var today = DateTime.UtcNow.Date;
+                        var expiredGoalDate = (endDate - today).Days;
+                        if (expiredGoalDate < 0)
+                        {
+                            promptNewGoal = true;
+                        }
+                    }
+                }
+
+                if (promptNewGoal) 
+                {
+                    ChatHistory chatHistoryGoal = new();
+                    chatHistoryGoal.chatHistory = new List<ChatMessageDTO>();
+                    chatHistoryGoal.chatHistory.Add(new ChatMessageDTO(ChatRole.Assistant, 
+                        "Hello!" +
+                        "\nIt seems like your goal has expired, please set a new goal!" +
+                        "\nPlease tell me what your health and/or fitness goals are!" +
+                        "\nWhich interval would you like in your overview?(weekly, biweekly or monthly)" +
+                        "\nWhat date would you like the goal to end?(yyyy-mm-dd format)"));
+                    chatHistoryGoal.Username = username;
+                    //Get threadID
+                    chatHistoryGoal.Id = chatHistoryService.AddChatHistory(chatHistoryGoal);
+
+                    //Add to top of return messages.
+                    chatHistoriesResponse.histories.Add(new ChatHistoryDTO(chatHistoryGoal.Id, chatHistoryGoal.chatHistory));
+
+                }
+
+
                 //Start chat 
-                
+
                 if (preferencesAndGoals == null)
                 {
                     //Create new chathistory to insert into database to get threadId.
                     ChatHistory chatHistoryGoal = new();
                     chatHistoryGoal.chatHistory = new List<ChatMessageDTO>();
-                    chatHistoryGoal.chatHistory.Add(new ChatMessageDTO(ChatRole.Assistant, "Hello, I am your health and fitness AI advisor!\nLet's start by setting up some goals and preferences for you.\nPlease tell me what your health and/or fitness goals are!\nAnd by the way, how do you prefer your graphs?"));
+                    chatHistoryGoal.chatHistory.Add(new ChatMessageDTO(ChatRole.Assistant, 
+                        "Hello, I am your health and fitness AI advisor!" +
+                        "\nLet's start by setting up some goals and preferences for you." +
+                        "\nPlease tell me what your health and/or fitness goals are!" +
+                        "\nWhich interval would you like in your overview?(weekly, biweekly or monthly)" +
+                        "\nWhat date would you like the goal to end?(yyyy-mm-dd format)" +
+                        "\nHow would you like your graphs displayed?(Halfcircle or Column)"));
                     chatHistoryGoal.Username = username;
                     //Get threadID
                     chatHistoryGoal.Id = chatHistoryService.AddChatHistory(chatHistoryGoal);

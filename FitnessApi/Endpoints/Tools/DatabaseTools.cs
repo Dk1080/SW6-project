@@ -14,10 +14,12 @@ public class DatabaseTools
         return output;
     }
 
-    [Description("chartPreference may only have either the value Halfcircle or the value Column. goalType may only have one of the following values: ActiveCaloriesBurnedRecord, TotalCaloriesBurnedRecord, DistanceRecord, ElevationGainedRecord, FloorsClimbedRecord, HeartRateRecord, HeightRecord, RestingHeartRateRecord, StepsRecord, WeightRecord or WheelchairPushesRecord")]
-    public async Task<string> SetPreferencesAndGoals(IUserPreferencesService userPreferencesService, string username, string chartPreference="none", string goalType="none", string value="none")
+
+    [Description("chartPreference may only have either the value Halfcircle or the value Column. goalType may only have one of the following values: ActiveCaloriesBurnedRecord, TotalCaloriesBurnedRecord, DistanceRecord, ElevationGainedRecord, FloorsClimbedRecord, HeartRateRecord, HeightRecord, RestingHeartRateRecord, StepsRecord, WeightRecord or WheelchairPushesRecord. interval must be weekly, biweekly or monthly. endDate must be in yyyy-MM-dd format (e.g., 2025-04-24).")]
+    public async Task<string> SetPreferencesAndGoals(IUserPreferencesService userPreferencesService, string username, string chartPreference="none", string goalType="none", string value="none", string interval="none", string endDate="none")
     { 
-        Console.WriteLine($"Preference and goals inputs: {username}, {chartPreference}, {goalType}, {value}");
+        Console.WriteLine($"Preference and goals inputs: {username}, {chartPreference}, {goalType}, {value}, {interval}, {endDate}");
+
         UserPreferences preferences = await userPreferencesService.GetUserPreferencesAsync(username);
         if (preferences == null)
         {
@@ -39,7 +41,8 @@ public class DatabaseTools
         if (goalType != "none" && value != "none")
         {
             List<Goal> goals = new List<Goal>();
-            goals.Add(new Goal() { GoalType = goalType, Value = int.Parse(value) });
+            DateTime goalStartDate = DateTime.UtcNow.Date;   
+            goals.Add(new Goal() { GoalType = goalType, Value = int.Parse(value), Interval = interval, StartDate = goalStartDate, EndDate = DateTime.Parse(endDate) });
             preferences.Goals = goals;   
         }
 
@@ -53,5 +56,32 @@ public class DatabaseTools
             return "Failure to update preferences";
         }
         return "Success, the users preferences and goals have been updated";
+    }
+
+
+
+    [Description("Interval must be weekly, biweekly or monthly, endDate must be in yyyy-MM-dd format (e.g., 2025-04-24).")]
+    public async Task<string> UpdateGoal(IUserPreferencesService userPreferencesService, string username, string goalType="none", string value="none", string interval="none", string endDate = "none") 
+    {
+        UserPreferences preferences = await userPreferencesService.GetUserPreferencesAsync(username);
+
+        if (goalType != "none" && value != "none")
+        {
+            List<Goal> goals = new List<Goal>();
+            DateTime goalStartDate = DateTime.UtcNow.Date;
+            goals.Add(new Goal() { GoalType = goalType, Value = int.Parse(value), Interval = interval, StartDate = goalStartDate, EndDate = DateTime.Parse(endDate) });
+            preferences.Goals = goals;
+        }
+
+        try
+        {
+            var updatedPreferences = await userPreferencesService.UpdateUserPreferencesAsync(username, preferences);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return "Failure to update goal";
+        }
+        return "Success, the users goals have been updated";
     }
 }

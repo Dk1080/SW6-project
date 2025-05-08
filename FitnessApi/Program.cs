@@ -5,23 +5,29 @@ using OllamaSharp;
 using MongoDB.Driver;
 using Scalar.AspNetCore;
 
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.AddServiceDefaults();
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-//Add conection to the database
-builder.AddMongoDBClient(connectionName: "FitnessAppDatabase");
-
-builder.Services.AddScoped<DatabaseContext>(svc =>
+namespace FitnessApi;
+public class Program
 {
-    var scope = svc.CreateScope();
-    return DatabaseContext.Create(scope.ServiceProvider.GetRequiredService<IMongoDatabase>());
-});
+
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.AddServiceDefaults();
+
+        // Add services to the container.
+        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+        builder.Services.AddOpenApi();
+
+        //Add conection to the database
+        builder.AddMongoDBClient(connectionName: "FitnessAppDatabase");
+
+        builder.Services.AddScoped<DatabaseContext>(svc =>
+        {
+            var scope = svc.CreateScope();
+            return DatabaseContext.Create(scope.ServiceProvider.GetRequiredService<IMongoDatabase>());
+        });
+
 
 //Add DB services via DI
 builder.Services.AddScoped<IUserService, UserService>();
@@ -31,51 +37,57 @@ builder.Services.AddScoped<IHealthDataService, HealthDataService>();
 builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
 
 
-//Configure session management.
-builder.Services.AddDistributedMemoryCache();
 
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
+        //Configure session management.
+        builder.Services.AddDistributedMemoryCache();
 
-
-//Add Password hashing service
-builder.Services.AddScoped<IPasswordHasher , PasswordHasher>();
+        builder.Services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(30);
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
+        });
 
 
-//Adding ollama
-builder.AddOllamaApiClient("ollama-llama3-2").AddChatClient();
+        //Add Password hashing service
+        builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 
-var app = builder.Build();
+        //Adding ollama
+        builder.AddOllamaApiClient("ollama-llama3-2").AddChatClient();
+
+
+        var app = builder.Build();
 
 
 
-app.MapDefaultEndpoints();
+        app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapScalarApiReference(_ => _.Servers = []);
-    app.MapOpenApi();
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapScalarApiReference(_ => _.Servers = []);
+            app.MapOpenApi();
+        }
+
+        app.UseSession();
+
+        app.UseHttpsRedirection();
+
+        //Map endpoints
+        app.MapLoginEndpoints();
+        app.MapChatEndpoints();
+        app.MapHealthDataEndpoints();
+        app.MapDashboardEndpoints();
+
+        app.Run();
+
+    }
+
+
 }
 
-app.UseSession();
 
-app.UseHttpsRedirection();
-
-//Map endpoints
-app.MapLoginEndpoints();
-app.MapChatEndpoints();
-app.MapHealthDataEndpoints();
-app.MapDashboardEndpoints();
-
-
-
-app.Run();
 
 
 
