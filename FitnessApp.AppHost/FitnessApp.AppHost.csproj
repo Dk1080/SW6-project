@@ -11,16 +11,16 @@
     <UserSecretsId>ad9b2d5f-1c5d-41ce-bb50-1fc2105dc4b9</UserSecretsId>
   </PropertyGroup>
 
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.2.1" />
-    <PackageReference Include="Aspire.Hosting.MongoDB" Version="9.2.1" />
-    <PackageReference Include="Aspire.Hosting.NodeJs" Version="9.2.1" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="9.4.0" />
+    <ItemGroup>
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="9.2.1" />
+        <PackageReference Include="Aspire.Hosting.MongoDB" Version="9.2.1" />
+        <PackageReference Include="Aspire.Hosting.NodeJs" Version="9.2.1" />
+        <PackageReference Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="9.4.0" />
+	</ItemGroup>
 
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\FitnessApi\FitnessApi.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+        <ProjectReference Include="..\FitnessApi\FitnessApi.csproj" />
+    </ItemGroup>
 
 
 

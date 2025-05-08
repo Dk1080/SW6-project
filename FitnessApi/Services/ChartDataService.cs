@@ -22,15 +22,17 @@ namespace FitnessApi.Services
             {
                 var userPref = _dbContext.UserPreferences.FirstOrDefault(p => p.User == username);
 
-                var goalInfo = userPref.Goals.FirstOrDefault();
-                
-                Console.WriteLine($"Retrieved GoalInfo: {goalInfo?.GoalType}");
-
-                if (goalInfo == null)
+                if (userPref == null)
                 {
                     Console.WriteLine("No goal info found.");
                     return new List<ChartData>();
                 }
+
+                var goalInfo = userPref.Goals.FirstOrDefault();
+                
+                Console.WriteLine($"Retrieved GoalInfo: {goalInfo?.GoalType}");
+
+                
                 
                 //Get HealthHourInfo with correct datatype - TODO 
                 var matchingHourInfos = _dbContext.HealthInfo

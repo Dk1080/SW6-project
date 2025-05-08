@@ -106,7 +106,7 @@ namespace FitnessApp.ViewModels
                 DateTime todayDate = DateTime.UtcNow.Date;
                 if (preferenceData.Goals.Any()) 
                 {
-                    var stepsGoal = preferenceData.Goals.FirstOrDefault(g => g.GoalType == "steps");
+                    var stepsGoal = preferenceData.Goals.FirstOrDefault(g => g.GoalType == "StepsRecord");
                     if (stepsGoal != null)
                     {
                         interval = stepsGoal.Interval ?? "weekly";
@@ -159,7 +159,7 @@ namespace FitnessApp.ViewModels
 
 
 
-                List<int> values;
+                List<double> values;
                 List<string> labels;
                 
                 values = filteredData.Select(w => w.Value).ToList();
