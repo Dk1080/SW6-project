@@ -70,7 +70,10 @@ namespace FitnessApi.Endpoints
                         Goals = preferences?.Goals.Select(g => new GoalDTO
                         {
                             GoalType = g.GoalType,
-                            Value = g.Value
+                            Value = g.Value,
+                            Interval = g.Interval,
+                            StartDate = g.StartDate,
+                            EndDate = g.EndDate
                         }).ToList() ?? new List<GoalDTO>()
                     };
 

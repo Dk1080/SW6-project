@@ -13,7 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessApp.ServiceDefaults"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOs", "DTOs\DTOs.csproj", "{5CE6B280-86CD-4BAF-8FBF-21A23F8FD31A}"
 EndProject
+
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "FitnessWebApp", "FitnessWebApp\FitnessWebApp.esproj", "{A5A477A6-F583-ECD4-6760-A83729107E4A}"
+
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,7 @@ Global
 		{A5A477A6-F583-ECD4-6760-A83729107E4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5A477A6-F583-ECD4-6760-A83729107E4A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5A477A6-F583-ECD4-6760-A83729107E4A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
