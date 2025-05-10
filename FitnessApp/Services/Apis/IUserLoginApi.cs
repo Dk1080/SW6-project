@@ -11,7 +11,10 @@ namespace FitnessApp.Services.APIs
     public interface IUserLoginApi
     {
         [Post("/login")]
-        Task<HttpResponseMessage> Execute(UserRequest userRequest);
+        Task<HttpResponseMessage> Login(UserRequest userRequest);
+
+        [Post("/addUser")]
+        Task<HttpResponseMessage> AddUser(UserRequest userRequest);
 
 
     }
