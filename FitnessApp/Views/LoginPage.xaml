@@ -6,11 +6,12 @@
              x:DataType="viewmodel:LoginViewModel"
              Background="DarkGray"
              >
-   <Grid ColumnDefinitions="20*,60*,20*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"  Margin="5">
+    <Grid ColumnDefinitions="20*,60*,20*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"  Margin="5">
     <Label LineBreakMode="WordWrap" TextColor="Black" Text="Welcome to Fitness App Please login" Grid.Column="1" Grid.Row="0" Margin="0,10"></Label>
     <Entry Placeholder="Username" Text="{Binding Username}" Grid.Column="1" Grid.Row="1" Margin="0,10"></Entry>
     <Entry Placeholder="Password" Text="{Binding Password}" Grid.Column="1" Grid.Row="2" Margin="0,10"></Entry>
     <Button Text="Login" Command="{Binding SendLoginRequestCommand}" Grid.Column="1" Grid.Row="3" Margin="0,10"></Button>
     <Label TextColor="Red" Text="{Binding InvalidInfo}" Grid.Column="1" Grid.Row="4" Margin="0,10"></Label>
+    <Button Text="New? Create new user" Command="{Binding NewUserPromptCommand}" Grid.Column="1" Grid.Row="5" Margin="0,10"></Button>
     </Grid>
 </ContentPage>

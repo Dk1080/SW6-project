@@ -29,18 +29,31 @@ namespace FitnessApi.Endpoints
                 //Hash the password of the user.
                 user.Password = passwordHasher.hashPassword(user.Password);
 
-                try
+
+                //Check that the username is not already taken.
+                var gottenUser = userService.GetUserByName(user.Username);
+
+                if (gottenUser == null)
                 {
-                    userService.AddUser(user);
+                    try
+                    {
+                        userService.AddUser(user);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        return Results.InternalServerError();
+                    }
+
+                    return Results.Ok("User added");
                 }
-                catch (Exception ex)
+                else
                 {
-                    Console.WriteLine(ex);
-                    return Results.InternalServerError();
+                    return Results.BadRequest("Username is taken");
                 }
 
-                return Results.Ok("User added");
-                
+
+
             });
 
 

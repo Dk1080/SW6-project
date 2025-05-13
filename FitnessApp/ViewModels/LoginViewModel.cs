@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using FitnessApp;
 using FitnessApp.Services.APIs;
 using DTOs;
+using Microsoft.Maui.Controls;
 
 namespace FitnessApp.ViewModels;
 
@@ -21,12 +22,15 @@ public partial class LoginViewModel : ObservableObject
 
     private IUserLoginApi _userLoginApi;
     private readonly CookieContainer _cookieContainer;
+    private readonly IPopupService _popupService;
 
 
-    public LoginViewModel(IUserLoginApi userLoginApi, CookieContainer cookieContainer)
+
+    public LoginViewModel(IUserLoginApi userLoginApi, CookieContainer cookieContainer, IPopupService popupService)
     {
         _userLoginApi = userLoginApi;
         _cookieContainer = cookieContainer;
+        _popupService = popupService;
 
     }
 
@@ -44,7 +48,7 @@ public partial class LoginViewModel : ObservableObject
         //Send Login details to server.
         try
         {
-            HttpResponseMessage response = await _userLoginApi.Execute(new UserRequest(username, password));
+            HttpResponseMessage response = await _userLoginApi.Login(new UserRequest(username, password));
 
             //TODO Add condition if server is unresponsive / not avalible
             if (response.StatusCode == HttpStatusCode.OK)
@@ -72,6 +76,17 @@ public partial class LoginViewModel : ObservableObject
             Console.WriteLine(ex.ToString());
         }
     }
+
+    [RelayCommand]
+    public async Task NewUserPrompt()
+    {
+        //Display popup for user to create login details.
+        await _popupService.ShowPopupAsync<NewUserPopupViewModel>();
+    }
+
+
+
 }
 
  
+    

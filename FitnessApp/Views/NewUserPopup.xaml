@@ -1,0 +1,26 @@
+<toolkit:Popup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewmodel="clr-namespace:FitnessApp.ViewModels"
+    x:Class="FitnessApp.NewUserPopup"
+    x:DataType="viewmodel:NewUserPopupViewModel">
+
+	<Frame
+        Padding="20"
+        WidthRequest="250"
+        HeightRequest="300"
+        CornerRadius="20"
+        BackgroundColor="White"
+        HasShadow="True">
+
+		<VerticalStackLayout Spacing="10">
+			<Label Text="Username:" />
+			<Entry Text="{Binding Username}" />
+			<Label Text="Password:" />
+			<Entry Text="{Binding Password}" />
+			<Label Text="{Binding ResponseMessage}" />
+			<Button Text="Create" Command="{Binding CreateUserCommand}" />
+		</VerticalStackLayout>
+	</Frame>
+</toolkit:Popup>

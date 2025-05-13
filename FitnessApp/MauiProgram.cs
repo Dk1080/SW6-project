@@ -14,6 +14,8 @@ using Microsoft.Extensions.Logging;
 using Refit;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 using System.Net;
+using CommunityToolkit.Maui.Core.Handlers;
+using CommunityToolkit.Maui.Views;
 
 namespace FitnessApp;
 
@@ -96,6 +98,14 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<IsPieSeriesConverter>();
         builder.Services.AddSingleton<IsNotPieSeriesConverter>();
+
+
+        //Add popup support
+        builder.Services.ConfigureMauiHandlers(handlers =>
+        {
+            handlers.AddHandler<Popup, PopupHandler>();
+        });
+        builder.Services.AddTransientPopup<NewUserPopup, NewUserPopupViewModel>();
 
 
 

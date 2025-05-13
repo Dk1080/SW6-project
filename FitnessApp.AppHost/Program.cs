@@ -23,9 +23,13 @@ var api = builder.AddProject<Projects.FitnessApi>("fitnessapi")
     .WithReference(ollama)
     .WithReference(mongodb);
 
+//Add hyperlink to scalar website
+api.WithUrl($"{api.GetEndpoint("http")}/scalar/v1", "OpenApi");
+
 
 //Add smart display app.
 builder.AddNpmApp("FitnessWebApp", "../FitnessWebApp")
+    .WaitFor(api)
    .WithReference(api)
     .WithEnvironment("BROWSER", "none")
     .WithHttpEndpoint(env: "VITE_PORT")
