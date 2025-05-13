@@ -15,6 +15,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Amazon.Auth.AccessControlPolicy;
 using DTOs;
 using FitnessApi.Endpoints.Tools;
@@ -61,12 +62,34 @@ namespace FitnessApi.Endpoints
                 List<ChatMessage> LocalChatmessasges = new List<ChatMessage>()
                 {
                     new(ChatRole.System, """
-                                         "You are an health and fitness adviser, you only answer questions related to those fields.
+                                         "You are an health and fitness adviser, you only answer questions related to those fields. 
+                                         If you need to call a tool, respond with one of the following depending on the scenario:
+                                         If the user wants to have their fitness data listed or you want to analyze it respond with:
+                                         [tool: GetFitnessData]
+                                         or
+                                         If the user wants to set their preferences and goals, get values for all the parameters and respond with this:
+                                         [tool: SetPreferencesAndGoals]
+                                         {
+                                            "chartPreference":"value1",
+                                            "goalType":"value2"
+                                            "value":"value3",
+                                            "interval":"value4",
+                                            "endDate":"value5"
+                                         }
+                                         where value1, value2, value3, value4 and value5 are placeholders for whatever values the user wants. Dont respond with this before you have received all the values.
+                                         or
+                                         If the user wants to update any of goal type, goal value, goal interval, goal end date or all of them, respond with this only if you have received all the value:
+                                         [tool: UpdateGoal]
+                                         {
+                                            "goalType":"value1",
+                                            "value":"value2",
+                                            "interval":"value3",
+                                            "endDate":"value4"      
+                                         }
+                                         where value1, value2, value3 and value4 are placeholders for whatever values the user wants. Your answer may not contain the string "[tool: UpdateGoal]"
                                          """)
                 };
- 
-
-
+                
                 //If this is a previous conversation then get it from the database.
                 if (ObjectId.Parse(chatDTO.ThreadId) != ObjectId.Empty)
                 {
@@ -80,22 +103,28 @@ namespace FitnessApi.Endpoints
 
                 ////Give the chat history to the AI and get the response.
                 //Step 1: User sends message
-                ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
+                ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges);
                 
                 //Step 2: Check if response includes function calls
+                
+                Console.WriteLine($"Contents: {response.Messages.First().Contents}");
+                Console.WriteLine($"Text is {response.Messages.First().Text}");
+                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, response.Messages.First().Text));
 
-                foreach (FunctionCallContent content in response.Messages.First().Contents)
+                if(response.Messages.First().Text.Contains("[tool: "))
                 {
-                    Console.WriteLine($"AI contents is: {content}");
-                    Console.WriteLine($"AI function name is: {content.Name}");
+                    //Retrieve what tool to call
+                    string tool = ExtractToolName(response.Messages.First().Text);
                     
                     //Step 3: Call methods with parameters
                     //Step 4: Send result of method(s) back to AI
                     //Call appropriate method - as of yet only one method
                     string result = "";
-                    if (content.Name != "")
+                    if (tool != "")
                     {
-                        switch (content.Name)
+                        //Get any input parameter values
+                        
+                        switch (tool)
                         {
                             case "GetFitnessData":
                                 result = databaseTools.GetFitnessData(healthdata);
@@ -103,28 +132,30 @@ namespace FitnessApi.Endpoints
                                 break;
                             
                             case "SetPreferencesAndGoals":
-                                foreach (var VARIABLE in content.Arguments)
+                                var parameters = ExtractJsonPayload(response.Messages.First().Text);
+                                foreach (var VARIABLE in parameters.EnumerateObject())
                                 {
-                                    Console.WriteLine($"Key: {VARIABLE.Key}, Value: {VARIABLE.Value}");
+                                    Console.WriteLine($"Key: {VARIABLE.Name}, Value: {VARIABLE.Value}");
                                 }
-                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, content.Arguments["chartPreference"].ToString(), content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString(), content.Arguments["interval"].ToString(), content.Arguments["endDate"].ToString());
+                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, parameters.GetProperty("chartPreference").ToString(), parameters.GetProperty("goalType").ToString(), parameters.GetProperty("value").ToString(), parameters.GetProperty("interval").ToString(), parameters.GetProperty("endDate").ToString());
                                 break;
 
                             case "UpdateGoal":
-                                result = await databaseTools.UpdateGoal(userPreferencesService, username, content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString(), content.Arguments["interval"].ToString(), content.Arguments["endDate"].ToString());
+                                var parametersUpdateGoal = ExtractJsonPayload(response.Messages.First().Text);
+                                result = await databaseTools.UpdateGoal(userPreferencesService, username, parametersUpdateGoal.GetProperty("goalType").ToString(), parametersUpdateGoal.GetProperty("value").ToString(), parametersUpdateGoal.GetProperty("interval").ToString(), parametersUpdateGoal.GetProperty("endDate").ToString());
                                 break;
-
-
                         }
                     }
                     LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
-                }
-
-                //Step 5: Get updated AI answer with result
-                ChatResponse updatedAnswer = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
+                    
+                    //Step 5: Get updated AI answer with result
+                    ChatResponse updatedAnswer = await chatClient.GetResponseAsync(LocalChatmessasges);
                 
-                //Step 6: Send final response to user
-                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Messages.First().Text));
+                    //Step 6: Send final response to user
+                    LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Messages.First().Text));
+                }
+                
+                
 
 
                 ChatMessage RrtnMsg = LocalChatmessasges.Last();
@@ -247,6 +278,24 @@ namespace FitnessApi.Endpoints
                 return Results.Ok(chatHistoriesResponse);
             });
             return app;
+        }
+        
+        static string ExtractToolName(string input)
+        {
+            var match = Regex.Match(input, @"\[tool:\s*(.*?)\]");
+            return match.Success ? match.Groups[1].Value : null;
+        }
+        
+        static JsonElement ExtractJsonPayload(string input)
+        {
+            var match = Regex.Match(input, @"\[tool:\s*\w+\s*\]\s*(\{.*\})", RegexOptions.Singleline);
+            if (!match.Success)
+                throw new ArgumentException("No valid tool payload found.");
+
+            string json = match.Groups[1].Value;
+
+            var document = JsonDocument.Parse(json);
+            return document.RootElement.Clone(); // Clone to avoid using disposed document
         }
     }
 }
