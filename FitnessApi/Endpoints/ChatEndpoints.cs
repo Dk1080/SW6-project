@@ -82,8 +82,6 @@ namespace FitnessApi.Endpoints
                 //Step 1: User sends message
                 ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
                 
-                Console.WriteLine($"Response: {response}");
-                
                 //Step 2: Check if response includes function calls
 
                 bool functioncallFlag = false;

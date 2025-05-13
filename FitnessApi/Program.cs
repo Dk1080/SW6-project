@@ -3,6 +3,8 @@ using FitnessApi.Services;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
 using MongoDB.Driver;
+using Polly;
+using Polly.Retry;
 using Scalar.AspNetCore;
 
 namespace FitnessApi;
@@ -54,7 +56,18 @@ builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
 
 
         //Adding ollama
-        builder.AddOllamaApiClient("ollama-phi4-mini").AddChatClient();
+        builder.AddOllamaApiClient("ollama-phi4-mini").AddChatClient(); //Also adds httpclient named "ollama-phi4-mini"
+
+        //Reconfigure httpclient "ollama-phi4-mini"
+        builder.Services.AddHttpClient("ollama-phi4-mini")
+            .ConfigureHttpClient(client =>
+            {
+                client.Timeout = Timeout.InfiniteTimeSpan; //Remove built-in timeout
+            })
+            .AddResilienceHandler("Standard-TotalRequestTimeout", builder =>
+            {
+                builder.AddTimeout(TimeSpan.FromSeconds(60)); //Override Polly timeout  
+            });
 
 
         var app = builder.Build();

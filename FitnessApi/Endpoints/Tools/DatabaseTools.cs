@@ -63,7 +63,9 @@ public class DatabaseTools
 
 
 
-    [Description("Interval must be weekly, biweekly or monthly, endDate must be in yyyy-MM-dd format (e.g., 2025-04-24).")]
+    [Description("User must provide a goalType, a value, a interval and a endDate. You wont be needing userPreferencesService or username from the user, so NEVER ask for those. " +
+                 "goalType may only have one of the following values: ActiveCaloriesBurnedRecord, TotalCaloriesBurnedRecord, DistanceRecord, ElevationGainedRecord, FloorsClimbedRecord, HeartRateRecord, HeightRecord, RestingHeartRateRecord, StepsRecord, WeightRecord or WheelchairPushesRecord. " +
+                 "Interval must be weekly, biweekly or monthly, endDate must be in yyyy-MM-dd format (e.g., 2025-04-24).")]
     public async Task<string> UpdateGoal(IUserPreferencesService userPreferencesService, string username, string goalType="none", string value="none", string interval="none", string endDate = "none") 
     {
         UserPreferences preferences = await userPreferencesService.GetUserPreferencesAsync(username);
