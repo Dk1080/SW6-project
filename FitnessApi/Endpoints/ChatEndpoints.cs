@@ -82,50 +82,66 @@ namespace FitnessApi.Endpoints
                 //Step 1: User sends message
                 ChatResponse response = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
                 
+                Console.WriteLine($"Response: {response}");
+                
                 //Step 2: Check if response includes function calls
 
-                foreach (FunctionCallContent content in response.Messages.First().Contents)
+                bool functioncallFlag = false;
+
+                foreach (AIContent content in response.Messages.First().Contents)
                 {
-                    Console.WriteLine($"AI contents is: {content}");
-                    Console.WriteLine($"AI function name is: {content.Name}");
-                    
-                    //Step 3: Call methods with parameters
-                    //Step 4: Send result of method(s) back to AI
-                    //Call appropriate method - as of yet only one method
-                    string result = "";
-                    if (content.Name != "")
+                    if (content is FunctionCallContent)
                     {
-                        switch (content.Name)
+                        FunctionCallContent functionCallContent = content as FunctionCallContent;
+                        
+                        Console.WriteLine($"AI contents is: {functionCallContent}");
+                        Console.WriteLine($"AI function name is: {functionCallContent.Name}");
+                    
+                        //Step 3: Call methods with parameters
+                        //Step 4: Send result of method(s) back to AI
+                        //Call appropriate method - as of yet only one method
+                        string result = "";
+                        if (functionCallContent.Name != "")
                         {
-                            case "GetFitnessData":
-                                result = databaseTools.GetFitnessData(healthdata);
-                                Console.WriteLine($"Fitness data is: {result}");
-                                break;
+                            switch (functionCallContent.Name)
+                            {
+                                case "GetFitnessData":
+                                    result = databaseTools.GetFitnessData(healthdata);
+                                    Console.WriteLine($"Fitness data is: {result}");
+                                    break;
                             
-                            case "SetPreferencesAndGoals":
-                                foreach (var VARIABLE in content.Arguments)
-                                {
-                                    Console.WriteLine($"Key: {VARIABLE.Key}, Value: {VARIABLE.Value}");
-                                }
-                                result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, content.Arguments["chartPreference"].ToString(), content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString(), content.Arguments["interval"].ToString(), content.Arguments["endDate"].ToString());
-                                break;
+                                case "SetPreferencesAndGoals":
+                                    foreach (var VARIABLE in functionCallContent.Arguments)
+                                    {
+                                        Console.WriteLine($"Key: {VARIABLE.Key}, Value: {VARIABLE.Value}");
+                                    }
+                                    result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, functionCallContent.Arguments["chartPreference"].ToString(), functionCallContent.Arguments["goalType"].ToString(), functionCallContent.Arguments["value"].ToString(), functionCallContent.Arguments["interval"].ToString(), functionCallContent.Arguments["endDate"].ToString());
+                                    break;
 
-                            case "UpdateGoal":
-                                result = await databaseTools.UpdateGoal(userPreferencesService, username, content.Arguments["goalType"].ToString(), content.Arguments["value"].ToString(), content.Arguments["interval"].ToString(), content.Arguments["endDate"].ToString());
-                                break;
+                                case "UpdateGoal":
+                                    result = await databaseTools.UpdateGoal(userPreferencesService, username, functionCallContent.Arguments["goalType"].ToString(), functionCallContent.Arguments["value"].ToString(), functionCallContent.Arguments["interval"].ToString(), functionCallContent.Arguments["endDate"].ToString());
+                                    break;
 
 
+                            }
                         }
+                        LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
+                        
+                        //Step 5: Get updated AI answer with result
+                        ChatResponse updatedAnswer = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
+                
+                        //Step 6: Send final response to user
+                        LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Messages.First().Text));
+                        
+                        functioncallFlag = true;
                     }
-                    LocalChatmessasges.Add(new ChatMessage(ChatRole.Tool, result));
+                    
                 }
 
-                //Step 5: Get updated AI answer with result
-                ChatResponse updatedAnswer = await chatClient.GetResponseAsync(LocalChatmessasges, chatOptions);
-                
-                //Step 6: Send final response to user
-                LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, updatedAnswer.Messages.First().Text));
-
+                if (!functioncallFlag)
+                {
+                    LocalChatmessasges.Add(new ChatMessage(ChatRole.Assistant, response.Messages.First().Text));
+                }
 
                 ChatMessage RrtnMsg = LocalChatmessasges.Last();
                 ObjectId threadId = new();

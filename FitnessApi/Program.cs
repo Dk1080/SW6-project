@@ -54,7 +54,7 @@ builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
 
 
         //Adding ollama
-        builder.AddOllamaApiClient("ollama-llama3-2").AddChatClient();
+        builder.AddOllamaApiClient("ollama-phi4-mini").AddChatClient();
 
 
         var app = builder.Build();
