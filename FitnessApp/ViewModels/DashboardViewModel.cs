@@ -237,8 +237,11 @@ namespace FitnessApp.ViewModels
                             Values = new[] { percentage },
                             Name = "Today’s Progress",
                             InnerRadius = 50, // Doughnut hole
-                            Fill = new SolidColorPaint(new SkiaSharp.SKColor(0, 255, 0)), // grøn       
+                            Fill = new SolidColorPaint(new SkiaSharp.SKColor(0, 255, 0)), // grøn
+                            DataLabelsFormatter = point => $"{point.Coordinate.PrimaryValue:F1}% / 100%",
+                            DataLabelsSize = 15,
                             DataLabelsPaint = new SolidColorPaint(SKColor.Parse("#000000")),
+                            DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.ChartCenter 
                         },
                         new PieSeries<int>
                         {
@@ -258,7 +261,9 @@ namespace FitnessApp.ViewModels
                             Fill = new SolidColorPaint(SKColor.Parse("#00FF00")), // Grøn
                             DataLabelsFormatter = point => $"{point.Coordinate.PrimaryValue:F1}% / 100%", 
                             DataLabelsPaint = new SolidColorPaint(SKColor.Parse("#000000")),
-                            DataLabelsSize = 20
+                            DataLabelsSize = 18,
+                            DataLabelsPosition = LiveChartsCore.Measure.DataLabelsPosition.Top, 
+                            DataLabelsPadding = new LiveChartsCore.Drawing.Padding(0, -10) 
 
                         }
                     },
@@ -275,13 +280,13 @@ namespace FitnessApp.ViewModels
 
                 // X-akse value
                 XAxesChartSeries[0].Labels = new List<string> { today.ToString("MM-dd") };
-                
+
                 // Determine dynamic max limit
-                int dynamicMax =Math.Max(100, percentage + 10); // Add a buffer if needed
+                int dynamicMax = Math.Max(100, percentage + 25); // Add a buffer if needed
                 Console.WriteLine($"dynamicMax: {dynamicMax}");
 
                 var labels = new List<string>();
-                for (int i = 0; i <= dynamicMax+25; i += 25)
+                for (int i = 0; i <= dynamicMax + 25; i += 25)
                 {
                     labels.Add($"{i}%");
                 }
