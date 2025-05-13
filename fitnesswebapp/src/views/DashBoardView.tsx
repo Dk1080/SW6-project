@@ -1,8 +1,13 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Doughnut, Pie,  } from 'react-chartjs-2';
-ChartJS.register(ArcElement, Tooltip, Legend);
+
+
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, plugins } from 'chart.js';
+import { Bar, Doughnut, Pie } from 'react-chartjs-2';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import ChartjsAnnotation from 'chartjs-plugin-annotation';
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartjsAnnotation);
+
+
 
 function DashBoardView() {
 
@@ -22,7 +27,22 @@ function DashBoardView() {
             },
         ],
     });
-    const [options, setOptions] = useState();
+    const [topOptions, setTopOptions] = useState();
+    const [bottomOptions, setBottomOptions] = useState();
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [bottomChartData, setBottomChartData] = useState({
+        labels: [],
+        datasets: [
+            {
+                label: '',
+                data: [],
+                backgroundColor: [],
+                borderColor: [],
+                borderWidth: 0,
+            },
+        ],
+    });
+
 
     //On site load send a request for graph and goal data.
     useEffect(() => {
@@ -84,34 +104,134 @@ function DashBoardView() {
             //Change what type of graph to display
             switch (userGoalAndPreference.chartPreference) {
                 case "Halfcircle":
+
+                    let unixTime = Date.parse(chartData?.[chartData?.length - 1]?.date)
+                    let tmpDate = new Date(Number(unixTime));
+                    console.log(`${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}`)
+                    console.log(`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`)
+
+
                     setDisplayChart({
-                        labels: [userGoalAndPreference.goals[0].goalType, "Goal"], // Type of goal
+                        labels: ["Number of steps today", "Remainder to get to goal"], // Type of goal
                         datasets: [
                             {
-                                label: `Number of ${userGoalAndPreference.goals[0].goalType}`,
+                                label: `Steps`,
                                 data: [
-                                    chartData[0].value,
-                                    userGoalAndPreference.goals[0].value - chartData[0].value,
+                                    `${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}` ===
+                                        `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`
+                                        ? chartData[0].value
+                                        : 0,
+                                    Math.max(0, userGoalAndPreference.goals[0].value - chartData[0].value),
                                 ],
+
                                 backgroundColor: [
                                     'rgb(0, 154, 104)',  // Filled portion
                                     'rgb(221, 57, 50)',  // Remaining portion
                                 ],
-                                borderColor: ['rgba(255, 255, 255, 1)'],
+                                borderColor: ['rgb(0, 154, 104)', 'rgb(221, 57, 50)'],
                                 borderWidth: 2.5,
                             },
                         ],
                     });
 
-                    setOptions({
-                        rotation: -90,
-                        circumference: 180,
+                    setTopOptions({
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'black',
+                                    font: {
+                                        size: 20
+                                    }
+                                }
+                            },
+                        },
                         cutout: "60%",
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         responsive: true,
                     });
 
+                    break;
+                case "Column": {
+                    let unixTime = Date.parse(chartData?.[chartData?.length - 1]?.date)
+                    let tmpDate = new Date(Number(unixTime));
+                    console.log(`${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}`)
+                    console.log(`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`)
+                    setDisplayChart({
+                        labels: ["Daily Steps"],
+                        datasets: [{
+                            label: `Progress towards goal of ${userGoalAndPreference.goals[0].value} steps`,
+                            data: [
+                                `${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}` ===
+                                    `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`
+                                    ? chartData[0].value
+                                    : 0
+                            ],
+                            backgroundColor: [
+                                'rgb(0, 154, 104)',
+                            ],
+                            borderColor: ['rgb(0,0,0)'],
+                            barThickness: 'flex',
 
+                            borderWidth: 1
+                        }],
+                    });
+                     }
+                    setTopOptions({
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'black',
+                                    font: {
+                                        size: 20
+                                    }
+                                }
+                            },
+                            annotation: {
+                                annotations: {
+                                    goalLine: {
+                                        type: 'line',
+                                        yMin: userGoalAndPreference.goals[0].value,
+                                        yMax: userGoalAndPreference.goals[0].value,
+                                        borderColor: 'red',
+                                        borderWidth: 10,
+                                    }
+                                }
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                top: 20,
+                                right: 20,
+                                bottom: 20,
+                                left: 20
+                            }
+                        },
+                        scales: {
+                            x: {
+                                categoryPercentage: 1.0,
+                                barPercentage: 1.0,
+                                ticks: {
+                                    color: 'black',
+                                    font: {
+                                        size: 30
+                                    }
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'black',  
+                                    font: {
+                                        size: 30
+                                    }
+                                }
+                            }
+                        }
+
+                    });
+
+                    
                     break;
                 default:
                     console.log("oh no");
@@ -119,8 +239,89 @@ function DashBoardView() {
             }
 
 
-            
+            //Set data for bottom graph.
 
+            //Switch based on what interval it is.
+            console.log(userGoalAndPreference?.goals?.[0].interval)
+
+
+            switch (userGoalAndPreference?.goals?.[0].interval) {
+
+                case "weekly":
+                    //Get the current date.
+              
+                    { setCurrentDate(new Date());
+                    console.log(currentDate)
+
+
+                    let labels: string[] = [];
+                    let data: number[] = [];
+                    let parsedDate: Object[] = [];
+
+                        //Parse the seven latest days from the database into date format.
+                        for (let i = 0; i < 7; i++) {
+
+                            let unixTime = Date.parse(chartData?.[i]?.date).toString();
+                            let tmpDate = new Date(Number(unixTime));
+
+                            if (!isNaN(tmpDate)) {
+                                parsedDate.push({ "date": `${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}`, "value": chartData?.[i]?.value});
+                            }
+                        }
+
+                        console.log(parsedDate)
+
+                    
+                    //Go thorugh each the of the dates to check if they are within a week.
+                    for (let i = 0; i < 7; i++) {
+                        let found = false;
+
+                        //From today shift add the date to the label
+                        let shiftedDate = new Date(currentDate);
+                        shiftedDate.setDate(currentDate.getDate() - i);
+                        labels.unshift(`${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`);
+
+                        //Check if the date has a step value.
+
+                        parsedDate.forEach((pDate: any) => {
+                            if (pDate.date === `${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`) {
+                                data.unshift(pDate.value);
+                                found = true;
+                            }
+                        });
+
+                        if (!found) {
+                            data.unshift(0)
+                        }
+
+                      
+                        }
+                        console.log(labels)
+                        console.log(data)
+
+                        //Set the data and label to the bottom graph.
+                        setBottomChartData({
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: "Steps",
+                                    data: data,
+                                    backgroundColor:"rgb(0, 139, 95)"
+                                    }
+                            ]
+                        });
+
+                    }
+                    break;
+                case "daily":
+                    console.log(1)
+                    break;
+                default:
+                        console.log("Oh no^2")
+
+            }
+
+            //Get the current week based on the latest
 
         }
     }, [chartData, userGoalAndPreference]);
@@ -143,12 +344,22 @@ function DashBoardView() {
     } else {
         return (
             <div>
-                <div>
-                    <Doughnut data={displayChart} options={options} />
-                    <p>Steps: {JSON.stringify(chartData?.[0]?.value)}</p>
-                    <p>Goal: {JSON.stringify(userGoalAndPreference?.goals?.[0]?.value)}</p>
+            <h1>Dashboard</h1>
+                <div style={{ backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding:"5px", margin: "100px", width: Math.floor(window.innerWidth * 0.8), height: Math.floor(window.innerHeight * 0.7) }}>
+                    {userGoalAndPreference?.chartPreference === "Halfcircle" && <Doughnut data={displayChart} options={topOptions} />}
+                    {userGoalAndPreference?.chartPreference === "Column" && <Bar data={displayChart} options={topOptions} />}
+                    <h2 style={{ display: 'inline-block', padding: '0px 10px'}}> Today's steps: {JSON.stringify(chartData?.[0]?.value)} </h2>
+                    <h2 style={{ display: 'inline-block' }}> Goal: {JSON.stringify(userGoalAndPreference?.goals?.[0]?.value)}</h2>
                 </div>
-                <button onClick={goToChatView}>Go to Chat</button>
+
+                <div style={{ backgroundColor: "rgb(139, 1, 1)", borderRadius: '25px', margin: "100px" }}>
+                    <Bar data={bottomChartData}  />
+                </div>
+
+
+                <button style={{ width: Math.floor(window.innerWidtXh * 0.8), backgroundColor: "rgb(62, 97, 208)" }} onClick={goToChatView}>
+                    <img src={`/chat.svg`} alt="Button Icon" style={{ height: Math.floor(window.innerHeight * 0.09) }} />
+                </button>
             </div>
         );
     }
