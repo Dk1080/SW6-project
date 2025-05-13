@@ -99,6 +99,9 @@ namespace FitnessApp.ViewModels
                 currentChatHistory.ChatHistory.Add(userMessage);
             }
 
+            // Gør så teksten forsvinder efter send 
+            Query = string.Empty; 
+
             // Sending the query to the server.
             try
             {
