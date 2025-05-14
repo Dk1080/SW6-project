@@ -16,7 +16,7 @@ var ollama = builder.AddOllama(name: "ollama")
     .WithGPUSupport(OllamaGpuVendor.Nvidia)
     //.WithOpenWebUI()
     .WithDataVolume()
-    .AddModel("phi4-mini");
+    .AddModel("llama3.2");
 
 var api = builder.AddProject<Projects.FitnessApi>("fitnessapi")
     .WaitFor(ollama)

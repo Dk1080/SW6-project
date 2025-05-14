@@ -54,10 +54,10 @@ namespace FitnessApi.Services
                 existingPreferences.ChartPreference = preferences.ChartPreference;
                 
                 // steps her
-                var updatedStepsGoal = preferences.Goals.FirstOrDefault(g => g.GoalType == "steps");
+                var updatedStepsGoal = preferences.Goals.FirstOrDefault(g => g.GoalType == "StepsRecord");
                 if (updatedStepsGoal != null)
                 {   
-                    var existingStepsGoal = existingPreferences.Goals.FirstOrDefault(g => g.GoalType == "steps");
+                    var existingStepsGoal = existingPreferences.Goals.FirstOrDefault(g => g.GoalType == "StepsRecord");
                     if (existingStepsGoal != null)
                     {
                         existingStepsGoal.Value = updatedStepsGoal.Value;
