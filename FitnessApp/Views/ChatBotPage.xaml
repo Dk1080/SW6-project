@@ -78,7 +78,7 @@
 
 
             <!-- ScrollView displaying Chat logs -->
-            <CollectionView ItemsSource="{Binding CurrentChat}" Margin="10" Grid.Row="1">
+            <CollectionView x:Name="ChatCollectionView" ItemsSource="{Binding CurrentChat}" Margin="10" Grid.Row="1">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="dto:ChatMessageDTO">
                         <Border StrokeShape="RoundRectangle 10,10,10,10" Padding="10" Margin="20">
