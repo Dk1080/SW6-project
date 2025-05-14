@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using DTOs;
 using FitnessApi.Models.Api_DTOs;
 using FitnessApp.Services.Apis;
@@ -17,6 +18,9 @@ using System.Xml.Linq;
 
 namespace FitnessApp.ViewModels
 {
+
+    public class ScrollToBottomMessage{}
+
     public partial class ChatBotViewModel : ObservableObject
     {
 
@@ -63,6 +67,7 @@ namespace FitnessApp.ViewModels
                         CurrentChat.Add(message);
                     }
                     threadId = ObjectId.Parse(topChatHistory.Id);
+                    ScrollToBottom();
                 }
 
             }
@@ -99,6 +104,10 @@ namespace FitnessApp.ViewModels
                 currentChatHistory.ChatHistory.Add(userMessage);
             }
 
+            // Gør så teksten forsvinder efter send 
+            Query = string.Empty;
+            ScrollToBottom();
+
             // Sending the query to the server.
             try
             {
@@ -123,6 +132,7 @@ namespace FitnessApp.ViewModels
 
                 OnPropertyChanged(nameof(CurrentChat));
                 OnPropertyChanged(nameof(ChatLog));
+                ScrollToBottom();
             }
             catch (Exception e)
             {
@@ -158,6 +168,7 @@ namespace FitnessApp.ViewModels
                     }
 
                     OnPropertyChanged(nameof(CurrentChat));
+                    ScrollToBottom();
                 }
 
             }
@@ -203,11 +214,17 @@ namespace FitnessApp.ViewModels
             _isMenuOpen = !_isMenuOpen;
         }
 
-        
+        [RelayCommand]
+        public void ScrollToBottom()
+        {
+            // Send a message to trigger scrolling in the view
+            WeakReferenceMessenger.Default.Send(new ScrollToBottomMessage());
+        }
 
 
     }
 
+    
 
     
 }
