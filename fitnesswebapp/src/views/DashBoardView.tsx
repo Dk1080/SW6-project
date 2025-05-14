@@ -5,7 +5,9 @@ import { Bar, Doughnut, Pie } from 'react-chartjs-2';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import ChartjsAnnotation from 'chartjs-plugin-annotation';
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartjsAnnotation);
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartjsAnnotation, ChartDataLabels);
 
 
 
@@ -44,6 +46,7 @@ function DashBoardView() {
     });
 
     let todaySteps = 0;
+    const [goalsAvalible, setGoalsAvalible] = useState(false);
 
     //On site load send a request for graph and goal data.
     useEffect(() => {
@@ -115,126 +118,131 @@ function DashBoardView() {
             console.log(todaySteps)
 
 
-            //Change what type of graph to display
-            switch (userGoalAndPreference.chartPreference) {
-                case "Halfcircle":
+            if (userGoalAndPreference != null) {
+                setGoalsAvalible(true);
+                //Change what type of graph to display
+                switch (userGoalAndPreference.chartPreference) {
+                    case "Halfcircle":
 
-                    setDisplayChart({
-                        labels: ["Number of steps today", "Remainder to get to goal"], // Type of goal
-                        datasets: [
-                            {
-                                label: `Steps`,
+                        setDisplayChart({
+                            labels: ["Number of steps today", "Remainder to get to goal"], // Type of goal
+                            datasets: [
+                                {
+                                    label: `Steps`,
+                                    data: [
+                                        todaySteps,
+                                        Math.max(0, userGoalAndPreference.goals[0].value - todaySteps),
+                                    ],
+
+                                    backgroundColor: [
+                                        'rgb(0, 154, 104)',  // Filled portion
+                                        'rgb(221, 57, 50)',  // Remaining portion
+                                    ],
+                                    borderColor: ['rgb(0, 154, 104)', 'rgb(221, 57, 50)'],
+                                    borderWidth: 2.5,
+                                },
+                            ],
+                        });
+
+                        setTopOptions({
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: 'black',
+                                        font: {
+                                            size: 20
+                                        }
+                                    }
+                                },
+                            },
+                            cutout: "60%",
+                            maintainAspectRatio: false,
+                            responsive: true,
+                        });
+
+                        break;
+                    case "Column": {
+                        setDisplayChart({
+                            labels: ["Daily Steps"],
+                            datasets: [{
+                                label: `Progress towards goal of ${userGoalAndPreference.goals[0].value} steps`,
                                 data: [
-                                    todaySteps,
-                                    Math.max(0, userGoalAndPreference.goals[0].value - todaySteps),
+                                    todaySteps
                                 ],
-
                                 backgroundColor: [
-                                    'rgb(0, 154, 104)',  // Filled portion
-                                    'rgb(221, 57, 50)',  // Remaining portion
+                                    'rgb(0, 154, 104)',
                                 ],
-                                borderColor: ['rgb(0, 154, 104)', 'rgb(221, 57, 50)'],
-                                borderWidth: 2.5,
-                            },
-                        ],
-                    });
+                                borderColor: ['rgb(0,0,0)'],
+                                barThickness: 'flex',
 
-                    setTopOptions({
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: 'black',
-                                    font: {
-                                        size: 20
+                                borderWidth: 1
+                            }],
+                        });
+                    }
+                        setTopOptions({
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: 'black',
+                                        font: {
+                                            size: 20
+                                        }
+                                    }
+                                },
+                                annotation: {
+                                    annotations: {
+                                        goalLine: {
+                                            type: 'line',
+                                            yMin: userGoalAndPreference.goals[0].value,
+                                            yMax: userGoalAndPreference.goals[0].value,
+                                            borderColor: 'red',
+                                            borderWidth: 10,
+                                        }
                                     }
                                 }
                             },
-                        },
-                        cutout: "60%",
-                        maintainAspectRatio: false,
-                        responsive: true,
-                    });
-
-                    break;
-                case "Column": {
-                    setDisplayChart({
-                        labels: ["Daily Steps"],
-                        datasets: [{
-                            label: `Progress towards goal of ${userGoalAndPreference.goals[0].value} steps`,
-                            data: [
-                                todaySteps
-                            ],
-                            backgroundColor: [
-                                'rgb(0, 154, 104)',
-                            ],
-                            borderColor: ['rgb(0,0,0)'],
-                            barThickness: 'flex',
-
-                            borderWidth: 1
-                        }],
-                    });
-                     }
-                    setTopOptions({
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: 'black',
-                                    font: {
-                                        size: 20
-                                    }
+                            layout: {
+                                padding: {
+                                    top: 20,
+                                    right: 20,
+                                    bottom: 20,
+                                    left: 20
                                 }
                             },
-                            annotation: {
-                                annotations: {
-                                    goalLine: {
-                                        type: 'line',
-                                        yMin: userGoalAndPreference.goals[0].value,
-                                        yMax: userGoalAndPreference.goals[0].value,
-                                        borderColor: 'red',
-                                        borderWidth: 10,
+                            scales: {
+                                x: {
+                                    categoryPercentage: 1.0,
+                                    barPercentage: 1.0,
+                                    ticks: {
+                                        color: 'black',
+                                        font: {
+                                            size: 30
+                                        }
+                                    }
+                                },
+                                y: {
+                                    ticks: {
+                                        color: 'black',
+                                        font: {
+                                            size: 30
+                                        }
                                     }
                                 }
                             }
-                        },
-                        layout: {
-                            padding: {
-                                top: 20,
-                                right: 20,
-                                bottom: 20,
-                                left: 20
-                            }
-                        },
-                        scales: {
-                            x: {
-                                categoryPercentage: 1.0,
-                                barPercentage: 1.0,
-                                ticks: {
-                                    color: 'black',
-                                    font: {
-                                        size: 30
-                                    }
-                                }
-                            },
-                            y: {
-                                ticks: {
-                                    color: 'black',  
-                                    font: {
-                                        size: 30
-                                    }
-                                }
-                            }
-                        }
 
-                    });
+                        });
 
-                    
-                    break;
-                default:
-                    console.log("oh no");
-                    break;
+
+                        break;
+                    default:
+                        console.log("oh no");
+                        break;
+                }
             }
+
+           
 
 
             //Set data for bottom graph.
@@ -347,7 +355,7 @@ function DashBoardView() {
                                     categoryPercentage: 1.0,
                                     barPercentage: 1.0,
                                     ticks: {
-                                        color: 'black',
+                                        color: 'white',
                                         font: {
                                             size: 20
                                         }
@@ -355,7 +363,7 @@ function DashBoardView() {
                                 },
                                 y: {
                                     ticks: {
-                                        color: 'black',
+                                        color: 'white',
                                         font: {
                                             size: 20
                                         }
@@ -424,7 +432,7 @@ function DashBoardView() {
                                     categoryPercentage: 1.0,
                                     barPercentage: 1.0,
                                     ticks: {
-                                        color: 'black',
+                                        color: 'white',
                                         font: {
                                             size: 20
                                         }
@@ -432,7 +440,7 @@ function DashBoardView() {
                                 },
                                 y: {
                                     ticks: {
-                                        color: 'black',
+                                        color: 'white',
                                         font: {
                                             size: 20
                                         }
@@ -496,6 +504,18 @@ function DashBoardView() {
                         ]
                     });
                     setBottomOptions({
+                        plugins: {
+                            datalabels: {
+                                display: true,
+                                color: 'white',
+                                font: {
+                                    size: 15,
+                                },
+                                anchor: 'end',
+                                align: 'top',
+                                formatter: (value: number) => value, // Show the value
+                            }
+                        },
                         scales: {
                             x: {
                                 categoryPercentage: 1.0,
@@ -503,7 +523,7 @@ function DashBoardView() {
                                 ticks: {
                                     color: 'black',
                                     font: {
-                                        size: 10
+                                        size: 15
                                     }
                                 }
                             },
@@ -511,7 +531,7 @@ function DashBoardView() {
                                 ticks: {
                                     color: 'black',
                                     font: {
-                                        size: 10
+                                        size: 15
                                     }
                                 }
                             }
@@ -550,13 +570,21 @@ function DashBoardView() {
     } else {
         return (
             <div>
-            <h1>Dashboard</h1>
-                <div style={{ backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding:"5px", margin: "100px", width: Math.floor(window.innerWidth * 0.8), height: Math.floor(window.innerHeight * 0.7) }}>
-                    {userGoalAndPreference?.chartPreference === "Halfcircle" && <Doughnut data={displayChart} options={topOptions} />}
-                    {userGoalAndPreference?.chartPreference === "Column" && <Bar data={displayChart} options={topOptions} />}
-                    <h2 style={{ display: 'inline-block', padding: '0px 10px' }}> Today's steps: {todaySteps} </h2>
-                    <h2 style={{ display: 'inline-block' }}> Goal: {JSON.stringify(userGoalAndPreference?.goals?.[0]?.value)}</h2>
-                </div>
+                <h1>Dashboard</h1>
+
+                {goalsAvalible == true ? (
+                    <div style={{ backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding: "5px", margin: "100px", width: Math.floor(window.innerWidth * 0.8), height: Math.floor(window.innerHeight * 0.7) }}>
+                        {userGoalAndPreference?.chartPreference === "Halfcircle" && <Doughnut data={displayChart} options={topOptions} />}
+                        {userGoalAndPreference?.chartPreference === "Column" && <Bar data={displayChart} options={topOptions} />}
+                        <h2 style={{ display: 'inline-block', padding: '0px 10px' }}> Today's steps: {todaySteps} </h2>
+                        <h2 style={{ display: 'inline-block' }}> Goal: {JSON.stringify(userGoalAndPreference?.goals?.[0]?.value)}</h2>
+                    </div>
+                ) : (
+                        <div style={{ backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding: "5px", margin: "100px", width: Math.floor(window.innerWidth * 0.8), height: Math.floor(window.innerHeight * 0.7) }}>
+                        <p>No goals available. Please set a goal to see your dashboard.</p>
+                    </div>
+                )}
+
 
                 <div style={{ backgroundColor: "rgb(139, 1, 1)", borderRadius: '25px', margin: "100px" }}>
                     <Bar data={bottomChartData} options={bottomOptions} />

@@ -191,8 +191,9 @@ function ChatView() {
 
                             //Update and force a rerender.
                             setChatlog({ ...updatedChatlog });
+                            document.getElementById("queryButton").disabled = "false";
+
                         });
-                        document.getElementById("queryButton").disabled = "false";
                     }
                 });
         }
