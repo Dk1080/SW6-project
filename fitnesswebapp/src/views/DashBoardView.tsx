@@ -43,6 +43,7 @@ function DashBoardView() {
         ],
     });
 
+    let todaySteps = 0;
 
     //On site load send a request for graph and goal data.
     useEffect(() => {
@@ -101,15 +102,22 @@ function DashBoardView() {
             console.log(chartData)
             console.log(userGoalAndPreference)
 
+            //Get the steps from today.
+            const unixTime = Date.parse(chartData?.[chartData?.length - 1]?.date)
+            const tmpDate = new Date(Number(unixTime));
+            if (`${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}` ===
+                `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`) {
+                console.log(chartData[chartData?.length - 1].value)
+
+                todaySteps = chartData[chartData.length - 1]?.value;
+                console.log(todaySteps)
+            }
+            console.log(todaySteps)
+
+
             //Change what type of graph to display
             switch (userGoalAndPreference.chartPreference) {
                 case "Halfcircle":
-
-                    let unixTime = Date.parse(chartData?.[chartData?.length - 1]?.date)
-                    let tmpDate = new Date(Number(unixTime));
-                    console.log(`${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}`)
-                    console.log(`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`)
-
 
                     setDisplayChart({
                         labels: ["Number of steps today", "Remainder to get to goal"], // Type of goal
@@ -117,11 +125,8 @@ function DashBoardView() {
                             {
                                 label: `Steps`,
                                 data: [
-                                    `${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}` ===
-                                        `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`
-                                        ? chartData[0].value
-                                        : 0,
-                                    Math.max(0, userGoalAndPreference.goals[0].value - chartData[0].value),
+                                    todaySteps,
+                                    Math.max(0, userGoalAndPreference.goals[0].value - todaySteps),
                                 ],
 
                                 backgroundColor: [
@@ -152,19 +157,12 @@ function DashBoardView() {
 
                     break;
                 case "Column": {
-                    let unixTime = Date.parse(chartData?.[chartData?.length - 1]?.date)
-                    let tmpDate = new Date(Number(unixTime));
-                    console.log(`${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}`)
-                    console.log(`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`)
                     setDisplayChart({
                         labels: ["Daily Steps"],
                         datasets: [{
                             label: `Progress towards goal of ${userGoalAndPreference.goals[0].value} steps`,
                             data: [
-                                `${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}` ===
-                                    `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`
-                                    ? chartData[0].value
-                                    : 0
+                                todaySteps
                             ],
                             backgroundColor: [
                                 'rgb(0, 154, 104)',
@@ -241,26 +239,61 @@ function DashBoardView() {
 
             //Set data for bottom graph.
 
-            //Switch based on what interval it is.
             console.log(userGoalAndPreference?.goals?.[0].interval)
 
 
+            //Set variables for use.
+            setCurrentDate(new Date());
+            console.log(currentDate)
+            let labels: string[] = [];
+            let data: number[] = [];
+            let parsedDate: Object[] = [];
+
+            //Switch based on what interval it is.
             switch (userGoalAndPreference?.goals?.[0].interval) {
+                case "daily":
+                    //Set the labels to the current date.
+                    let shiftedDate = new Date(currentDate);
+                    shiftedDate.setDate(currentDate.getDate());
+                    labels.push(`${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`)
+                    setBottomChartData({
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Steps",
+                                data: [todaySteps],
+                                backgroundColor: "rgb(0, 139, 95)"
+                            }
+                        ]
+                    });
+                    setBottomOptions({
+                        scales: {
+                            x: {
+                                categoryPercentage: 1.0,
+                                barPercentage: 1.0,
+                                ticks: {
+                                    color: 'black',
+                                    font: {
+                                        size: 20
+                                    }
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'black',
+                                    font: {
+                                        size: 20
+                                    }
+                                }
+                            }
+                        }
 
+                    })
+                    break;
                 case "weekly":
-                    //Get the current date.
-              
-                    { setCurrentDate(new Date());
-                    console.log(currentDate)
-
-
-                    let labels: string[] = [];
-                    let data: number[] = [];
-                    let parsedDate: Object[] = [];
-
+                    {
                         //Parse the seven latest days from the database into date format.
                         for (let i = 0; i < 7; i++) {
-
                             let unixTime = Date.parse(chartData?.[i]?.date).toString();
                             let tmpDate = new Date(Number(unixTime));
 
@@ -270,8 +303,6 @@ function DashBoardView() {
                         }
 
                         console.log(parsedDate)
-
-                    
                     //Go thorugh each the of the dates to check if they are within a week.
                     for (let i = 0; i < 7; i++) {
                         let found = false;
@@ -310,14 +341,189 @@ function DashBoardView() {
                                     }
                             ]
                         });
+                        setBottomOptions({
+                            scales: {
+                                x: {
+                                    categoryPercentage: 1.0,
+                                    barPercentage: 1.0,
+                                    ticks: {
+                                        color: 'black',
+                                        font: {
+                                            size: 20
+                                        }
+                                    }
+                                },
+                                y: {
+                                    ticks: {
+                                        color: 'black',
+                                        font: {
+                                            size: 20
+                                        }
+                                    }
+                                }
+                            }
+
+                        })
 
                     }
                     break;
-                case "daily":
-                    console.log(1)
+                case "biweekly":
+                    {
+                        //Parse the 14 latest days from the database into date format.
+                        for (let i = 0; i < 14; i++) {
+                            let unixTime = Date.parse(chartData?.[i]?.date).toString();
+                            let tmpDate = new Date(Number(unixTime));
+
+                            if (!isNaN(tmpDate)) {
+                                parsedDate.push({ "date": `${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}`, "value": chartData?.[i]?.value });
+                            }
+                        }
+
+                        console.log(parsedDate)
+                        //Go thorugh each the of the dates to check if they are within two week.
+                        for (let i = 0; i < 14; i++) {
+                            let found = false;
+
+                            //From today shift add the date to the label
+                            let shiftedDate = new Date(currentDate);
+                            shiftedDate.setDate(currentDate.getDate() - i);
+                            labels.unshift(`${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`);
+
+                            //Check if the date has a step value.
+
+                            parsedDate.forEach((pDate: any) => {
+                                if (pDate.date === `${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`) {
+                                    data.unshift(pDate.value);
+                                    found = true;
+                                }
+                            });
+
+                            if (!found) {
+                                data.unshift(0)
+                            }
+
+
+                        }
+                        console.log(labels)
+                        console.log(data)
+
+                        //Set the data and label to the bottom graph.
+                        setBottomChartData({
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: "Steps",
+                                    data: data,
+                                    backgroundColor: "rgb(0, 139, 95)"
+                                }
+                            ]
+                        });
+                        setBottomOptions({
+                            scales: {
+                                x: {
+                                    categoryPercentage: 1.0,
+                                    barPercentage: 1.0,
+                                    ticks: {
+                                        color: 'black',
+                                        font: {
+                                            size: 20
+                                        }
+                                    }
+                                },
+                                y: {
+                                    ticks: {
+                                        color: 'black',
+                                        font: {
+                                            size: 20
+                                        }
+                                    }
+                                }
+                            }
+
+                        })
+
+
+                    }
+                    break;
+                case "monthly":
+                    //Parse the 30 latest days from the database into date format.
+                    for (let i = 0; i < 30; i++) {
+                        let unixTime = Date.parse(chartData?.[i]?.date).toString();
+                        let tmpDate = new Date(Number(unixTime));
+
+                        if (!isNaN(tmpDate)) {
+                            parsedDate.push({ "date": `${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}`, "value": chartData?.[i]?.value });
+                        }
+                    }
+
+                    console.log(parsedDate)
+                    //Go thorugh each the of the dates to check if they are within a month.
+                    for (let i = 0; i < 30; i++) {
+                        let found = false;
+
+                        //From today shift add the date to the label
+                        let shiftedDate = new Date(currentDate);
+                        shiftedDate.setDate(currentDate.getDate() - i);
+                        labels.unshift(`${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`);
+
+                        //Check if the date has a step value.
+
+                        parsedDate.forEach((pDate: any) => {
+                            if (pDate.date === `${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`) {
+                                data.unshift(pDate.value);
+                                found = true;
+                            }
+                        });
+
+                        if (!found) {
+                            data.unshift(0)
+                        }
+
+
+                    }
+                    console.log(labels)
+                    console.log(data)
+
+                    //Set the data and label to the bottom graph.
+                    setBottomChartData({
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Steps",
+                                data: data,
+                                backgroundColor: "rgb(0, 139, 95)"
+                            }
+                        ]
+                    });
+                    setBottomOptions({
+                        scales: {
+                            x: {
+                                categoryPercentage: 1.0,
+                                barPercentage: 1.0,
+                                ticks: {
+                                    color: 'black',
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'black',
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            }
+                        }
+
+                    })
+
+
                     break;
                 default:
-                        console.log("Oh no^2")
+                    console.log("Oh no^2")
+                    break;
 
             }
 
@@ -348,12 +554,12 @@ function DashBoardView() {
                 <div style={{ backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding:"5px", margin: "100px", width: Math.floor(window.innerWidth * 0.8), height: Math.floor(window.innerHeight * 0.7) }}>
                     {userGoalAndPreference?.chartPreference === "Halfcircle" && <Doughnut data={displayChart} options={topOptions} />}
                     {userGoalAndPreference?.chartPreference === "Column" && <Bar data={displayChart} options={topOptions} />}
-                    <h2 style={{ display: 'inline-block', padding: '0px 10px'}}> Today's steps: {JSON.stringify(chartData?.[0]?.value)} </h2>
+                    <h2 style={{ display: 'inline-block', padding: '0px 10px' }}> Today's steps: {todaySteps} </h2>
                     <h2 style={{ display: 'inline-block' }}> Goal: {JSON.stringify(userGoalAndPreference?.goals?.[0]?.value)}</h2>
                 </div>
 
                 <div style={{ backgroundColor: "rgb(139, 1, 1)", borderRadius: '25px', margin: "100px" }}>
-                    <Bar data={bottomChartData}  />
+                    <Bar data={bottomChartData} options={bottomOptions} />
                 </div>
 
 

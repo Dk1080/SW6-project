@@ -61,6 +61,7 @@ function ChatView() {
     }
 
     const sendQuery = async (query) => {
+        document.getElementById("queryButton").disabled = "true";
 
         //Create temperary chat.
         const updatedChatlog = { ...chatlog };
@@ -191,7 +192,7 @@ function ChatView() {
                             //Update and force a rerender.
                             setChatlog({ ...updatedChatlog });
                         });
-
+                        document.getElementById("queryButton").disabled = "false";
                     }
                 });
         }
@@ -274,10 +275,10 @@ function ChatView() {
                             style={{
                                 minWidth: '200px',
                                 width: `${Math.min((transcript || query).length * 10, 500)}px`, // Expands with input, max width 300px
-                                transition: "width 0.2s ease" // Smooth transition
+                                transition: "width 0.2s ease", // Smooth transition
                             }}
                         />
-                        <button onClick={() => sendQuery(transcript || query)}>Send query!</button>
+                        <button id="queryButton" onClick={() => sendQuery(transcript || query)}>Send query!</button>
                     </div>
                     <p>{listening ? 'Microphone is on' : ''}</p>
 
