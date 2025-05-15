@@ -56,10 +56,10 @@ builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
 
 
         //Adding ollama
-        builder.AddOllamaApiClient("ollama-phi4-mini").AddChatClient(); //Also adds httpclient named "ollama-phi4-mini"
+        builder.AddOllamaApiClient("ollama-llama3-2").AddChatClient(); //Also adds httpclient named "ollama-phi4-mini"
 
         //Reconfigure httpclient "ollama-phi4-mini"
-        builder.Services.AddHttpClient("ollama-phi4-mini")
+        builder.Services.AddHttpClient("ollama-llama3-2")
             .ConfigureHttpClient(client =>
             {
                 client.Timeout = Timeout.InfiniteTimeSpan; //Remove built-in timeout
