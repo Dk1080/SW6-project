@@ -36,7 +36,8 @@ namespace FitnessApi.Endpoints
             //Let AI know what methods can be called
             AIFunction GetFitnessDataTool = AIFunctionFactory.Create(databaseTools.GetFitnessData);
             AIFunction SetPreferencesAndGoalsTool = AIFunctionFactory.Create(databaseTools.SetPreferencesAndGoals);
-            ChatOptions chatOptions = new ChatOptions { Tools = [GetFitnessDataTool, SetPreferencesAndGoalsTool] };
+            AIFunction UpdateGoalTool = AIFunctionFactory.Create(databaseTools.UpdateGoal);
+            ChatOptions chatOptions = new ChatOptions { Tools = [GetFitnessDataTool, SetPreferencesAndGoalsTool, UpdateGoalTool] };
             
             app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService, IHealthDataService healthDataService, IUserPreferencesService userPreferencesService) =>
             { 
@@ -61,7 +62,7 @@ namespace FitnessApi.Endpoints
                 List<ChatMessage> LocalChatmessasges = new List<ChatMessage>()
                 {
                     new(ChatRole.System, """
-                                         "You are an health and fitness adviser, you only answer questions related to those fields.
+                                         "You are an health and fitness adviser, you only answer questions related to those fields. You do not always need to call functions, only when the user provides the necessary data
                                          """)
                 };
  
@@ -107,17 +108,38 @@ namespace FitnessApi.Endpoints
                                     result = databaseTools.GetFitnessData(healthdata);
                                     Console.WriteLine($"Fitness data is: {result}");
                                     break;
-                            
+
                                 case "SetPreferencesAndGoals":
-                                    foreach (var VARIABLE in functionCallContent.Arguments)
-                                    {
-                                        Console.WriteLine($"Key: {VARIABLE.Key}, Value: {VARIABLE.Value}");
-                                    }
-                                    result = await databaseTools.SetPreferencesAndGoals(userPreferencesService, username, functionCallContent.Arguments["chartPreference"].ToString(), functionCallContent.Arguments["goalType"].ToString(), functionCallContent.Arguments["value"].ToString(), functionCallContent.Arguments["interval"].ToString(), functionCallContent.Arguments["endDate"].ToString());
+                                    functionCallContent.Arguments.TryGetValue("chartPreference", out var chartPreferenceObj);
+                                    functionCallContent.Arguments.TryGetValue("goalType", out var goalTypeObj);
+                                    functionCallContent.Arguments.TryGetValue("value", out var valueObj);
+                                    functionCallContent.Arguments.TryGetValue("interval", out var intervalObj);
+                                    functionCallContent.Arguments.TryGetValue("endDate", out var endDateObj);
+
+                                    // Convert to string, default to "none" if null
+                                    string chartPreference = chartPreferenceObj?.ToString() ?? "none";
+                                    string goalType = goalTypeObj?.ToString() ?? "none";
+                                    string value = valueObj?.ToString() ?? "none";
+                                    string interval = intervalObj?.ToString() ?? "none";
+                                    string endDate = endDateObj?.ToString() ?? "none";
+
+                                    result = await databaseTools.SetPreferencesAndGoals(
+                                        userPreferencesService,
+                                        username,
+                                        chartPreference,
+                                        goalType,
+                                        value,
+                                        interval,
+                                        endDate);
                                     break;
 
                                 case "UpdateGoal":
-                                    result = await databaseTools.UpdateGoal(userPreferencesService, username, functionCallContent.Arguments["goalType"].ToString(), functionCallContent.Arguments["value"].ToString(), functionCallContent.Arguments["interval"].ToString(), functionCallContent.Arguments["endDate"].ToString());
+                                    result = await databaseTools.UpdateGoal(userPreferencesService,
+                                        username, 
+                                        functionCallContent.Arguments["goalType"].ToString(), 
+                                        functionCallContent.Arguments["value"].ToString(), 
+                                        functionCallContent.Arguments["interval"].ToString(), 
+                                        functionCallContent.Arguments["endDate"].ToString());
                                     break;
 
 
@@ -204,7 +226,7 @@ namespace FitnessApi.Endpoints
 
                 if (preferencesAndGoals?.Goals?.Any() == true)
                 {
-                    goal = preferencesAndGoals.Goals.FirstOrDefault(g => g.GoalType == "steps");
+                    goal = preferencesAndGoals.Goals.FirstOrDefault(g => g.GoalType == "StepsRecord");
                     if (goal != null)
                     {
                         var endDate = goal.EndDate.Date;

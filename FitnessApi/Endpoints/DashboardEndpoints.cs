@@ -66,7 +66,7 @@ namespace FitnessApi.Endpoints
                     Console.WriteLine($"Preferences for {username}: ChartPreference={preferences?.ChartPreference}, Goals={preferences?.Goals?.Count ?? 0}");
                     var preferencesDto = new UserPreferencesDTO
                     {
-                        ChartPreference = preferences?.ChartPreference ?? "Column",
+                        ChartPreference = preferences?.ChartPreference ?? "",
                         Goals = preferences?.Goals.Select(g => new GoalDTO
                         {
                             GoalType = g.GoalType,

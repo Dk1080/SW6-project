@@ -278,8 +278,12 @@ namespace FitnessApp.ViewModels
                     }
                 };
 
-                // X-akse value
-                XAxesChartSeries[0].Labels = new List<string> { today.ToString("MM-dd") };
+                if(preferenceData.ChartPreference == "Halfcircle" || preferenceData.ChartPreference == "Column") 
+                {
+                    // X-akse value
+                    XAxesChartSeries[0].Labels = new List<string> { today.ToString("MM-dd") };
+                }
+                
 
                 // Determine dynamic max limit
                 int dynamicMax = Math.Max(100, percentage + 25); // Add a buffer if needed
