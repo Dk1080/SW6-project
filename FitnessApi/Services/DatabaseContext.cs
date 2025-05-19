@@ -21,6 +21,16 @@ namespace FitnessApi.Services
         {
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            // Ensure MongoDB configuration is already set (e.g., via AddDbContext)
+            base.OnConfiguring(optionsBuilder);
+
+            // Disable transactions
+            Database.AutoTransactionBehavior = AutoTransactionBehavior.Never;
+        }
+
+
         public static DatabaseContext Create(IMongoDatabase database) =>
         new(new DbContextOptionsBuilder<DatabaseContext>()
                                         .UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName)
