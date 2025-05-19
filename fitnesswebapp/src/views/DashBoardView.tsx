@@ -2,7 +2,7 @@
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, plugins } from 'chart.js';
 import { Bar, Doughnut, Pie } from 'react-chartjs-2';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import ChartjsAnnotation from 'chartjs-plugin-annotation';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -45,7 +45,7 @@ function DashBoardView() {
         ],
     });
 
-    let todaySteps = 0;
+    const todaySteps = useRef(0);
     const [goalsAvalible, setGoalsAvalible] = useState(false);
 
     //On site load send a request for graph and goal data.
@@ -112,13 +112,13 @@ function DashBoardView() {
                 `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`) {
                 console.log(chartData[chartData?.length - 1].value)
 
-                todaySteps = chartData[chartData.length - 1]?.value;
-                console.log(todaySteps)
+                todaySteps.current = chartData[chartData.length - 1]?.value;
+                console.log(todaySteps.current)
             }
-            console.log(todaySteps)
+            console.log(todaySteps.current)
 
 
-            if (userGoalAndPreference != null) {
+            if (userGoalAndPreference.goals.length != 0) {
                 setGoalsAvalible(true);
                 //Change what type of graph to display
                 switch (userGoalAndPreference.chartPreference) {
@@ -130,8 +130,8 @@ function DashBoardView() {
                                 {
                                     label: `Steps`,
                                     data: [
-                                        todaySteps,
-                                        Math.max(0, userGoalAndPreference.goals[0].value - todaySteps),
+                                        todaySteps.current,
+                                        Math.max(0, userGoalAndPreference.goals[0].value - todaySteps.current),
                                     ],
 
                                     backgroundColor: [
@@ -162,12 +162,13 @@ function DashBoardView() {
 
                         break;
                     case "Column": {
+                        console.log(todaySteps.current)
                         setDisplayChart({
                             labels: ["Daily Steps"],
                             datasets: [{
                                 label: `Progress towards goal of ${userGoalAndPreference.goals[0].value} steps`,
                                 data: [
-                                    todaySteps
+                                    [todaySteps.current]
                                 ],
                                 backgroundColor: [
                                     'rgb(0, 154, 104)',
@@ -233,21 +234,17 @@ function DashBoardView() {
                             }
 
                         });
-
-
                         break;
                     default:
                         console.log("oh no");
                         break;
+
+
                 }
             }
 
-           
-
-
             //Set data for bottom graph.
 
-            console.log(userGoalAndPreference?.goals?.[0].interval)
 
 
             //Set variables for use.
@@ -256,6 +253,10 @@ function DashBoardView() {
             let labels: string[] = [];
             let data: number[] = [];
             let parsedDate: Object[] = [];
+
+            if (!userGoalAndPreference?.goals?.[0]?.interval) {
+                return;
+            }
 
             //Switch based on what interval it is.
             switch (userGoalAndPreference?.goals?.[0].interval) {
@@ -270,11 +271,20 @@ function DashBoardView() {
                             {
                                 label: "Steps",
                                 data: [todaySteps],
-                                backgroundColor: "rgb(0, 139, 95)"
+                                backgroundColor: "rgb(0, 139, 95)",
                             }
                         ]
                     });
+                    // To change the datalabel font color in Chart.js with chartjs-plugin-datalabels, set the `color` property under the `datalabels` plugin in your chart options. Example:
+
                     setBottomOptions({
+                        plugins: {
+                            datalabels: {
+                                font: {
+                                    size: 50,
+                                }
+                            }
+                        },
                         scales: {
                             x: {
                                 categoryPercentage: 1.0,
@@ -282,7 +292,7 @@ function DashBoardView() {
                                 ticks: {
                                     color: 'black',
                                     font: {
-                                        size: 20
+                                        size: 15
                                     }
                                 }
                             },
@@ -290,50 +300,50 @@ function DashBoardView() {
                                 ticks: {
                                     color: 'black',
                                     font: {
-                                        size: 20
+                                        size: 15
                                     }
                                 }
                             }
                         }
-
                     })
                     break;
                 case "weekly":
                     {
+
                         //Parse the seven latest days from the database into date format.
                         for (let i = 0; i < 7; i++) {
                             let unixTime = Date.parse(chartData?.[i]?.date).toString();
                             let tmpDate = new Date(Number(unixTime));
 
                             if (!isNaN(tmpDate)) {
-                                parsedDate.push({ "date": `${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}`, "value": chartData?.[i]?.value});
+                                parsedDate.push({ "date": `${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}`, "value": chartData?.[i]?.value });
                             }
                         }
 
                         console.log(parsedDate)
-                    //Go thorugh each the of the dates to check if they are within a week.
-                    for (let i = 0; i < 7; i++) {
-                        let found = false;
+                        //Go thorugh each the of the dates to check if they are within a week.
+                        for (let i = 0; i < 7; i++) {
+                            let found = false;
 
-                        //From today shift add the date to the label
-                        let shiftedDate = new Date(currentDate);
-                        shiftedDate.setDate(currentDate.getDate() - i);
-                        labels.unshift(`${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`);
+                            //From today shift add the date to the label
+                            let shiftedDate = new Date(currentDate);
+                            shiftedDate.setDate(currentDate.getDate() - i);
+                            labels.unshift(`${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`);
 
-                        //Check if the date has a step value.
+                            //Check if the date has a step value.
 
-                        parsedDate.forEach((pDate: any) => {
-                            if (pDate.date === `${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`) {
-                                data.unshift(pDate.value);
-                                found = true;
+                            parsedDate.forEach((pDate: any) => {
+                                if (pDate.date === `${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`) {
+                                    data.unshift(pDate.value);
+                                    found = true;
+                                }
+                            });
+
+                            if (!found) {
+                                data.unshift(0)
                             }
-                        });
 
-                        if (!found) {
-                            data.unshift(0)
-                        }
 
-                      
                         }
                         console.log(labels)
                         console.log(data)
@@ -345,11 +355,19 @@ function DashBoardView() {
                                 {
                                     label: "Steps",
                                     data: data,
-                                    backgroundColor:"rgb(0, 139, 95)"
-                                    }
+                                    backgroundColor: "rgb(0, 139, 95)"
+                                }
                             ]
                         });
                         setBottomOptions({
+                            plugins: {
+                                datalabels: {
+                                    color: "white",
+                                    font: {
+                                        size: 15,
+                                    }
+                                }
+                            },
                             scales: {
                                 x: {
                                     categoryPercentage: 1.0,
@@ -545,10 +563,7 @@ function DashBoardView() {
                     console.log("Oh no^2")
                     break;
 
-            }
-
-            //Get the current week based on the latest
-
+            }          
         }
     }, [chartData, userGoalAndPreference]);
 
@@ -570,18 +585,18 @@ function DashBoardView() {
     } else {
         return (
             <div>
-                <h1>Dashboard</h1>
+                <h1 style={{marginBottom:-70}}>Dashboard</h1>
 
                 {goalsAvalible == true ? (
-                    <div style={{ backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding: "5px", margin: "100px", width: Math.floor(window.innerWidth * 0.8), height: Math.floor(window.innerHeight * 0.7) }}>
+                    <div style={{ backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding: "5px", margin: "100px", width: Math.floor(window.innerWidth * 0.7), height: Math.floor(window.innerHeight * 0.4) }}>
                         {userGoalAndPreference?.chartPreference === "Halfcircle" && <Doughnut data={displayChart} options={topOptions} />}
                         {userGoalAndPreference?.chartPreference === "Column" && <Bar data={displayChart} options={topOptions} />}
-                        <h2 style={{ display: 'inline-block', padding: '0px 10px' }}> Today's steps: {todaySteps} </h2>
+                        <h2 style={{ display: 'inline-block', padding: '0px 10px' }}> Today's steps: {todaySteps.current} </h2>
                         <h2 style={{ display: 'inline-block' }}> Goal: {JSON.stringify(userGoalAndPreference?.goals?.[0]?.value)}</h2>
                     </div>
                 ) : (
-                        <div style={{ backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding: "5px", margin: "100px", width: Math.floor(window.innerWidth * 0.8), height: Math.floor(window.innerHeight * 0.7) }}>
-                        <p>No goals available. Please set a goal to see your dashboard.</p>
+                        <div style={{display:"flex", backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding: "5px", margin: "100px", width: Math.floor(window.innerWidth * 0.6), height: Math.floor(window.innerHeight * 0.2) }}>
+                            <p style={{textAlign:'center', verticalAlign:"middle"}}>No goals available. Please set a goal to see your dashboard information.</p>
                     </div>
                 )}
 
@@ -591,7 +606,7 @@ function DashBoardView() {
                 </div>
 
 
-                <button style={{ width: Math.floor(window.innerWidtXh * 0.8), backgroundColor: "rgb(62, 97, 208)" }} onClick={goToChatView}>
+                <button style={{ marginTop:-50, width: Math.floor(window.innerWidth * 0.7), backgroundColor: "rgb(62, 97, 208)" }} onClick={goToChatView}>
                     <img src={`/chat.svg`} alt="Button Icon" style={{ height: Math.floor(window.innerHeight * 0.09) }} />
                 </button>
             </div>

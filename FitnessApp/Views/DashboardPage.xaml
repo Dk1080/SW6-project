@@ -34,11 +34,11 @@
                 FontSize="24"/>
         </Border>
 
-        <Button 
+        <!--<Button 
             Grid.Row="0"
             Text="Go to debug"
             Command="{Binding GoToDebugCommand}">   
-        </Button>
+        </Button>-->
 
 
         <Border Grid.Row="1" Background="#0E7C7B" Padding="20" StrokeShape="RoundRectangle 10,10,10,10"  

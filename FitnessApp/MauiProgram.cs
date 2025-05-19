@@ -87,8 +87,8 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<LoginPage>();
 
-        builder.Services.AddSingleton<DashboardPage>();
-        builder.Services.AddSingleton<DashboardViewModel>();
+        builder.Services.AddTransient<DashboardPage>();
+        builder.Services.AddTransient<DashboardViewModel>();
 
 		builder.Services.AddTransient<ChatBotPage>();
 		builder.Services.AddSingleton<ChatBotViewModel>();
