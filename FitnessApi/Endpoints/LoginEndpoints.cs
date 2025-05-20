@@ -64,7 +64,7 @@ namespace FitnessApi.Endpoints
 
                 if (gottenUser == null)
                 {
-                    return Results.BadRequest();
+                    return Results.Unauthorized();
                 }
                 //Check the password against the hashed password stored in the database.
                 else if (passwordHasher.verifyPassword(user.Password, gottenUser.Password))

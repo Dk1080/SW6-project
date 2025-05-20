@@ -210,9 +210,10 @@ namespace FitnessApi.Endpoints
                 List<ChatHistory> chatHistories = (List<ChatHistory>)chatHistoryService.GetAllChatHistoriesForAUser(username);
 
 
-                //Convert to ChatHistoryDTO
+                //Convert to ChatHistoryDTO and remove tool call messasges
                 foreach (ChatHistory chatHistoryItem in chatHistories)
                 {
+                    chatHistoryItem.chatHistory.RemoveAll(chat => chat.Role == "tool" || chat.Role == "system");
 
                     var tmpChat = new ChatHistoryDTO(chatHistoryItem.Id, chatHistoryItem.chatHistory);
                     chatHistoriesResponse.histories.Add(tmpChat);
@@ -226,7 +227,7 @@ namespace FitnessApi.Endpoints
 
                 if (preferencesAndGoals?.Goals?.Any() == true)
                 {
-                    goal = preferencesAndGoals.Goals.FirstOrDefault(g => g.GoalType == "StepsRecord");
+                    goal = preferencesAndGoals.Goals.FirstOrDefault();
                     if (goal != null)
                     {
                         var endDate = goal.EndDate.Date;
@@ -272,7 +273,7 @@ namespace FitnessApi.Endpoints
                         "\nPlease tell me what your health and/or fitness goals are!" +
                         "\nWhich interval would you like in your overview?(weekly, biweekly or monthly)" +
                         "\nWhat date would you like the goal to end?(yyyy-mm-dd format)" +
-                        "\nHow would you like your graphs displayed?(Halfcircle or Column)"));
+                        "\nHow would you like your graphs displayed?(Circle or Column)"));
                     chatHistoryGoal.Username = username;
                     //Get threadID
                     chatHistoryGoal.Id = chatHistoryService.AddChatHistory(chatHistoryGoal);

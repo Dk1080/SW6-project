@@ -17,7 +17,7 @@ public class DatabaseTools
 
 
     [Description("Sets or updates user preferences and goals. You can provide chartPreference alone to update the chart preference, or provide goalType, value, interval, and endDate to update goals. Do NOT ask for userPreferencesService or username. " +
-                 "chartPreference may only be 'Halfcircle' or 'Column'. If updating chartPreference, only provide this parameter. " +
+                 "chartPreference may only be 'Circle' or 'Column'. If updating chartPreference, only provide this parameter. " +
                  "To update goals, goalType must be one of: ActiveCaloriesBurnedRecord, TotalCaloriesBurnedRecord, DistanceRecord, ElevationGainedRecord, FloorsClimbedRecord, HeartRateRecord, HeightRecord, RestingHeartRateRecord, StepsRecord, WeightRecord, WheelchairPushesRecord. " +
                  "interval must be 'weekly', 'biweekly', or 'monthly'. endDate must be in yyyy-MM-dd format (e.g., 2025-04-24).")]
     public async Task<string> SetPreferencesAndGoals(IUserPreferencesService userPreferencesService, string username, string chartPreference = "none", string goalType = "none", string value = "none", string interval = "none", string endDate = "none")
@@ -43,9 +43,9 @@ public class DatabaseTools
         // ChartPreference kan opdateres alene
         if (chartPreference != "none")
         {
-            if (chartPreference != "Halfcircle" && chartPreference != "Column")
+            if (chartPreference != "Circle" && chartPreference != "Column")
             {
-                return "Chart preference must be 'Halfcircle' or 'Column'.";
+                return "Chart preference must be 'Circle' or 'Column'.";
             }
             preferences.ChartPreference = chartPreference;
             preferencesUpdated = true;

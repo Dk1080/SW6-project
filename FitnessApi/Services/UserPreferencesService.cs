@@ -52,22 +52,29 @@ namespace FitnessApi.Services
             {
                 Console.WriteLine($"[Service] Updating preferences for {username}.");
                 existingPreferences.ChartPreference = preferences.ChartPreference;
-                
-                // steps her
-                var updatedStepsGoal = preferences.Goals.FirstOrDefault(g => g.GoalType == "StepsRecord");
-                if (updatedStepsGoal != null)
-                {   
-                    var existingStepsGoal = existingPreferences.Goals.FirstOrDefault(g => g.GoalType == "StepsRecord");
-                    if (existingStepsGoal != null)
+
+                var updatedGoal = preferences.Goals.LastOrDefault();
+
+                if (updatedGoal != null)
+                {
+                    var newGoal = new Goal
                     {
-                        existingStepsGoal.Value = updatedStepsGoal.Value;
-                        existingStepsGoal.Interval = updatedStepsGoal.Interval;
-                        var startdate = DateTime.UtcNow.Date;
-                        existingStepsGoal.StartDate = startdate;   
-                        existingStepsGoal.EndDate = updatedStepsGoal.EndDate;
-                    }
+                        GoalType = updatedGoal.GoalType,
+                        Interval = updatedGoal.Interval,
+                        Value = updatedGoal.Value,
+                        StartDate = DateTime.UtcNow.Date,
+                        EndDate = updatedGoal.EndDate
+                    };
+
+                    existingPreferences.Goals = new List<Goal> { newGoal };
                 }
-                    _dbContext.UserPreferences.Update(existingPreferences);
+
+                // Optionally update other preferences
+                existingPreferences.ChartPreference = preferences.ChartPreference;
+
+                // Save the updated document
+                //_dbContext.UserPreferences.Update(existingPreferences);
+
             }
 
             try
