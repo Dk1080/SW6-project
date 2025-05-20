@@ -61,7 +61,11 @@ function ChatView() {
     }
 
     const sendQuery = async (query) => {
-        document.getElementById("queryButton").disabled = "true";
+        //Dissable the input and clear the box
+        document.getElementById("queryButton").disabled = true;
+        setQuery("");
+        resetTranscript();
+
 
         //Create temperary chat.
         const updatedChatlog = { ...chatlog };
@@ -191,12 +195,13 @@ function ChatView() {
 
                             //Update and force a rerender.
                             setChatlog({ ...updatedChatlog });
-                            document.getElementById("queryButton").disabled = "false";
 
                         });
                     }
                 });
         }
+        document.getElementById("queryButton").disabled = false;
+
         
 
     }
@@ -269,14 +274,22 @@ function ChatView() {
                                     }}>Reset</button>
                             </div>
                         )}
-                        <input 
+                        <textarea 
+                            id="inputField"
                             type="text" 
                             value={transcript || query} 
                             onChange={e => setQuery(e.target.value)} 
                             style={{
                                 minWidth: '200px',
-                                width: `${Math.min((transcript || query).length * 10, 500)}px`, // Expands with input, max width 300px
-                                transition: "width 0.2s ease", // Smooth transition
+                                width: '100%',
+                                minHeight: '40px',
+                                resize: 'none',
+                                overflow: 'hidden',
+                                lineHeight: '1.5',
+                                padding: '8px',
+                                fontSize: '16px',
+                                boxSizing: 'border-box',
+                                transition: 'height 0.2s ease'
                             }}
                         />
                         <button id="queryButton" onClick={() => sendQuery(transcript || query)}>Send query!</button>
