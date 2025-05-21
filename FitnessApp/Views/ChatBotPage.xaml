@@ -50,7 +50,7 @@
 
                     <!-- Text dead center -->
                     <Label Grid.Column="1" 
-                    Text="FitnessBot6969" 
+                    Text="FitBot" 
                     TextColor="Black" 
                     FontSize="24" 
                     HorizontalOptions="Center" 
