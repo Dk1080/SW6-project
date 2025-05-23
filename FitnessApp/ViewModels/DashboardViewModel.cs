@@ -106,7 +106,7 @@ namespace FitnessApp.ViewModels
                 DateTime todayDate = DateTime.UtcNow.Date;
                 if (preferenceData.Goals.Any()) 
                 {
-                    var stepsGoal = preferenceData.Goals.FirstOrDefault(g => g.GoalType == "StepsRecord");
+                    var stepsGoal = preferenceData.Goals.FirstOrDefault();
                     if (stepsGoal != null)
                     {
                         interval = stepsGoal.Interval ?? "weekly";
@@ -230,7 +230,7 @@ namespace FitnessApp.ViewModels
                 // Lav graf med data 
                 ChartSeries = preferenceData.ChartPreference switch
                 {
-                    "Halfcircle" => new ISeries[]
+                    "Circle" => new ISeries[]
                     {
                         new PieSeries<int>
                         {
@@ -278,7 +278,7 @@ namespace FitnessApp.ViewModels
                     }
                 };
 
-                if(preferenceData.ChartPreference == "Halfcircle" || preferenceData.ChartPreference == "Column") 
+                if(preferenceData.ChartPreference == "Circle" || preferenceData.ChartPreference == "Column") 
                 {
                     // X-akse value
                     XAxesChartSeries[0].Labels = new List<string> { today.ToString("MM-dd") };

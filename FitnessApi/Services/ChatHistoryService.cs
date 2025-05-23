@@ -32,7 +32,10 @@ namespace FitnessApi.Services
 
         public IEnumerable<ChatHistory> GetAllChatHistoriesForAUser(string userName)
         {
-            return _databaseContext.ChatHistories.Where(chat => chat.Username == userName).ToList();
+            return _databaseContext.ChatHistories
+                .Where(chat => chat.Username == userName)
+                .OrderByDescending(chat => chat.Id) // Assuming Id increases with time
+                .ToList();
         }
 
         public void UpdateChatHistory(ChatHistory chatHistory)

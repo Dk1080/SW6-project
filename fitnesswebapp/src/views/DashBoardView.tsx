@@ -45,7 +45,8 @@ function DashBoardView() {
         ],
     });
 
-    const todaySteps = useRef(0);
+    const todaysData = useRef(0);
+    const goalName = useRef("");
     const [goalsAvalible, setGoalsAvalible] = useState(false);
 
     //On site load send a request for graph and goal data.
@@ -105,33 +106,36 @@ function DashBoardView() {
             console.log(chartData)
             console.log(userGoalAndPreference)
 
-            //Get the steps from today.
+            //Change to better name.
+            goalName.current = getRealgoalName(userGoalAndPreference.goals[0]?.goalType);
+
+            //Get the data from today.
             const unixTime = Date.parse(chartData?.[chartData?.length - 1]?.date)
             const tmpDate = new Date(Number(unixTime));
             if (`${tmpDate.getFullYear()}-${tmpDate.getMonth() + 1}-${tmpDate.getDate()}` ===
                 `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`) {
                 console.log(chartData[chartData?.length - 1].value)
 
-                todaySteps.current = chartData[chartData.length - 1]?.value;
-                console.log(todaySteps.current)
+                todaysData.current = chartData[chartData.length - 1]?.value;
+                console.log(todaysData.current)
             }
-            console.log(todaySteps.current)
+            console.log(todaysData.current)
 
 
             if (userGoalAndPreference.goals.length != 0) {
                 setGoalsAvalible(true);
                 //Change what type of graph to display
                 switch (userGoalAndPreference.chartPreference) {
-                    case "Halfcircle":
+                    case "Circle":
 
                         setDisplayChart({
-                            labels: ["Number of steps today", "Remainder to get to goal"], // Type of goal
+                            labels: [`Number of ${goalName.current} today`, "Remainder to get to goal"], // Type of goal
                             datasets: [
                                 {
-                                    label: `Steps`,
+                                    label: `${goalName.current}`,
                                     data: [
-                                        todaySteps.current,
-                                        Math.max(0, userGoalAndPreference.goals[0].value - todaySteps.current),
+                                        todaysData.current,
+                                        Math.max(0, userGoalAndPreference.goals[0].value - todaysData.current),
                                     ],
 
                                     backgroundColor: [
@@ -162,13 +166,13 @@ function DashBoardView() {
 
                         break;
                     case "Column": {
-                        console.log(todaySteps.current)
+                        console.log(todaysData.current)
                         setDisplayChart({
-                            labels: ["Daily Steps"],
+                            labels: [`Daily ${goalName.current}`],
                             datasets: [{
-                                label: `Progress towards goal of ${userGoalAndPreference.goals[0].value} steps`,
+                                label: `Progress towards goal of ${userGoalAndPreference.goals[0].value} ${goalName.current}`,
                                 data: [
-                                    [todaySteps.current]
+                                    [todaysData.current]
                                 ],
                                 backgroundColor: [
                                     'rgb(0, 154, 104)',
@@ -269,8 +273,8 @@ function DashBoardView() {
                         labels: labels,
                         datasets: [
                             {
-                                label: "Steps",
-                                data: [todaySteps],
+                                label: `${goalName.current}`,
+                                data: [todaysData],
                                 backgroundColor: "rgb(0, 139, 95)",
                             }
                         ]
@@ -353,7 +357,7 @@ function DashBoardView() {
                             labels: labels,
                             datasets: [
                                 {
-                                    label: "Steps",
+                                    label: `${goalName.current}`,
                                     data: data,
                                     backgroundColor: "rgb(0, 139, 95)"
                                 }
@@ -438,7 +442,7 @@ function DashBoardView() {
                             labels: labels,
                             datasets: [
                                 {
-                                    label: "Steps",
+                                    label: `${goalName.current}`,
                                     data: data,
                                     backgroundColor: "rgb(0, 139, 95)"
                                 }
@@ -515,7 +519,7 @@ function DashBoardView() {
                         labels: labels,
                         datasets: [
                             {
-                                label: "Steps",
+                                label: `${goalName.current}`,
                                 data: data,
                                 backgroundColor: "rgb(0, 139, 95)"
                             }
@@ -576,6 +580,40 @@ function DashBoardView() {
    
 
 
+    const getRealgoalName = (goalName: string): string => {
+
+        switch (goalName) {
+            case "ActiveCaloriesBurnedRecord":
+                return "active calories burned";
+            case "TotalCaloriesBurnedRecord":
+                return "total calories burned";
+            case "DistanceRecord":
+                return "distance";
+            case "ElevationGainedRecord":
+                return "elevation gained";
+            case "FloorsClimbedRecord":
+                return "floors climbed";
+            case "HeartRateRecord":
+                return "heart rate";
+            case "HeightRecord":
+                return "height";
+            case "RestingHeartRateRecord":
+                return "resting heart rate";
+            case "StepsRecord":
+                return "steps";
+            case "WeightRecord":
+                return "weight";
+            case "WheelchairPushesRecord":
+                return "wheelchair pushes";
+            default:
+                return "ERROR";
+        }
+
+
+
+    }
+
+
 
 
     if (chartData && userGoalAndPreference == null) {
@@ -589,9 +627,9 @@ function DashBoardView() {
 
                 {goalsAvalible == true ? (
                     <div style={{ backgroundColor: "rgb(0, 115, 113)", borderRadius: '25px', padding: "5px", margin: "100px", width: Math.floor(window.innerWidth * 0.7), height: Math.floor(window.innerHeight * 0.4) }}>
-                        {userGoalAndPreference?.chartPreference === "Halfcircle" && <Doughnut data={displayChart} options={topOptions} />}
+                        {userGoalAndPreference?.chartPreference === "Circle" && <Doughnut data={displayChart} options={topOptions} />}
                         {userGoalAndPreference?.chartPreference === "Column" && <Bar data={displayChart} options={topOptions} />}
-                        <h2 style={{ display: 'inline-block', padding: '0px 10px' }}> Today's steps: {todaySteps.current} </h2>
+                        <h2 style={{ display: 'inline-block', padding: '0px 10px' }}> Today's {goalName.current}: {todaysData.current} </h2>
                         <h2 style={{ display: 'inline-block' }}> Goal: {JSON.stringify(userGoalAndPreference?.goals?.[0]?.value)}</h2>
                     </div>
                 ) : (

@@ -61,6 +61,15 @@ function ChatView() {
     }
 
     const sendQuery = async (query) => {
+
+
+        //Check if there is text in the input field.
+        if (transcript.length == 0 && query.length == 0) {
+            alert("Input query");
+            return;
+        }
+
+
         //Dissable the input and clear the box
         document.getElementById("queryButton").disabled = true;
         setQuery("");
