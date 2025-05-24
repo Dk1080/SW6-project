@@ -8,6 +8,7 @@ namespace FitnessApi.Endpoints.Tools;
 public class DatabaseTools
 {
 
+    [Description("Use this to retrieve the users fitness data, if the user wants it, wants an overview of it, wants a analysis of it, or you need it for some reason.")]
     public string GetFitnessData(HealthInfo healthInfo)
     {
         string output = string.Join(", ", healthInfo.HourInfos);
