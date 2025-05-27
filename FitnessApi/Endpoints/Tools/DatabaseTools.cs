@@ -15,6 +15,23 @@ public class DatabaseTools
         return output;
     }
 
+    [Description("Gets the goal data for a user. format the data, do not just display a long stirg of values.")]
+    public async Task<string> GetGoalData(IUserPreferencesService userPreferencesService, string username)
+    {
+        //Get goal data from the user.
+        var goalData = await userPreferencesService.GetUserPreferencesAsync(username);
+        if (goalData != null)
+        {
+            Console.WriteLine($" The start date of the goal is: {goalData.Goals[0].StartDate}, The goal type is:{goalData.Goals[0].GoalType} ,The value is: {goalData.Goals[0].Value},The enddate is:{goalData.Goals[0].EndDate}");
+            return $" The start date of the goal is: {goalData.Goals[0].StartDate}, The goal type is:{goalData.Goals[0].GoalType} ,The daily value is: {goalData.Goals[0].Value},The enddate is:{goalData.Goals[0].EndDate}";
+        }
+        else
+        {
+            return "There are no goals for this user.";
+        }
+
+    }
+
 
     [Description("Sets or updates user preferences and goals. You can provide chartPreference alone to update the chart preference, or provide goalType, value, interval, and endDate to update goals. Do NOT ask for userPreferencesService or username. " +
                  "chartPreference may only be 'Circle' or 'Column'. If updating chartPreference, only provide this parameter. " +
