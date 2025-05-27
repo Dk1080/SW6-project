@@ -35,9 +35,10 @@ namespace FitnessApi.Endpoints
             DatabaseTools databaseTools = new DatabaseTools();
             //Let AI know what methods can be called
             AIFunction GetFitnessDataTool = AIFunctionFactory.Create(databaseTools.GetFitnessData);
+            AIFunction GetGoalData = AIFunctionFactory.Create(databaseTools.GetGoalData);
             AIFunction SetPreferencesAndGoalsTool = AIFunctionFactory.Create(databaseTools.SetPreferencesAndGoals);
             AIFunction UpdateGoalTool = AIFunctionFactory.Create(databaseTools.UpdateGoal);
-            ChatOptions chatOptions = new ChatOptions { Tools = [GetFitnessDataTool, SetPreferencesAndGoalsTool, UpdateGoalTool] };
+            ChatOptions chatOptions = new ChatOptions { Tools = [GetFitnessDataTool, GetGoalData, SetPreferencesAndGoalsTool, UpdateGoalTool] };
             
             app.MapPost("/chat", async (HttpContext httpContext,IChatClient chatClient, ChatDTO chatDTO, IChatHistoryService chatHistoryService, IHealthDataService healthDataService, IUserPreferencesService userPreferencesService) =>
             { 
@@ -107,6 +108,10 @@ namespace FitnessApi.Endpoints
                                 case "GetFitnessData":
                                     result = databaseTools.GetFitnessData(healthdata);
                                     Console.WriteLine($"Fitness data is: {result}");
+                                    break;
+                                case "GetGoalData":
+                                    result = await databaseTools.GetGoalData(userPreferencesService, username);
+                                    
                                     break;
 
                                 case "SetPreferencesAndGoals":

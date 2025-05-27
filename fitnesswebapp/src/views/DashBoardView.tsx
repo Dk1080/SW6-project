@@ -264,53 +264,7 @@ function DashBoardView() {
 
             //Switch based on what interval it is.
             switch (userGoalAndPreference?.goals?.[0].interval) {
-                case "daily":
-                    //Set the labels to the current date.
-                    let shiftedDate = new Date(currentDate);
-                    shiftedDate.setDate(currentDate.getDate());
-                    labels.push(`${shiftedDate.getFullYear()}-${shiftedDate.getMonth() + 1}-${shiftedDate.getDate()}`)
-                    setBottomChartData({
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: `${goalName.current}`,
-                                data: [todaysData],
-                                backgroundColor: "rgb(0, 139, 95)",
-                            }
-                        ]
-                    });
-                    // To change the datalabel font color in Chart.js with chartjs-plugin-datalabels, set the `color` property under the `datalabels` plugin in your chart options. Example:
-
-                    setBottomOptions({
-                        plugins: {
-                            datalabels: {
-                                font: {
-                                    size: 50,
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                categoryPercentage: 1.0,
-                                barPercentage: 1.0,
-                                ticks: {
-                                    color: 'black',
-                                    font: {
-                                        size: 15
-                                    }
-                                }
-                            },
-                            y: {
-                                ticks: {
-                                    color: 'black',
-                                    font: {
-                                        size: 15
-                                    }
-                                }
-                            }
-                        }
-                    })
-                    break;
+                
                 case "weekly":
                     {
 
